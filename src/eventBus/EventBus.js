@@ -2,7 +2,7 @@
  * Created by iso.amon on 05.05.2014.
  */
 
-var engisEventBus = new function() {
+var eventBus = new function() {
 
     var components = {};
 
@@ -11,7 +11,7 @@ var engisEventBus = new function() {
     var eventPrototype;
 
     var Events = {
-        register : function (event, name) {
+        register: function(event, name) {
             if (typeof event !== 'function') {
                 throw new Error("No Event provided");
             }
@@ -20,7 +20,7 @@ var engisEventBus = new function() {
                 throw new Error("Error registering event, duplicate Event with name [" + event.name + "]");
             }
 
-            if(!eventPrototype) {
+            if (!eventPrototype) {
                 eventPrototype = new self.Event();
             }
 
@@ -89,5 +89,5 @@ var engisEventBus = new function() {
 }();
 
 engisModuleSystem.createPart("eventBus").creator(function() {
-    return engisEventBus;
+    return eventBus;
 });

@@ -1,6 +1,6 @@
-var engisModuleSystem = {};
-engisModuleSystem.createModule = function(name) {
-    if(typeof name !== "string") {
+var moduleSystem = {};
+moduleSystem.createModule = function(name) {
+    if (typeof name !== "string") {
         throw new Error("Name missing");
     }
     var dependencies = [];
@@ -8,15 +8,15 @@ engisModuleSystem.createModule = function(name) {
 
 
     function addModule(module) {
-        engisModuleSystem.modules = engisModuleSystem.modules || {};
+        moduleSystem.modules = moduleSystem.modules || {};
         var moduleObj = {
-            creator : module,
-            name : name,
-            dependencies : dependencies,
-            settings : settings
+            creator: module,
+            name: name,
+            dependencies: dependencies,
+            settings: settings
         };
 
-        engisModuleSystem.modules[name] = moduleObj;
+        moduleSystem.modules[name] = moduleObj;
     }
 
     function addSettings(neededSettings) {
@@ -24,48 +24,48 @@ engisModuleSystem.createModule = function(name) {
 
         return {
             dependencies: addDependencies,
-            creator : addModule
+            creator: addModule
         }
     }
 
 
     function addDependencies(neededParts) {
-        if(!$.isArray(neededParts)) {
-            neededParts = [ neededParts ];
+        if (!$.isArray(neededParts)) {
+            neededParts = [neededParts];
         }
 
         dependencies = neededParts;
 
         return {
             settings: addSettings,
-            creator : addModule
+            creator: addModule
         }
     }
 
     return {
-        settings : addSettings,
+        settings: addSettings,
         dependencies: addDependencies,
-        creator : addModule
+        creator: addModule
     };
 };
 
-engisModuleSystem.createPart = function(name) {
-    if(typeof name !== "string") {
+moduleSystem.createPart = function(name) {
+    if (typeof name !== "string") {
         throw new Error("Name missing");
     }
     var dependencies = [];
     var settings;
 
     function addPart(creator) {
-        engisModuleSystem.parts = engisModuleSystem.parts || {};
+        moduleSystem.parts = moduleSystem.parts || {};
         var partObj = {
-            creator : creator,
-            name : name,
+            creator: creator,
+            name: name,
             dependencies: dependencies,
             settings: settings
         };
 
-        engisModuleSystem.parts[name] = partObj;
+        moduleSystem.parts[name] = partObj;
     }
 
     function addSettings(neededSettings) {
@@ -74,20 +74,20 @@ engisModuleSystem.createPart = function(name) {
         return {
             settings: addSettings,
             dependencies: addDependencies,
-            creator : addPart
+            creator: addPart
         }
     }
 
 
     function addDependencies(neededParts) {
-        if(!$.isArray(neededParts)) {
-           neededParts = [ neededParts ];
+        if (!$.isArray(neededParts)) {
+            neededParts = [neededParts];
         }
 
         dependencies = neededParts;
 
         return {
-            creator : addPart
+            creator: addPart
         }
     }
 
@@ -95,12 +95,12 @@ engisModuleSystem.createPart = function(name) {
     return {
         settings: addSettings,
         dependencies: addDependencies,
-        creator : addPart
+        creator: addPart
     };
 };
 
 
-engisModuleSystem.initModulePage = function() {
+moduleSystem.initModulePage = function() {
     var loadedParts = {};
     var loadedModules = {};
 
@@ -118,29 +118,29 @@ engisModuleSystem.initModulePage = function() {
             oldPartsToBeLoaded,
             args;
 
-        engisModuleSystem.parts = engisModuleSystem.parts || {};
+        moduleSystem.parts = moduleSystem.parts || {};
 
         //gather parts
-        for(name in engisModuleSystem.parts) {
-            partDescriptor = engisModuleSystem.parts[name];
+        for (name in moduleSystem.parts) {
+            partDescriptor = moduleSystem.parts[name];
 
             partsToBeLoaded.push(partDescriptor);
         }
 
 
-        if(partsToBeLoaded.length > 0) {
+        if (partsToBeLoaded.length > 0) {
             do {
                 oldPartsToBeLoaded = partsToBeLoaded;
                 partsToBeLoaded = [];
 
                 //load parts
-                for(i = 0; i < oldPartsToBeLoaded.length; i++) {
+                for (i = 0; i < oldPartsToBeLoaded.length; i++) {
                     partDescriptor = oldPartsToBeLoaded[i];
                     dependencies = partDescriptor.dependencies;
                     foundDependencies = getDependencies(dependencies);
-                    if(foundDependencies.length === dependencies.length) {
+                    if (foundDependencies.length === dependencies.length) {
                         args = foundDependencies;
-                        if(typeof partDescriptor.settings !== "undefined") {
+                        if (typeof partDescriptor.settings !== "undefined") {
                             args.unshift(partDescriptor.settings)
                         }
 
@@ -150,11 +150,11 @@ engisModuleSystem.initModulePage = function() {
                         partsToBeLoaded.push(partDescriptor);
                     }
                 }
-            } while(oldPartsToBeLoaded.length > partsToBeLoaded.length);
+            } while (oldPartsToBeLoaded.length > partsToBeLoaded.length);
 
 
             //error handling
-            if(partsToBeLoaded.length > 0) {
+            if (partsToBeLoaded.length > 0) {
                 throw new Error("provision error can't resolve dependencies for parts:" + JSON.stringify(partsToBeLoaded));
             }
         }
@@ -166,7 +166,7 @@ engisModuleSystem.initModulePage = function() {
             name,
             module;
 
-        engisModuleSystem.modules =  engisModuleSystem.modules || {};
+        moduleSystem.modules = moduleSystem.modules || {};
 
 
         $modulesOnPage.each(function(index, element) {
@@ -182,16 +182,16 @@ engisModuleSystem.initModulePage = function() {
                 mergedSettings;
 
 
-            for(i = 0; i < moduleNames.length; i++) {
+            for (i = 0; i < moduleNames.length; i++) {
                 moduleName = moduleNames[i];
-                if(engisModuleSystem.modules.hasOwnProperty(moduleName)) {
-                    moduleDescriptor = engisModuleSystem.modules[moduleName];
+                if (moduleSystem.modules.hasOwnProperty(moduleName)) {
+                    moduleDescriptor = moduleSystem.modules[moduleName];
 
                     foundDependencies = getDependencies(moduleDescriptor.dependencies);
-                    if(foundDependencies.length == moduleDescriptor.dependencies.length) {
+                    if (foundDependencies.length == moduleDescriptor.dependencies.length) {
                         args = foundDependencies;
                         domSettings = getDOMSettings($element, moduleName);
-                        if(typeof moduleDescriptor.settings !== "undefined" || typeof domSettings !== "undefined") {
+                        if (typeof moduleDescriptor.settings !== "undefined" || typeof domSettings !== "undefined") {
                             mergedSettings = $.extend({}, moduleDescriptor.settings, domSettings);
 
                             args.unshift(mergedSettings);
@@ -200,7 +200,7 @@ engisModuleSystem.initModulePage = function() {
 
                         createdModule = moduleDescriptor.creator.apply(null, args);
 
-                        if(typeof createdModule === "undefined") {
+                        if (typeof createdModule === "undefined") {
                             createdModule = {};
                         }
 
@@ -208,7 +208,7 @@ engisModuleSystem.initModulePage = function() {
 
                         createdModule.name = name;
                         loadedModules[name] = createdModule;
-                        engisEventBus.add(createdModule);
+                        eventBus.add(createdModule);
                     } else {
                         throw new Error("Required Parts Missing from " + moduleName + " dependencies: " + JSON.stringify(moduleDescriptor.dependencies));
                     }
@@ -220,9 +220,9 @@ engisModuleSystem.initModulePage = function() {
         });
 
 
-        for(name in loadedModules) {
+        for (name in loadedModules) {
             module = loadedModules[name];
-            if(typeof module.postConstruct === "function") {
+            if (typeof module.postConstruct === "function") {
                 module.postConstruct();
             }
         }
@@ -238,9 +238,9 @@ engisModuleSystem.initModulePage = function() {
         var foundName;
 
         do {
-          foundName =  name + i;
-          i++;
-        } while(loadedModules.hasOwnProperty(foundName));
+            foundName = name + i;
+            i++;
+        } while (loadedModules.hasOwnProperty(foundName));
 
         return foundName;
     }
@@ -248,20 +248,15 @@ engisModuleSystem.initModulePage = function() {
     function getDependencies(dependencies) {
         var parts = [];
 
-        if(dependencies.length > 0) {
+        if (dependencies.length > 0) {
             $.each(dependencies, function() {
-               if(loadedParts.hasOwnProperty(this)) {
-                  var part = loadedParts[this];
-                  parts.push(part);
-               }
+                if (loadedParts.hasOwnProperty(this)) {
+                    var part = loadedParts[this];
+                    parts.push(part);
+                }
             });
         }
         return parts;
     }
 
 };
-
-
-
-
-

@@ -3,13 +3,13 @@
  */
 
 ;
-(function (EventBus) {
+(function(EventBus) {
 
     EventBus.Event = function Event(name) {
         this.name = name;
     };
 
-    EventBus.Event.prototype.getData = function () {
+    EventBus.Event.prototype.getData = function() {
         var result = {};
 
         for (var property in this) {
@@ -21,4 +21,4 @@
         return result;
     };
 
-}(engisEventBus));
+}(eventBus));
