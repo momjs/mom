@@ -2,7 +2,6 @@
  * Created by iso.amon on 05.05.2014.
  */
 
-;
 (function(EventBus) {
 
     EventBus.Event = function Event(name) {

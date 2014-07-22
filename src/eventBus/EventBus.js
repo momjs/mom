@@ -2,11 +2,9 @@
  * Created by iso.amon on 05.05.2014.
  */
 
-var eventBus = new function() {
+var eventBus = (function() {
 
     var components = {};
-
-    var self = this;
 
     var eventPrototype;
 
@@ -21,7 +19,7 @@ var eventBus = new function() {
             }
 
             if (!eventPrototype) {
-                eventPrototype = new self.Event();
+                eventPrototype = new eventBus.Event();
             }
 
             event.prototype = eventPrototype;
@@ -68,7 +66,7 @@ var eventBus = new function() {
             if (replaceDuplicates) {
                 removeComponent(component.name);
             } else {
-                throw new Error("Component with name [" + component.name + "] already registered")
+                throw new Error("Component with name [" + component.name + "] already registered");
             }
         }
 
@@ -81,13 +79,16 @@ var eventBus = new function() {
         }
     }
 
-    self.publish = publishEvent;
-    self.add = addComponent;
-    self.remove = removeComponent;
-    self.Events = Events;
 
-}();
+    return {
+        publish: publishEvent,
+        add: addComponent,
+        remove: removeComponent,
+        Events: Events
+    };
 
-engisModuleSystem.createPart("eventBus").creator(function() {
+})();
+
+moduleSystem.createPart("eventBus").creator(function() {
     return eventBus;
 });

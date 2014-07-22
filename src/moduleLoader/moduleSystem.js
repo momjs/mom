@@ -25,7 +25,7 @@ moduleSystem.createModule = function(name) {
         return {
             dependencies: addDependencies,
             creator: addModule
-        }
+        };
     }
 
 
@@ -39,7 +39,7 @@ moduleSystem.createModule = function(name) {
         return {
             settings: addSettings,
             creator: addModule
-        }
+        };
     }
 
     return {
@@ -75,7 +75,7 @@ moduleSystem.createPart = function(name) {
             settings: addSettings,
             dependencies: addDependencies,
             creator: addPart
-        }
+        };
     }
 
 
@@ -88,7 +88,7 @@ moduleSystem.createPart = function(name) {
 
         return {
             creator: addPart
-        }
+        };
     }
 
 
@@ -141,7 +141,7 @@ moduleSystem.initModulePage = function() {
                     if (foundDependencies.length === dependencies.length) {
                         args = foundDependencies;
                         if (typeof partDescriptor.settings !== "undefined") {
-                            args.unshift(partDescriptor.settings)
+                            args.unshift(partDescriptor.settings);
                         }
 
                         createdPart = partDescriptor.creator.apply(null, args);
