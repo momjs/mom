@@ -4,6 +4,8 @@ dist/
 lib/
 node_modules/
 report/
+.grunt/
+_SpecRunner.html
 
 # Windows image file caches
 Thumbs.db

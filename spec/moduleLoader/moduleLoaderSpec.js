@@ -8,8 +8,7 @@ describe("The Module Loader", function() {
     afterEach(function() {
         eventBus.remove("testModule0");
         eventBus.remove("testModule1");
-        moduleSystem.modules = {};
-        moduleSystem.parts = {};
+        moduleSystem.reset();
     });
 
     it("should load any Module found in dom", function() {
