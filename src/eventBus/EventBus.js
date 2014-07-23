@@ -6,29 +6,43 @@ var eventBus = (function() {
 
     var components = {};
 
-    var eventPrototype;
+    var eventPrototype = new Event();
 
     var Events = {
-        register: function(event, name) {
-            if (typeof event !== 'function') {
+        register: function(Event, name) {
+            if (typeof Event !== 'function') {
                 throw new Error("No Event provided");
             }
 
             if (name in Events) {
-                throw new Error("Error registering event, duplicate Event with name [" + event.name + "]");
+                throw new Error("Error registering event, duplicate Event with name [" + name + "]");
             }
 
-            if (!eventPrototype) {
-                eventPrototype = new eventBus.Event();
-            }
+            Event.prototype = eventPrototype;
 
-            event.prototype = eventPrototype;
+            Events[name] = Event;
 
-            Events[name] = event;
-
-            return event;
+            return Event;
         }
     };
+
+
+    function Event(name) {
+        this.name = name;
+        this.getData = function() {
+            var result = {};
+
+            for (var property in this) {
+                if (this.hasOwnProperty(property) && property !== "name" && property !== "getData") {
+                    result[property] = this[property];
+                }
+            }
+
+            return result;
+        };
+    };
+
+
 
     function publishEvent(event, source) {
 

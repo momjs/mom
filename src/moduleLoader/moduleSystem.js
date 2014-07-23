@@ -92,7 +92,7 @@ var moduleSystem = (function() {
                         foundDependencies = getDependencies(dependencies);
                         if (foundDependencies.length === dependencies.length) {
                             args = foundDependencies;
-                            if (typeof partDescriptor.settings !== "undefined") {
+                            if (partDescriptor.settings !== undefined) {
                                 args.unshift(partDescriptor.settings);
                             }
 
@@ -149,7 +149,7 @@ var moduleSystem = (function() {
 
                             createdModule = moduleDescriptor.creator.apply(null, args);
 
-                            if (typeof createdModule === "undefined") {
+                            if (createdModule === undefined) {
                                 createdModule = {};
                             }
 
@@ -157,6 +157,8 @@ var moduleSystem = (function() {
 
                             createdModule.name = name;
                             loadedModules[name] = createdModule;
+
+
                             eventBus.add(createdModule);
                         } else {
                             throw new Error("Required Parts Missing from " + moduleName + " dependencies: " + JSON.stringify(moduleDescriptor.dependencies));
@@ -211,10 +213,6 @@ var moduleSystem = (function() {
             }
             return parts;
         }
-    }
-
-    function removeModule(name) {
-
     }
 
     function reset() {
