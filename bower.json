@@ -11,7 +11,6 @@
         "jquery": ">=2"
     },
     "devDependencies": {
-        "jasmine": ">=2",
         "jasmine-jquery": ">=2"
     },
     "ignore": [

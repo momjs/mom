@@ -19,7 +19,9 @@ module.exports = function(grunt) {
         },
         dirs: {
             dest: 'dist',
-            dep: '<%= dirs.dest %>/dependencies'
+            dep: '<%= dirs.dest %>/dependencies',
+            source: 'src',
+            test: 'spec'
         },
         bower: {
             dev: {
@@ -32,10 +34,10 @@ module.exports = function(grunt) {
             },
             dist: {
                 src: [
-                    'src/moduleLoader/moduleSystem.js',
-                    'src/eventBus/eventBus.js'
+                    '<%= dirs.source %>/moduleLoader/moduleSystem.js',
+                    '<%= dirs.source %>/eventBus/eventBus.js'
                 ],
-                dest: '<%= dirs.dest %>/<%= pkg.name %>.js'
+                dest: '<%= dirs.dest %>/<%= pkg.name %>.<%= pkg.version %>.js'
             }
         },
         bowerInstall: {
@@ -47,11 +49,11 @@ module.exports = function(grunt) {
             },
             dist: {
                 src: ['<%= concat.dist.dest %>'],
-                dest: '<%= dirs.dest %>/<%= pkg.name %>.min.js'
+                dest: '<%= dirs.dest %>/<%= pkg.name %>.<%= pkg.version %>.min.js'
             }
         },
         jshint: {
-            files: ['src/**/*.js'],
+            files: ['<%= dirs.source %>/**/*.js'],
             options: {
                 jshintrc: true
             }
@@ -65,7 +67,7 @@ module.exports = function(grunt) {
                         '<%= dirs.dep %>/jasmine-jquery.js',
                     ],
                     specs: [
-                        'spec/**/*Spec.js'
+                        '<%= dirs.test %>/**/*Spec.js'
                     ]
                 }
             }
@@ -93,7 +95,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['build']);
 
     // Build task.
-    grunt.registerTask('build', ['bowerInstall', 'bower', 'concat', 'uglify']);
+    grunt.registerTask('build', ['bowerInstall', 'bower', 'jasmine', 'jshint', 'concat', 'uglify']);
 
     grunt.registerTask('test', ['jasmine']);
 

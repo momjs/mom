@@ -39,7 +39,7 @@ var eventBus = (function() {
 
             return result;
         };
-    };
+    }
 
 
 
