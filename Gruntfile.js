@@ -31,7 +31,10 @@ module.exports = function(grunt) {
                 banner: '<%= meta.banner %>'
             },
             dist: {
-                src: ['src/**/*.js'],
+                src: [
+                    'src/moduleLoader/moduleSystem.js',
+                    'src/eventBus/eventBus.js'
+                ],
                 dest: '<%= dirs.dest %>/<%= pkg.name %>.js'
             }
         },
@@ -55,11 +58,7 @@ module.exports = function(grunt) {
         },
         jasmine: {
             coverage: {
-                src: [
-                    'src/moduleLoader/moduleSystem.js',
-                    'src/eventBus/eventBus.js',
-                    'src/eventBus/Events.js',
-                ],
+                src: '<%= concat.dist.src %>',
                 options: {
                     vendor: [
                         '<%= dirs.dep %>/jquery.js',

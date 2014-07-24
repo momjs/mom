@@ -73,7 +73,14 @@ var moduleSystem = (function() {
                 oldPartsToBeLoaded,
                 args;
 
-            partsToBeLoaded = parts;
+
+            //gather parts
+            for (name in parts) {
+                partDescriptor = parts[name];
+
+                partsToBeLoaded.push(partDescriptor);
+            }
+
             if (partsToBeLoaded.length > 0) {
                 do {
                     oldPartsToBeLoaded = partsToBeLoaded;
