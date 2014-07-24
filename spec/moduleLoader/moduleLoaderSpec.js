@@ -6,8 +6,7 @@ describe("The Module Loader", function() {
     });
 
     afterEach(function() {
-        eventBus.remove("testModule0");
-        eventBus.remove("testModule1");
+        eventBus.reset();
         moduleSystem.reset();
     });
 
@@ -78,7 +77,6 @@ describe("The Module Loader", function() {
 
     });
 
-
     it("should override the specified settings with the settings found in DOM", function() {
         loadFixtures("moduleSystem/oneModuleWithSettings.html");
         var settings = {
@@ -100,7 +98,6 @@ describe("The Module Loader", function() {
 
     });
 
-
     it("should set the name of a module to its moduleObj", function() {
         loadFixtures("moduleSystem/oneModule.html");
         var moduleObj = {};
@@ -111,8 +108,6 @@ describe("The Module Loader", function() {
 
         expect(moduleObj.name).toBe("testModule0");
     });
-
-
 
     it("should create a module for every module in dom", function() {
         loadFixtures("moduleSystem/twoIdenticalModules.html");
@@ -136,9 +131,6 @@ describe("The Module Loader", function() {
 
         expect(moduleObj.name).toBe("testModule1");
     });
-
-
-
 
     it("should Throw if a Module in the dom is not registered", function() {
         loadFixtures("moduleSystem/oneModule.html");

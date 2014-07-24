@@ -18,11 +18,12 @@ module.exports = function(grunt) {
             ].join('\n')
         },
         dirs: {
-            dest: 'dist'
+            dest: 'dist',
+            dep: '<%= dirs.dest %>/dependencies'
         },
         bower: {
             dev: {
-                dest: '<%= dirs.dest %>/dependencies'
+                dest: '<%= dirs.dep %>'
             }
         },
         concat: {
@@ -61,17 +62,12 @@ module.exports = function(grunt) {
                 ],
                 options: {
                     vendor: [
-                        '<%= dirs.dest %>/dependencies/jquery.js',
-                        '<%= dirs.dest %>/dependencies/jasmine-jquery.js',
+                        '<%= dirs.dep %>/jquery.js',
+                        '<%= dirs.dep %>/jasmine-jquery.js',
                     ],
                     specs: [
                         'spec/**/*Spec.js'
-                    ],
-                    junit: {
-                        path: 'report/jasmineTestResults',
-                        consolidate: false
-                    }
-
+                    ]
                 }
             }
         }

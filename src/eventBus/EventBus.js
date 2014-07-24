@@ -4,27 +4,26 @@
 
 var eventBus = (function() {
 
-    var components = {};
+    var components = {},
+        eventPrototype = new Event(),
+        Events = {
 
-    var eventPrototype = new Event();
+            register: function(Event, name) {
+                if (typeof Event !== 'function') {
+                    throw new Error("No Event provided");
+                }
 
-    var Events = {
-        register: function(Event, name) {
-            if (typeof Event !== 'function') {
-                throw new Error("No Event provided");
+                if (name in Events) {
+                    throw new Error("Error registering event, duplicate Event with name [" + name + "]");
+                }
+
+                Event.prototype = eventPrototype;
+
+                Events[name] = Event;
+
+                return Event;
             }
-
-            if (name in Events) {
-                throw new Error("Error registering event, duplicate Event with name [" + name + "]");
-            }
-
-            Event.prototype = eventPrototype;
-
-            Events[name] = Event;
-
-            return Event;
-        }
-    };
+        };
 
 
     function Event(name) {
@@ -93,11 +92,16 @@ var eventBus = (function() {
         }
     }
 
+    function reset() {
+        components = {};
+    }
+
 
     return {
         publish: publishEvent,
         add: addComponent,
         remove: removeComponent,
+        reset: reset,
         Events: Events
     };
 

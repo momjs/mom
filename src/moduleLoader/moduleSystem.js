@@ -11,14 +11,16 @@ var moduleSystem = (function() {
             var settings;
 
 
-            function add(module) {
+            function add(creator) {
                 var descriptor = {
-                    creator: module,
+                    creator: creator,
                     name: name,
                     dependencies: dependencies,
                     settings: settings
                 };
-
+                if (store.hasOwnProperty(name)) {
+                    throw new Error(name + " allready registered");
+                }
                 store[name] = descriptor;
             }
 
@@ -71,15 +73,7 @@ var moduleSystem = (function() {
                 oldPartsToBeLoaded,
                 args;
 
-
-            //gather parts
-            for (name in parts) {
-                partDescriptor = parts[name];
-
-                partsToBeLoaded.push(partDescriptor);
-            }
-
-
+            partsToBeLoaded = parts;
             if (partsToBeLoaded.length > 0) {
                 do {
                     oldPartsToBeLoaded = partsToBeLoaded;
@@ -121,7 +115,8 @@ var moduleSystem = (function() {
             $modulesOnPage.each(function(index, element) {
                 var $element = $(element),
                     moduleNames = $element.data("module").split(","),
-                    moduleName, moduleDescriptor,
+                    moduleName,
+                    moduleDescriptor,
                     createdModule,
                     name,
                     i,
@@ -197,9 +192,9 @@ var moduleSystem = (function() {
         }
 
         /**
-        * returns all dependencies, which are currently loaded.
-        * This doesn't garante to load all needed dependencies
-        **/
+         * returns all dependencies, which are currently loaded.
+         * This doesn't garante to load all needed dependencies
+         **/
         function getDependencies(dependencies) {
             var parts = [];
 
@@ -216,17 +211,21 @@ var moduleSystem = (function() {
     }
 
     function reset() {
-        for (var member in modules) delete modules[member];
-        for (var member in parts) delete parts[member];
+        removeProperties(parts);
+        removeProperties(modules);
+
+        function removeProperties(store) {
+            for (var member in store) {
+                delete store[member];
+            }
+        }
     }
 
     return {
-        createPart : create(parts),
-        createModule : create(modules),
-        initModulePage : initModulePage,
-        reset : reset
+        createPart: create(parts),
+        createModule: create(modules),
+        initModulePage: initModulePage,
+        reset: reset
     };
 
 })();
-
-
