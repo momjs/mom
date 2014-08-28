@@ -1,0 +1,24 @@
+{
+    "curly": true,
+    "camelcase": true,
+    "eqeqeq": true,
+    "eqnull": true,
+    "forin": true,
+    "freeze": true,
+    "immed": true,
+    "latedef": "nofunc",
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "nonbsp": true,
+    "nonew": true,
+    "quotmark": "single",
+    "undef": true,
+    "unused": true,
+    "strict": true,
+    "browser": true,
+    "globals": {
+        "jQuery": false,
+        "$": false
+    }
+}
