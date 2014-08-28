@@ -1,11 +1,14 @@
+/* global moduleSystem:true */
+/* jshint unused:false */
 var moduleSystem = (function() {
+    'use strict';
     var modules = {},
         parts = {};
 
     function create(store) {
         return function(name) {
-            if (typeof name !== "string") {
-                throw new Error("Name missing");
+            if (typeof name !== 'string') {
+                throw new Error('Name missing');
             }
             var dependencies = [];
             var settings;
@@ -19,7 +22,7 @@ var moduleSystem = (function() {
                     settings: settings
                 };
                 if (store.hasOwnProperty(name)) {
-                    throw new Error(name + " allready registered");
+                    throw new Error(name + ' already registered');
                 }
                 store[name] = descriptor;
             }
@@ -76,9 +79,11 @@ var moduleSystem = (function() {
 
             //gather parts
             for (name in parts) {
-                partDescriptor = parts[name];
+                if(parts.hasOwnProperty(name)) {
+                    partDescriptor = parts[name];
 
-                partsToBeLoaded.push(partDescriptor);
+                    partsToBeLoaded.push(partDescriptor);
+                }
             }
 
             if (partsToBeLoaded.length > 0) {
@@ -108,20 +113,20 @@ var moduleSystem = (function() {
 
                 //error handling
                 if (partsToBeLoaded.length > 0) {
-                    throw new Error("provision error can't resolve dependencies for parts:" + JSON.stringify(partsToBeLoaded));
+                    throw new Error('provision error can\'t resolve dependencies for parts:' + JSON.stringify(partsToBeLoaded));
                 }
             }
         }
 
 
         function initModules() {
-            var $modulesOnPage = $("[data-module]"),
+            var $modulesOnPage = $('[data-module]'),
                 name,
                 module;
 
             $modulesOnPage.each(function(index, element) {
                 var $element = $(element),
-                    moduleNames = $element.data("module").split(","),
+                    moduleNames = $element.data('module').split(','),
                     moduleName,
                     moduleDescriptor,
                     createdModule,
@@ -139,7 +144,7 @@ var moduleSystem = (function() {
                         moduleDescriptor = modules[moduleName];
 
                         foundDependencies = getDependencies(moduleDescriptor.dependencies);
-                        if (foundDependencies.length == moduleDescriptor.dependencies.length) {
+                        if (foundDependencies.length === moduleDescriptor.dependencies.length) {
                             args = foundDependencies;
                             domSettings = getDOMSettings($element, moduleName);
                             if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
@@ -163,10 +168,10 @@ var moduleSystem = (function() {
 
                             eventBus.add(createdModule);
                         } else {
-                            throw new Error("Required Parts Missing from " + moduleName + " dependencies: " + JSON.stringify(moduleDescriptor.dependencies));
+                            throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
                         }
                     } else {
-                        throw new Error("Module " + moduleName + " not registered but found in dom");
+                        throw new Error('Module ' + moduleName + ' not registered but found in dom');
                     }
 
                 }
@@ -174,15 +179,18 @@ var moduleSystem = (function() {
 
 
             for (name in loadedModules) {
-                module = loadedModules[name];
-                if (typeof module.postConstruct === "function") {
-                    module.postConstruct();
+                if(loadedModules.hasOwnProperty(name)) {
+                    module = loadedModules[name];
+                    if (typeof module.postConstruct === 'function') {
+                        module.postConstruct();
+                    }
                 }
+
             }
 
 
             function getDOMSettings($element, moduleName) {
-                return $element.data(moduleName.toLowerCase() + "Settings");
+                return $element.data(moduleName.toLowerCase() + 'Settings');
             }
         }
 
@@ -223,7 +231,9 @@ var moduleSystem = (function() {
 
         function removeProperties(store) {
             for (var member in store) {
-                delete store[member];
+                if(store.hasOwnProperty(member)) {
+                    delete store[member];
+                }
             }
         }
     }

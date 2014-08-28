@@ -1,8 +1,22 @@
-/**
- * Created by iso.amon on 05.05.2014.
- */
-
+/* global eventBus:true */
+/* jshint unused:false */
 var eventBus = (function() {
+    'use strict';
+
+    function Event(name) {
+        this.name = name;
+        this.getData = function() {
+            var result = {};
+
+            for (var property in this) {
+                if (this.hasOwnProperty(property) && property !== 'name' && property !== 'getData') {
+                    result[property] = this[property];
+                }
+            }
+
+            return result;
+        };
+    }
 
     var components = {},
         eventPrototype = new Event(),
@@ -10,11 +24,11 @@ var eventBus = (function() {
 
             register: function(Event, name) {
                 if (typeof Event !== 'function') {
-                    throw new Error("No Event provided");
+                    throw new Error('No Event provided');
                 }
 
                 if (name in Events) {
-                    throw new Error("Error registering event, duplicate Event with name [" + name + "]");
+                    throw new Error('Error registering event, duplicate Event with name [' + name + ']');
                 }
 
                 Event.prototype = eventPrototype;
@@ -25,24 +39,6 @@ var eventBus = (function() {
             }
         };
 
-
-    function Event(name) {
-        this.name = name;
-        this.getData = function() {
-            var result = {};
-
-            for (var property in this) {
-                if (this.hasOwnProperty(property) && property !== "name" && property !== "getData") {
-                    result[property] = this[property];
-                }
-            }
-
-            return result;
-        };
-    }
-
-
-
     function publishEvent(event, source) {
 
         // if no event is provided, or event has no name, do not publish an event
@@ -50,36 +46,38 @@ var eventBus = (function() {
             return;
         }
 
-        var callbackFunctionName = "on" + event.name,
+        var callbackFunctionName = 'on' + event.name,
             componentName,
             component,
             callback;
 
         //call components
         for (componentName in components) {
-            component = components[componentName];
-            callback = component[callbackFunctionName];
+            if(components.hasOwnProperty(componentName)) {
+                component = components[componentName];
+                callback = component[callbackFunctionName];
 
-            if (typeof callback === "function") {
-                source = source || component;
-                callback.call(source, event.getData());
+                if (typeof callback === 'function') {
+                    source = source || component;
+                    callback.call(source, event.getData());
+                }
             }
         }
     }
 
     function addComponent(component, replaceDuplicates) {
         if (typeof component === 'undefined') {
-            throw new Error("Component to be registered is undefined");
+            throw new Error('Component to be registered is undefined');
         }
         if (typeof component.name === 'undefined') {
-            throw new Error("Component name to be registered is undefined");
+            throw new Error('Component name to be registered is undefined');
         }
 
         if (component.name in components) {
             if (replaceDuplicates) {
                 removeComponent(component.name);
             } else {
-                throw new Error("Component with name [" + component.name + "] already registered");
+                throw new Error('Component with name [' + component.name + '] already registered');
             }
         }
 
@@ -107,6 +105,7 @@ var eventBus = (function() {
 
 })();
 
-moduleSystem.createPart("eventBus").creator(function() {
+moduleSystem.createPart('eventBus').creator(function() {
+    'use strict';
     return eventBus;
 });

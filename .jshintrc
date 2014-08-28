@@ -19,6 +19,8 @@
     "browser": true,
     "globals": {
         "jQuery": false,
-        "$": false
+        "$": false,
+        "moduleSystem": false,
+        "eventBus": false
     }
 }
