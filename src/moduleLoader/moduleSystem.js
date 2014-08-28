@@ -190,7 +190,13 @@ var moduleSystem = (function() {
 
 
             function getDOMSettings($element, moduleName) {
-                return $element.data(moduleName.toLowerCase() + 'Settings');
+
+                var $settingsScript = $element.find('script[type="' + moduleName + '/settings"]'),
+                    settingsAsHtml = $settingsScript.html();
+
+                if(settingsAsHtml !== undefined) {
+                    return $.parseJSON(settingsAsHtml);
+                }
             }
         }
 
