@@ -104,8 +104,3 @@ var eventBus = (function() {
     };
 
 })();
-
-moduleSystem.createPart('eventBus').creator(function() {
-    'use strict';
-    return eventBus;
-});

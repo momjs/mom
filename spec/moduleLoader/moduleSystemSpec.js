@@ -1,8 +1,6 @@
 describe("The Module Loader", function() {
 
     beforeEach(function() {
-        moduleSystem.modules = {};
-        moduleSystem.parts = {};
     });
 
     afterEach(function() {

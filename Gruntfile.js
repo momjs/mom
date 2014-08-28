@@ -36,8 +36,8 @@ module.exports = function(grunt) {
                 src: [
                     '<%= dirs.source %>/moduleLoader/moduleLoader.js',
                     '<%= dirs.source %>/moduleLoader/moduleBuilder.js',
-                    '<%= dirs.source %>/moduleLoader/moduleSystem.js',
-                    '<%= dirs.source %>/eventBus/eventBus.js'
+                    '<%= dirs.source %>/eventBus/eventBus.js',
+                    '<%= dirs.source %>/moduleLoader/moduleSystem.js'
                 ],
                 dest: '<%= dirs.dest %>/<%= pkg.name %>.<%= pkg.version %>.js'
             }

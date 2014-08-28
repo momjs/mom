@@ -1,9 +1,15 @@
 /* global moduleSystem:true */
 /* jshint unused:false */
-var moduleSystem = (function(moduleBuilderCreator, moduleLoaderCreator) {
+var moduleSystem = (function(moduleBuilderCreator, moduleLoaderCreator, eventBus) {
     'use strict';
     var moduleBuilder = moduleBuilderCreator(),
-        moduleLoader = moduleLoaderCreator(moduleBuilder);
+        moduleLoader = moduleLoaderCreator(moduleBuilder, eventBus);
+
+
+    moduleBuilder.createPart('eventBus').creator(function() {
+        return eventBus;
+    });
+
 
     function reset() {
         moduleBuilder.reset();
@@ -17,4 +23,4 @@ var moduleSystem = (function(moduleBuilderCreator, moduleLoaderCreator) {
         reset: reset
     };
 
-})(moduleBuilder, moduleLoader);
+})(moduleBuilder, moduleLoader, eventBus);
