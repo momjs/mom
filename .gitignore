@@ -5,6 +5,7 @@ lib/
 node_modules/
 report/
 .grunt/
+.idea/
 _SpecRunner.html
 
 # Windows image file caches
@@ -22,6 +23,7 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+*.iml
 
 # =========================
 # Operating System Files
