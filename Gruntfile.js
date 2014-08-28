@@ -34,6 +34,8 @@ module.exports = function(grunt) {
             },
             dist: {
                 src: [
+                    '<%= dirs.source %>/moduleLoader/moduleLoader.js',
+                    '<%= dirs.source %>/moduleLoader/moduleBuilder.js',
                     '<%= dirs.source %>/moduleLoader/moduleSystem.js',
                     '<%= dirs.source %>/eventBus/eventBus.js'
                 ],

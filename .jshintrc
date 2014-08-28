@@ -21,6 +21,8 @@
         "jQuery": false,
         "$": false,
         "moduleSystem": false,
-        "eventBus": false
+        "eventBus": false,
+        "moduleBuilder": false,
+        "moduleLoader": false
     }
 }
