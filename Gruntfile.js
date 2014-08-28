@@ -1,6 +1,6 @@
-'use strict';
-
+/* global module: true */
 module.exports = function(grunt) {
+    'use strict';
 
     // Project configuration.
     grunt.initConfig({
@@ -64,7 +64,7 @@ module.exports = function(grunt) {
                 options: {
                     vendor: [
                         '<%= dirs.dep %>/jquery.js',
-                        '<%= dirs.dep %>/jasmine-jquery.js',
+                        '<%= dirs.dep %>/jasmine-jquery.js'
                     ],
                     specs: [
                         '<%= dirs.test %>/**/*Spec.js'
@@ -87,7 +87,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-bower-task');
 
-    grunt.renameTask("bower", "bowerInstall");
+    grunt.renameTask('bower', 'bowerInstall');
 
     grunt.loadNpmTasks('grunt-bower');
 
