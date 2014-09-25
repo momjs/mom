@@ -106,6 +106,7 @@ var moduleLoader = function(parts, modules, eventBus) {
                                 //gather settings
                             domSettings = getDOMSettings($element, moduleName);
                             if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
+                                //override module settings with found dom settings into new object
                                 mergedSettings = $.extend({}, moduleDescriptor.settings, domSettings);
 
                                 args.unshift(mergedSettings);
