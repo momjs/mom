@@ -1,10 +1,7 @@
 /* global moduleLoader:true */
 /* jshint unused:false */
-var moduleLoader = function(moduleBuilder) {
+var moduleLoader = function(parts, modules, eventBus) {
     'use strict';
-
-    var modules = moduleBuilder.modules,
-        parts = moduleBuilder.parts;
 
 
     function initModulePage() {
@@ -45,22 +42,32 @@ var moduleLoader = function(moduleBuilder) {
                         partDescriptor = oldPartsToBeLoaded[i];
                         dependencies = partDescriptor.dependencies;
                         foundDependencies = getDependencies(dependencies);
+
+                        // check if all needed dependencies are found
                         if (foundDependencies.length === dependencies.length) {
+                            //build arguments for part
                             args = foundDependencies;
+
+                                // add settings from descriptor
                             if (partDescriptor.settings !== undefined) {
                                 args.unshift(partDescriptor.settings);
                             }
 
+                            // create part
                             createdPart = partDescriptor.creator.apply(null, args);
                             loadedParts[partDescriptor.name] = createdPart;
                         } else {
+
+                            // try on next iteration
                             partsToBeLoaded.push(partDescriptor);
                         }
                     }
+                    //provisioning isn't finished until at least one new part could be initialized
                 } while (oldPartsToBeLoaded.length > partsToBeLoaded.length);
 
 
                 //error handling
+                //true if not all parts could be provisioned
                 if (partsToBeLoaded.length > 0) {
                     throw new Error('provision error can\'t resolve dependencies for parts:' + JSON.stringify(partsToBeLoaded));
                 }
@@ -75,46 +82,52 @@ var moduleLoader = function(moduleBuilder) {
 
             $modulesOnPage.each(function(index, element) {
                 var $element = $(element),
-                    moduleNames = $element.data('module').split(','),
-                    moduleName,
-                    moduleDescriptor,
-                    createdModule,
-                    name,
-                    i,
-                    foundDependencies,
-                    args,
-                    domSettings,
-                    mergedSettings;
+                    moduleNames = $element.data('module').split(',');
 
+                $.each(moduleNames, function(i, moduleName) {
+                    var moduleDescriptor,
+                        createdModule,
+                        name,
+                        foundDependencies,
+                        args,
+                        domSettings,
+                        mergedSettings;
 
-                for (i = 0; i < moduleNames.length; i++) {
-                    moduleName = moduleNames[i];
+                    //check if module to be loaded is registered
                     if (modules.hasOwnProperty(moduleName)) {
                         moduleDescriptor = modules[moduleName];
 
                         foundDependencies = getDependencies(moduleDescriptor.dependencies);
+                        // check if all needed dependencies are found
                         if (foundDependencies.length === moduleDescriptor.dependencies.length) {
+                            //build arguments
                             args = foundDependencies;
+
+                                //gather settings
                             domSettings = getDOMSettings($element, moduleName);
                             if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
                                 mergedSettings = $.extend({}, moduleDescriptor.settings, domSettings);
 
                                 args.unshift(mergedSettings);
                             }
+
+                                //make moduleDomElement first arguments
                             args.unshift($element);
 
+                            //create Module
                             createdModule = moduleDescriptor.creator.apply(null, args);
 
                             if (createdModule === undefined) {
                                 createdModule = {};
                             }
 
+                            //increment module name if a module is found multiple times
                             name = getIncrementedModuleName(moduleDescriptor.name);
 
                             createdModule.name = name;
                             loadedModules[name] = createdModule;
 
-
+                            //add module to eventBus
                             eventBus.add(createdModule);
                         } else {
                             throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
@@ -122,8 +135,7 @@ var moduleLoader = function(moduleBuilder) {
                     } else {
                         throw new Error('Module ' + moduleName + ' not registered but found in dom');
                     }
-
-                }
+                });
             });
 
 

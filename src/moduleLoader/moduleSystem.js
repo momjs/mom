@@ -3,7 +3,7 @@
 var moduleSystem = (function(moduleBuilderCreator, moduleLoaderCreator, eventBus) {
     'use strict';
     var moduleBuilder = moduleBuilderCreator(),
-        moduleLoader = moduleLoaderCreator(moduleBuilder, eventBus);
+        moduleLoader = moduleLoaderCreator(moduleBuilder.parts, moduleBuilder.modules, eventBus);
 
 
     moduleBuilder.createPart('eventBus').creator(function() {
