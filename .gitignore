@@ -1,6 +1,6 @@
 # autogeneration
 bower_components/
-dist/
+dist/dependencies/
 lib/
 node_modules/
 report/
