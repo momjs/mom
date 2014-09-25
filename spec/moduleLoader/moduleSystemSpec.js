@@ -268,6 +268,30 @@ describe("The Module Loader", function() {
         expect(spyModuleObject.postConstruct).toHaveBeenCalled();
     });
 
+    it("should call postConstruct from parts when provision is finished", function() {
+        var spyPartObject = jasmine.createSpyObj("part object", ["postConstruct"]);
+
+        var initWasCalled = false;
+
+        spyPartObject.postConstruct.and.callFake(function() {
+            expect(initWasCalled).toEqual(true);
+        });
+
+        var spyPart = jasmine.createSpy("spyPart").and.callFake(function() {
+            initWasCalled = true;
+            return spyPartObject;
+        });
+
+
+        moduleSystem.createPart("testPart").creator(spyPart);
+
+
+        moduleSystem.initModulePage();
+
+
+        expect(spyPartObject.postConstruct).toHaveBeenCalled();
+    });
+
 
 
 });

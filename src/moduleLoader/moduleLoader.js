@@ -55,6 +55,11 @@ var moduleLoader = function(parts, modules, eventBus) {
 
                             // create part
                             createdPart = partDescriptor.creator.apply(null, args);
+
+                            if (createdPart === undefined) {
+                                createdPart = {};
+                            }
+
                             loadedParts[partDescriptor.name] = createdPart;
                         } else {
 
@@ -139,17 +144,8 @@ var moduleLoader = function(parts, modules, eventBus) {
                 });
             });
 
-
-            for (name in loadedModules) {
-                if(loadedModules.hasOwnProperty(name)) {
-                    module = loadedModules[name];
-                    if (typeof module.postConstruct === 'function') {
-                        module.postConstruct();
-                    }
-                }
-
-            }
-
+            callPostConstructs(loadedParts);
+            callPostConstructs(loadedModules);
 
             function getDOMSettings($element, moduleName) {
 
@@ -159,6 +155,14 @@ var moduleLoader = function(parts, modules, eventBus) {
                 if(settingsAsHtml !== undefined) {
                     return $.parseJSON(settingsAsHtml);
                 }
+            }
+
+            function callPostConstructs(store) {
+                $.each(store, function(i, element) {
+                    if (typeof element.postConstruct === 'function') {
+                        element.postConstruct();
+                    }
+                });
             }
         }
 
