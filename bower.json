@@ -1,6 +1,6 @@
 {
     "name": "moduleSystem",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "main": "./dist/moduleSystem.min.js",
     "description": "Dynamic Loading of Javascript based on DOM elements",
     "repository": {
