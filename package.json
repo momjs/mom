@@ -1,7 +1,7 @@
 {
     "name": "moduleSystem",
     "description": "Dynamic Loading of Javascript based on DOM elements",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "filename": "moduleSystem.min.js",
     "author": "Eder Alexander <eder.alexan@gmail.com>",
     "dependencies": {},
