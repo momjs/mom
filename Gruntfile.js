@@ -75,20 +75,20 @@ module.exports = function(grunt) {
             }
         },
         bump: {
-        options: {
-          files: ['package.json', 'bower.json'],
-          updateConfigs: ['pkg'],
-          commit: true,
-          commitMessage: 'Release v%VERSION%',
-          commitFiles: ['package.json', 'bower.json'],
-          createTag: true,
-          tagName: 'v%VERSION%',
-          tagMessage: 'Version %VERSION%',
-          push: true,
-          pushTo: 'origin',
-          gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+            options: {
+                  files: ['package.json', 'bower.json'],
+                  updateConfigs: ['pkg'],
+                  commit: true,
+                  commitMessage: 'Release v%VERSION%',
+                  commitFiles: ['package.json', 'bower.json', '<%= dirs.dist %>'],
+                  createTag: true,
+                  tagName: 'v%VERSION%',
+                  tagMessage: 'Version %VERSION%',
+                  push: true,
+                  pushTo: 'origin',
+                  gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+            }
         }
-  },
     });
 
     // Load the plugin that provides the "jshint" task.
@@ -112,6 +112,8 @@ module.exports = function(grunt) {
 
     // Default task.
     grunt.registerTask('default', ['build']);
+
+    grunt.registerTask('releaseMinor', ['bump-only', 'build', 'bump-commit'])
 
     // Build task.
     grunt.registerTask('build', ['bowerInstall', 'bower', 'jasmine', 'jshint', 'concat', 'uglify']);
