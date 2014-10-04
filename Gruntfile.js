@@ -120,7 +120,7 @@ module.exports = function (grunt) {
    // Default task.
    grunt.registerTask('default', ['build']);
 
-   grunt.registerTask('releaseMinor', ['bump-only', 'build', 'bump-commit'])
+   grunt.registerTask('releaseMinor', ['bump-only', 'build', 'exec', 'bump-commit'])
 
    // Build task.
    grunt.registerTask('build', ['bowerInstall', 'bower', 'jasmine', 'jshint', 'concat', 'uglify']);
