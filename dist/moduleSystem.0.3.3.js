@@ -1,311 +1,324 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v0.3.3 - 2014-09-25 * @link 
+ * @version v0.3.3 - 2014-10-04 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* global moduleLoader:true */
 /* jshint unused:false */
-var moduleLoader = function(parts, modules, eventBus) {
-    'use strict';
+var moduleLoader = function (moduleAccess, partAccess) {
+   'use strict';
 
 
-    function initModulePage() {
-        var loadedParts = {};
-        var loadedModules = {};
+   function initModulePage() {
 
-        initParts();
-        initModules();
-
-        function initParts() {
-            var name,
-                partDescriptor,
-                i,
-                dependencies,
-                foundDependencies,
-                createdPart,
-                partsToBeLoaded = [],
-                oldPartsToBeLoaded,
-                args;
+      initModules();
 
 
-            //gather parts
-            for (name in parts) {
-                if(parts.hasOwnProperty(name)) {
-                    partDescriptor = parts[name];
+      function initModules() {
+         var $modulesOnPage = $('[data-module]');
 
-                    partsToBeLoaded.push(partDescriptor);
-                }
-            }
+         $modulesOnPage.each(function (index, element) {
+            var $element = $(element);
 
-            if (partsToBeLoaded.length > 0) {
-                do {
-                    oldPartsToBeLoaded = partsToBeLoaded;
-                    partsToBeLoaded = [];
+            moduleAccess.provisionModule($(element));
 
-                    //load parts
-                    for (i = 0; i < oldPartsToBeLoaded.length; i++) {
-                        partDescriptor = oldPartsToBeLoaded[i];
-                        dependencies = partDescriptor.dependencies;
-                        foundDependencies = getDependencies(dependencies);
+         });
 
-                        // check if all needed dependencies are found
-                        if (foundDependencies.length === dependencies.length) {
-                            //build arguments for part
-                            args = foundDependencies;
+         partAccess.provisionFinished();
+         moduleAccess.provisionFinished();
 
-                                // add settings from descriptor
-                            if (partDescriptor.settings !== undefined) {
-                                args.unshift(partDescriptor.settings);
-                            }
+      }
 
-                            // create part
-                            createdPart = partDescriptor.creator.apply(null, args);
-
-                            if (createdPart === undefined) {
-                                createdPart = {};
-                            }
-
-                            loadedParts[partDescriptor.name] = createdPart;
-                        } else {
-
-                            // try on next iteration
-                            partsToBeLoaded.push(partDescriptor);
-                        }
-                    }
-                    //provisioning isn't finished until at least one new part could be initialized
-                } while (oldPartsToBeLoaded.length > partsToBeLoaded.length);
+   }
 
 
-                //error handling
-                //true if not all parts could be provisioned
-                if (partsToBeLoaded.length > 0) {
-                    throw new Error('provision error can\'t resolve dependencies for parts:' + JSON.stringify(partsToBeLoaded));
-                }
-            }
-        }
 
-
-        function initModules() {
-            var $modulesOnPage = $('[data-module]'),
-                name,
-                module;
-
-            $modulesOnPage.each(function(index, element) {
-                var $element = $(element),
-                    moduleNames = $element.data('module').split(',');
-
-                $.each(moduleNames, function(i, moduleName) {
-                    var moduleDescriptor,
-                        createdModule,
-                        name,
-                        foundDependencies,
-                        args,
-                        domSettings,
-                        mergedSettings;
-
-                    //check if module to be loaded is registered
-                    if (modules.hasOwnProperty(moduleName)) {
-                        moduleDescriptor = modules[moduleName];
-
-                        foundDependencies = getDependencies(moduleDescriptor.dependencies);
-                        // check if all needed dependencies are found
-                        if (foundDependencies.length === moduleDescriptor.dependencies.length) {
-                            //build arguments
-                            args = foundDependencies;
-
-                                //gather settings
-                            domSettings = getDOMSettings($element, moduleName);
-                            if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
-                                //override module settings with found dom settings into new object
-                                mergedSettings = $.extend({}, moduleDescriptor.settings, domSettings);
-
-                                args.unshift(mergedSettings);
-                            }
-
-                                //make moduleDomElement first arguments
-                            args.unshift($element);
-
-                            //create Module
-                            createdModule = moduleDescriptor.creator.apply(null, args);
-
-                            if (createdModule === undefined) {
-                                createdModule = {};
-                            }
-
-                            //increment module name if a module is found multiple times
-                            name = getIncrementedModuleName(moduleDescriptor.name);
-
-                            createdModule.name = name;
-                            loadedModules[name] = createdModule;
-
-                            //add module to eventBus
-                            eventBus.add(createdModule);
-                        } else {
-                            throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
-                        }
-                    } else {
-                        throw new Error('Module ' + moduleName + ' not registered but found in dom');
-                    }
-                });
-            });
-
-            callPostConstructs(loadedParts);
-            callPostConstructs(loadedModules);
-
-            function getDOMSettings($element, moduleName) {
-
-                var $settingsScript = $element.find('script[type="' + moduleName + '/settings"]'),
-                    settingsAsHtml = $settingsScript.html();
-
-                if(settingsAsHtml !== undefined) {
-                    return $.parseJSON(settingsAsHtml);
-                }
-            }
-
-            function callPostConstructs(store) {
-                $.each(store, function(i, element) {
-                    if (typeof element.postConstruct === 'function') {
-                        element.postConstruct();
-                    }
-                });
-            }
-        }
-
-        function getIncrementedModuleName(name) {
-            var i = 0;
-            var foundName;
-
-            do {
-                foundName = name + i;
-                i++;
-            } while (loadedModules.hasOwnProperty(foundName));
-
-            return foundName;
-        }
-
-        /**
-         * returns all dependencies, which are currently loaded.
-         * This doesn't garante to load all needed dependencies
-         **/
-        function getDependencies(dependencies) {
-            var parts = [];
-
-            if (dependencies.length > 0) {
-                $.each(dependencies, function() {
-                    if (loadedParts.hasOwnProperty(this)) {
-                        var part = loadedParts[this];
-                        parts.push(part);
-                    }
-                });
-            }
-            return parts;
-        }
-    }
-
-    function reset() {
-        removeProperties(parts);
-        removeProperties(modules);
-
-        function removeProperties(store) {
-            for (var member in store) {
-                if(store.hasOwnProperty(member)) {
-                    delete store[member];
-                }
-            }
-        }
-    }
-
-
-    return {
-        initModulePage: initModulePage,
-        reset: reset
-    };
+   return {
+      initModulePage: initModulePage
+   };
 };
 /* global moduleBuilder:true */
 /* jshint unused:false */
-var moduleBuilder = function() {
-    'use strict';
+var moduleBuilder = function (moduleAccess, partAccess) {
+   'use strict';
 
-    var modules = {},
-        parts = {};
-
-    function create(store) {
-        return function (name) {
-            if (typeof name !== 'string') {
-                throw new Error('Name missing');
-            }
-            var dependencies = [];
-            var settings;
+   function create(store) {
+      return function (name) {
+         if (typeof name !== 'string') {
+            throw new Error('Name missing');
+         }
+         var dependencies = [];
+         var settings;
 
 
-            function add(creator) {
-                var descriptor = {
-                    creator: creator,
-                    name: name,
-                    dependencies: dependencies,
-                    settings: settings
-                };
-                if (store.hasOwnProperty(name)) {
-                    throw new Error(name + ' already registered');
-                }
-                store[name] = descriptor;
-            }
+         function add(creator) {
+            var descriptor = {
+               creator: creator,
+               name: name,
+               dependencies: dependencies,
+               settings: settings
+            };
+            store(descriptor);
+         }
 
-            function addSettings(neededSettings) {
-                settings = neededSettings;
-
-                return {
-                    dependencies: addDependencies,
-                    creator: add
-                };
-            }
-
-
-            function addDependencies(neededParts) {
-                if (!$.isArray(neededParts)) {
-                    neededParts = [neededParts];
-                }
-
-                dependencies = neededParts;
-
-                return {
-                    settings: addSettings,
-                    creator: add
-                };
-            }
+         function addSettings(neededSettings) {
+            settings = neededSettings;
 
             return {
-                settings: addSettings,
-                dependencies: addDependencies,
-                creator: add
+               dependencies: addDependencies,
+               creator: add
             };
-        };
+         }
 
 
-    }
-
-    function reset() {
-        removeProperties(parts);
-        removeProperties(modules);
-
-        function removeProperties(store) {
-            for (var member in store) {
-                if(store.hasOwnProperty(member)) {
-                    delete store[member];
-                }
+         function addDependencies(neededParts) {
+            if (!$.isArray(neededParts)) {
+               neededParts = [neededParts];
             }
-        }
-    }
 
-    return {
-        createPart: create(parts),
-        createModule: create(modules),
-        modules: modules,
-        parts: parts,
-        reset: reset
-    };
+            dependencies = neededParts;
 
+            return {
+               settings: addSettings,
+               creator: add
+            };
+         }
+
+         return {
+            settings: addSettings,
+            dependencies: addDependencies,
+            creator: add
+         };
+      };
+
+
+   }
+
+
+
+   return {
+      createPart: create(partAccess.addPartDescriptor),
+      createModule: create(moduleAccess.addModuleDescriptor)
+   };
+
+};
+/* global partAccess:true */
+/* jshint unused:false */
+var partAccess = function () {
+   'use strict';
+
+   var loadedParts = {},
+      availablePartDescriptors = {};
+
+   function addPartDescriptor(partDescriptor) {
+      availablePartDescriptors[partDescriptor.name] = partDescriptor;
+   }
+
+   function getOrInitializeParts(partNames) {
+      var parts = [];
+
+      $.each(partNames, function (i, partName) {
+         parts.push(getOrInitializePart(partName));
+      });
+
+      return parts;
+   }
+
+
+   function getOrInitializePart(partName) {
+      var part = loadedParts[partName];
+      if (part === undefined) {
+         part = initialize(partName);
+      }
+
+      return part;
+   }
+
+   function initialize(partName) {
+      var dependencies,
+         foundDependencies,
+         partDescriptor;
+
+      if (availablePartDescriptors.hasOwnProperty(partName)) {
+         partDescriptor = availablePartDescriptors[partName];
+         dependencies = partDescriptor.dependencies;
+         foundDependencies = getOrInitializeParts(dependencies);
+
+         return buildPart(partDescriptor, foundDependencies);
+      } else {
+         throw new Error('tried to load ' + partName + 'but was not registered');
+      }
+   }
+
+   function buildPart(partDescriptor, dependencies) {
+      var args,
+         createdPart;
+
+      //initialize Parts here
+      args = dependencies;
+      // add settings from descriptor
+      if (partDescriptor.settings !== undefined) {
+         args.unshift(partDescriptor.settings);
+      }
+
+      // create part
+      createdPart = partDescriptor.creator.apply(null, args);
+
+      if (createdPart === undefined) {
+         createdPart = {};
+      }
+
+      loadedParts[partDescriptor.name] = createdPart;
+
+      return createdPart;
+   }
+
+
+   function callPostConstructs() {
+      callPostConstruct(loadedParts);
+
+      function callPostConstruct(store) {
+         $.each(store, function (i, element) {
+            if (typeof element.postConstruct === 'function') {
+               element.postConstruct();
+            }
+         });
+      }
+   }
+
+   function reset() {
+      loadedParts = {};
+      availablePartDescriptors = {};
+   }
+
+   return {
+      reset: reset,
+      provisionPart: getOrInitializePart,
+      getParts: getOrInitializeParts,
+      provisionFinished: callPostConstructs,
+      addPartDescriptor: addPartDescriptor
+   };
+};
+/* global moduleAccess:true */
+/* jshint unused:false */
+var moduleAccess = function (partAccess, eventBus) {
+   'use strict';
+
+   var loadedModules = {},
+      availableModuleDescriptors = {};
+
+
+   function addModuleDescriptor(moduleDescriptor) {
+      availableModuleDescriptors[moduleDescriptor.name] = moduleDescriptor;
+   }
+
+
+   function initializeModule($element) {
+      var moduleName = $element.data('module'),
+         moduleDescriptor,
+         foundDependencies;
+
+      //check if module to be loaded is registered
+      if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
+         moduleDescriptor = availableModuleDescriptors[moduleName];
+
+         foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
+         // check if all needed dependencies are found
+         if (foundDependencies.length === moduleDescriptor.dependencies.length) {
+            buildModule($element, moduleDescriptor, foundDependencies);
+         } else {
+            throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
+         }
+      } else {
+         throw new Error('Module ' + moduleName + ' not registered but found in dom');
+      }
+
+   }
+
+   function buildModule($element, moduleDescriptor, foundDependencies) {
+      //build arguments
+      var args = foundDependencies,
+         domSettings = getDOMSettings($element, moduleDescriptor.name),
+         mergedSettings,
+         createdModule,
+         name;
+
+      if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
+         //override module settings with found dom settings into new object
+         mergedSettings = $.extend({}, moduleDescriptor.settings, domSettings);
+
+         args.unshift(mergedSettings);
+      }
+
+      //make moduleDomElement first arguments
+      args.unshift($element);
+
+      //create Module
+      createdModule = moduleDescriptor.creator.apply(null, args);
+
+      if (createdModule === undefined) {
+         createdModule = {};
+      }
+
+      //increment module name if a module is found multiple times
+      name = getIncrementedModuleName(moduleDescriptor.name);
+
+      createdModule.name = name;
+      loadedModules[name] = createdModule;
+
+      //add module to eventBus
+      eventBus.add(createdModule);
+   }
+
+
+   function getDOMSettings($element, moduleName) {
+
+      var $settingsScript = $element.find('script[type="' + moduleName + '/settings"]'),
+         settingsAsHtml = $settingsScript.html();
+
+      if (settingsAsHtml !== undefined) {
+         return $.parseJSON(settingsAsHtml);
+      }
+   }
+
+
+   function getIncrementedModuleName(name) {
+      var i = 0;
+      var foundName;
+
+      do {
+         foundName = name + i;
+         i++;
+      } while (loadedModules.hasOwnProperty(foundName));
+
+      return foundName;
+   }
+
+   function callPostConstructs() {
+      callPostConstruct(loadedModules);
+
+      function callPostConstruct(store) {
+         $.each(store, function (i, element) {
+            if (typeof element.postConstruct === 'function') {
+               element.postConstruct();
+            }
+         });
+      }
+   }
+
+   function reset() {
+      loadedModules = {};
+      availableModuleDescriptors = {};
+   }
+
+
+   return {
+      reset: reset,
+      provisionModule: initializeModule,
+      provisionFinished: callPostConstructs,
+      addModuleDescriptor: addModuleDescriptor
+   };
 };
 /* global eventBus:true */
 /* jshint unused:false */
@@ -416,27 +429,33 @@ var eventBus = (function() {
 
 /* global moduleSystem:true */
 /* jshint unused:false */
-var moduleSystem = (function(moduleBuilderCreator, moduleLoaderCreator, eventBus) {
-    'use strict';
-    var moduleBuilder = moduleBuilderCreator(),
-        moduleLoader = moduleLoaderCreator(moduleBuilder.parts, moduleBuilder.modules, eventBus);
+var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
+   'use strict';
+   var partAccess = partAccessCreator(),
+      moduleAccess = moduleAccessCreator(partAccess, eventBus),
+      moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
+      moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
 
 
-    moduleBuilder.createPart('eventBus').creator(function() {
-        return eventBus;
-    });
+   moduleBuilder.createPart('eventBus').creator(function () {
+      return eventBus;
+   });
 
 
-    function reset() {
-        moduleBuilder.reset();
-        moduleLoader.reset();
-    }
+   function reset() {
+      partAccess.reset();
+      moduleAccess.reset();
 
-    return {
-        createPart: moduleBuilder.createPart,
-        createModule: moduleBuilder.createModule,
-        initModulePage: moduleLoader.initModulePage,
-        reset: reset
-    };
+      moduleBuilder.createPart('eventBus').creator(function () {
+         return eventBus;
+      });
+   }
 
-})(moduleBuilder, moduleLoader, eventBus);
+   return {
+      createPart: moduleBuilder.createPart,
+      createModule: moduleBuilder.createModule,
+      initModulePage: moduleLoader.initModulePage,
+      reset: reset
+   };
+
+})(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);

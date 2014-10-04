@@ -1,26 +1,32 @@
 /* global moduleSystem:true */
 /* jshint unused:false */
-var moduleSystem = (function(moduleBuilderCreator, moduleLoaderCreator, eventBus) {
-    'use strict';
-    var moduleBuilder = moduleBuilderCreator(),
-        moduleLoader = moduleLoaderCreator(moduleBuilder.parts, moduleBuilder.modules, eventBus);
+var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
+   'use strict';
+   var partAccess = partAccessCreator(),
+      moduleAccess = moduleAccessCreator(partAccess, eventBus),
+      moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
+      moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
 
 
-    moduleBuilder.createPart('eventBus').creator(function() {
-        return eventBus;
-    });
+   moduleBuilder.createPart('eventBus').creator(function () {
+      return eventBus;
+   });
 
 
-    function reset() {
-        moduleBuilder.reset();
-        moduleLoader.reset();
-    }
+   function reset() {
+      partAccess.reset();
+      moduleAccess.reset();
 
-    return {
-        createPart: moduleBuilder.createPart,
-        createModule: moduleBuilder.createModule,
-        initModulePage: moduleLoader.initModulePage,
-        reset: reset
-    };
+      moduleBuilder.createPart('eventBus').creator(function () {
+         return eventBus;
+      });
+   }
 
-})(moduleBuilder, moduleLoader, eventBus);
+   return {
+      createPart: moduleBuilder.createPart,
+      createModule: moduleBuilder.createModule,
+      initModulePage: moduleLoader.initModulePage,
+      reset: reset
+   };
+
+})(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
