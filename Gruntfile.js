@@ -92,7 +92,7 @@ module.exports = function (grunt) {
          }
       },
       exec: {
-         git_add_all: 'git add all'
+         gitAddAll: 'git add --all'
       }
    });
 
