@@ -90,6 +90,9 @@ module.exports = function (grunt) {
             pushTo: 'origin',
             gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
          }
+      },
+      exec: {
+         git_add_all: 'git add all'
       }
    });
 
@@ -111,6 +114,8 @@ module.exports = function (grunt) {
    grunt.loadNpmTasks('grunt-bower');
 
    grunt.loadNpmTasks('grunt-bump');
+
+   grunt.loadNpmTasks('grunt-exec');
 
    // Default task.
    grunt.registerTask('default', ['build']);

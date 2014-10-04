@@ -1,19 +1,20 @@
 {
-    "name": "moduleSystem",
-    "description": "Dynamic Loading of Javascript based on DOM elements",
-    "version": "0.3.5",
-    "filename": "moduleSystem.min.js",
-    "author": "Eder Alexander <eder.alexan@gmail.com>",
-    "dependencies": {},
-    "devDependencies": {
-        "grunt": "^0.4.5",
-        "grunt-contrib-concat": "*",
-        "grunt-contrib-jshint": "*",
-        "grunt-contrib-uglify": "*",
-        "grunt-contrib-jasmine": "~0.6.1",
-        "grunt-cli": ">= 0.1.7",
-        "grunt-bower": "*",
-        "grunt-bower-task": "*",
-        "grunt-bump": "*"
-    }
+   "name": "moduleSystem",
+   "description": "Dynamic Loading of Javascript based on DOM elements",
+   "version": "0.3.5",
+   "filename": "moduleSystem.min.js",
+   "author": "Eder Alexander <eder.alexan@gmail.com>",
+   "dependencies": {},
+   "devDependencies": {
+      "grunt": "^0.4.5",
+      "grunt-contrib-concat": "*",
+      "grunt-contrib-jshint": "*",
+      "grunt-contrib-uglify": "*",
+      "grunt-contrib-jasmine": "~0.6.1",
+      "grunt-cli": ">= 0.1.7",
+      "grunt-bower": "*",
+      "grunt-bower-task": "*",
+      "grunt-bump": "*",
+      "grunt-exec": "*"
+   }
 }
