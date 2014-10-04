@@ -7,4 +7,5 @@ Dynamic Loading of Javascript based on DOM elements
 - [ ] only expose moduleSystem global variable 
 - [ ] documentation
 - [ ] add to bower
+- [ ] add configurable one or multiple modules per dom Element
 
