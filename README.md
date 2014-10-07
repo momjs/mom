@@ -100,7 +100,7 @@ moduleSystem.createModule("staticHelloWorld")
 an additional setting which overrides the default settings object could be provided via DOM
 ```html
 <div data-module="staticHelloWorld"> //alerts Hello Module
-  <script type="settings/staticHelloWorld"> 
+  <script type="staticHelloWorld/settings"> 
     {
       "staticText" : "Module"
     }
