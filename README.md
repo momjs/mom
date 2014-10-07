@@ -99,7 +99,7 @@ moduleSystem.createModule("staticHelloWorld")
 #####Override from DOM
 an additional setting which overrides the default settings object could be provided via DOM
 ```html
-<div data-module="staticHelloWorld" data-staticHelloWorld-settings='{"staticText" : "Module"}'> //alerts Hello Module
+<div data-module="staticHelloWorld"> //alerts Hello Module
   <script type="settings/staticHelloWorld"> 
     {
       "staticText" : "Module"
@@ -139,7 +139,7 @@ moduleSystem.createModule("helloWorldPublisher")
 ```
 ```html
 <div data-module="helloWorldPublisher" /> //publish hello world changed
-```js
+```
 ####Communication between modules
 modules should communicate over the EventBus to prevent tight coupling. 
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
@@ -157,7 +157,7 @@ moduleSystem.createModule("helloWorldListener")
 ```
 ```html
 <div data-module="helloWorldListener" /> // alerts Hello World if helloWorldPublisher is in place
-```js
+```
 ####More than one Module per DOM-Element
 sometimes it is useful to handle a dom element with more than one js-module. For this it is possible to load more than one module with a comma separated list
 ```html
