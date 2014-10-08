@@ -1,10 +1,16 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v0.3.6 - 2014-10-04 * @link 
+ * @version v0.3.6 - 2014-10-08 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
- *//* global moduleLoader:true */
+ *//* jshint ignore:start */
+;
+(function (window, undefined) {
+      'use strict';
+/* jshint ignore:end */
+
+/* global moduleLoader:true */
 /* jshint unused:false */
 var moduleLoader = function (moduleAccess, partAccess) {
    'use strict';
@@ -429,7 +435,7 @@ var eventBus = (function() {
 
 /* global moduleSystem:true */
 /* jshint unused:false */
-var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
+window.moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
    'use strict';
    var partAccess = partAccessCreator(),
       moduleAccess = moduleAccessCreator(partAccess, eventBus),
@@ -445,6 +451,7 @@ var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAcc
    function reset() {
       partAccess.reset();
       moduleAccess.reset();
+      eventBus.reset();
 
       moduleBuilder.createPart('eventBus').creator(function () {
          return eventBus;
@@ -455,7 +462,11 @@ var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAcc
       createPart: moduleBuilder.createPart,
       createModule: moduleBuilder.createModule,
       initModulePage: moduleLoader.initModulePage,
-      reset: reset
+      reset: reset,
+      getPart: partAccess.provisionPart
    };
 
 })(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
+/* jshint ignore:start */ 
+}(window));
+/* jshint ignore:end */

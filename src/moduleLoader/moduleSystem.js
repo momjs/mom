@@ -1,6 +1,6 @@
 /* global moduleSystem:true */
 /* jshint unused:false */
-var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
+window.moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
    'use strict';
    var partAccess = partAccessCreator(),
       moduleAccess = moduleAccessCreator(partAccess, eventBus),
@@ -16,6 +16,7 @@ var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAcc
    function reset() {
       partAccess.reset();
       moduleAccess.reset();
+      eventBus.reset();
 
       moduleBuilder.createPart('eventBus').creator(function () {
          return eventBus;
@@ -26,7 +27,8 @@ var moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAcc
       createPart: moduleBuilder.createPart,
       createModule: moduleBuilder.createModule,
       initModulePage: moduleLoader.initModulePage,
-      reset: reset
+      reset: reset,
+      getPart: partAccess.provisionPart
    };
 
 })(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);

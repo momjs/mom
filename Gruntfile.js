@@ -15,13 +15,24 @@ module.exports = function (grunt) {
                 ' * @author <%= pkg.author %>',
                 ' * @license MIT License, http://www.opensource.org/licenses/MIT',
                 ' */'
-            ].join('\n')
+            ].join('\n'),
       },
       dirs: {
          dest: 'dist',
          dep: '<%= dirs.dest %>/dependencies',
          source: 'src',
          test: 'spec'
+      },
+      files: {
+         src: [
+               '<%= dirs.source %>/moduleLoader/moduleLoader.js',
+               '<%= dirs.source %>/moduleLoader/moduleBuilder.js',
+               '<%= dirs.source %>/moduleLoader/partAccess.js',
+               '<%= dirs.source %>/moduleLoader/moduleAccess.js',
+               '<%= dirs.source %>/eventBus/eventBus.js',
+               '<%= dirs.source %>/moduleLoader/moduleSystem.js',
+               '<%= dirs.source %>/moduleLoader/moduleLoader.js'
+         ]
       },
       bower: {
          dev: {
@@ -34,13 +45,10 @@ module.exports = function (grunt) {
          },
          dist: {
             src: [
-                    '<%= dirs.source %>/moduleLoader/moduleLoader.js',
-                    '<%= dirs.source %>/moduleLoader/moduleBuilder.js',
-                    '<%= dirs.source %>/moduleLoader/partAccess.js',
-                    '<%= dirs.source %>/moduleLoader/moduleAccess.js',
-                    '<%= dirs.source %>/eventBus/eventBus.js',
-                    '<%= dirs.source %>/moduleLoader/moduleSystem.js'
-                ],
+               '<%= dirs.source %>/intro.js',
+               '<%= files.src %>',
+               '<%= dirs.source %>/outro.js'
+            ],
             dest: '<%= dirs.dest %>/<%= pkg.name %>.<%= pkg.version %>.js'
          }
       },
@@ -63,17 +71,22 @@ module.exports = function (grunt) {
          }
       },
       jasmine: {
-         coverage: {
-            src: '<%= concat.dist.src %>',
-            options: {
-               vendor: [
-                        '<%= dirs.dep %>/jquery.js',
-                        '<%= dirs.dep %>/jasmine-jquery.js'
-                    ],
-               specs: [
-                        '<%= dirs.test %>/**/*Spec.js'
-                    ]
-            }
+         options: {
+            vendor: [
+               '<%= dirs.dep %>/jquery.js',
+               '<%= dirs.dep %>/jasmine-jquery.js'
+            ],
+            specs: [
+               '<%= dirs.test %>/**/*Spec.js'
+            ]
+         },
+         test: {
+            src: '<%= files.src %>',
+            options: '<%= jasmine.options %>'
+         },
+         prod: {
+            src: '<%= concat.dist.dest %>',
+            options: '<%= jasmine.options %>'
          }
       },
       bump: {
@@ -123,11 +136,13 @@ module.exports = function (grunt) {
    grunt.registerTask('releaseMinor', ['bump-only', 'build', 'exec', 'bump-commit'])
 
    // Build task.
-   grunt.registerTask('build', ['bowerInstall', 'bower', 'jasmine', 'jshint', 'concat', 'uglify']);
+   grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'concat', 'testProd', 'uglify']);
 
-   grunt.registerTask('test', ['jasmine']);
+   grunt.registerTask('test', ['jasmine:test']);
+
+   grunt.registerTask('testProd', ['jasmine:prod']);
 
    grunt.registerTask('createSpecRunner', [
-        'jasmine:coverage:build'
+        'jasmine:test:build'
     ]);
 };
