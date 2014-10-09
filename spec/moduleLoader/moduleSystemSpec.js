@@ -122,12 +122,28 @@ describe('The Module Loader', function () {
       var spyModule;
 
       it('should get a part', function () {
-         var spyPart = jasmine.createSpy('creator');
-         moduleSystem.createPart('testPart').creator(function () {
-            return spyPart;
-         });
+         var partObj = {
+            test: 'test'
+         };
+         var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
+         moduleSystem.createPart('testPart').creator(spyPart);
 
-         expect(moduleSystem.getPart('testPart')).toEqual(spyPart);
+         expect(moduleSystem.getPart('testPart')).toEqual(partObj);
+      });
+
+      it('should not reinitilize part if allready initialized', function () {
+         var partObj = {
+            test: 'test'
+         };
+         var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
+         moduleSystem.createPart('testPart').creator(spyPart);
+
+         moduleSystem.getPart('testPart');
+         var partObjActual = moduleSystem.getPart('testPart');
+
+         expect(partObj).toEqual(partObjActual);
+         expect(spyPart.calls.count()).toEqual(1);
+
       });
 
       it('should provide a settings object to the part if specified', function () {
