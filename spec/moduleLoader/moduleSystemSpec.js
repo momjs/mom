@@ -117,16 +117,8 @@ describe('The Module Loader', function () {
       expect(moduleSystem.initModulePage).toThrow();
    });
 
-   it('should not load any part wich is not needed', function () {
-      var spyPart = jasmine.createSpy('creator');
-      moduleSystem.createPart('testPart').creator(spyPart);
 
-      moduleSystem.initModulePage();
-
-      expect(spyPart).not.toHaveBeenCalled();
-   });
-
-   describe('parts', function () {
+   describe('with parts', function () {
       var spyModule;
 
       it('should get a part', function () {
@@ -138,15 +130,64 @@ describe('The Module Loader', function () {
          expect(moduleSystem.getPart('testPart')).toEqual(spyPart);
       });
 
+      it('should provide a settings object to the part if specified', function () {
+         var settings = {
+            testSetting: 'test'
+         };
+
+         var spyPart = jasmine.createSpy('creator').and.returnValue({});
+         moduleSystem.createPart('testPart')
+            .settings(settings)
+            .creator(spyPart);
+
+         moduleSystem.getPart('testPart');
+
+         expect(spyPart).toHaveBeenCalledWith(settings);
+      });
+
+      it('should add missing Parts to Parts', function () {
+         var testPart = jasmine.createSpy('test part');
+         var publicMethodObject = {
+            testProperty: 'test'
+         };
+         moduleSystem.createPart('dependencyPart').creator(function () {
+            return publicMethodObject;
+         });
+         moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(testPart);
+
+         moduleSystem.getPart('testPart');
+
+
+         expect(testPart).toHaveBeenCalledWith(publicMethodObject);
+      });
+
+      it('should throw an exception if a part dependencie couldnt be resolved', function () {
+         var spyPart = jasmine.createSpy();
+         moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(spyPart);
+
+         expect(function () {
+            moduleSystem.getPart('testPart')
+         }).toThrow();
+      });
+
+
+      it('should throw an exception on circular dependencies', function () {
+         var spyPart = jasmine.createSpy();
+         moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(spyPart);
+         moduleSystem.createPart('dependencyPart').dependencies(['testPart']).creator(spyPart);
+
+         expect(function () {
+            moduleSystem.getPart('testPart')
+         }).toThrow();
+      });
+
       describe('with dependencie from module', function () {
          beforeEach(function () {
             loadFixtures('moduleSystem/oneModule.html');
             spyModule = jasmine.createSpy('module');
 
-
             moduleSystem.createModule('testModule').dependencies(['testPart']).creator(spyModule);
          });
-
 
          it('should load any needed Part', function () {
             var spyPart = jasmine.createSpy('creator');
@@ -157,37 +198,14 @@ describe('The Module Loader', function () {
             expect(spyPart).toHaveBeenCalled();
          });
 
-
-         it('should provide a settings object to the part if specified', function () {
-            var settings = {
-               testSetting: 'test'
-            };
-
-            var spyPart = jasmine.createSpy('creator').and.returnValue({});
-            moduleSystem.createPart('testPart')
-               .settings(settings)
-               .creator(spyPart);
+         it('should not load any part which is not needed', function () {
+            moduleSystem.createPart('testPart').creator(function () {});
+            var spyPart = jasmine.createSpy('creator');
+            moduleSystem.createPart('testPart2').creator(spyPart);
 
             moduleSystem.initModulePage();
 
-            expect(spyPart).toHaveBeenCalledWith(settings);
-
-         });
-
-         it('should add missing Parts to Parts', function () {
-            var testPart = jasmine.createSpy('test part');
-            var publicMethodObject = {
-               testProperty: 'test'
-            };
-            moduleSystem.createPart('dependencyPart').creator(function () {
-               return publicMethodObject;
-            });
-            moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(testPart);
-
-            moduleSystem.initModulePage();
-
-
-            expect(testPart).toHaveBeenCalledWith(publicMethodObject);
+            expect(spyPart).not.toHaveBeenCalled();
          });
 
          it('should add missing parts to the module', function () {
@@ -202,19 +220,6 @@ describe('The Module Loader', function () {
 
 
             expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), publicMethodObject);
-         });
-         it('should throw an exception if a part dependencie couldnt be resolved', function () {
-            var spyPart = jasmine.createSpy();
-            moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(spyPart);
-
-            expect(moduleSystem.initModulePage).toThrow();
-         });
-         it('should throw an exception on circular dependencies', function () {
-            var spyPart = jasmine.createSpy();
-            moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(spyPart);
-            moduleSystem.createPart('dependencyPart').dependencies(['testPart']).creator(spyPart);
-
-            expect(moduleSystem.initModulePage).toThrow();
          });
 
          it('should call postConstruct from parts when provision is finished', function () {
@@ -259,7 +264,7 @@ describe('The Module Loader', function () {
 
 
 
-   it('should add every model to the event bus', function () {
+   it('should add every module to the event bus', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var eventBus = moduleSystem.getPart('eventBus');
 

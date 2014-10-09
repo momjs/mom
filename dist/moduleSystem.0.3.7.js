@@ -433,8 +433,6 @@ var eventBus = (function() {
 
 })();
 
-/* global moduleSystem:true */
-/* jshint unused:false */
 window.moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
    'use strict';
    var partAccess = partAccessCreator(),
