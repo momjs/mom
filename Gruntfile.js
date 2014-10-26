@@ -104,6 +104,16 @@ module.exports = function (grunt) {
             gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
          }
       },
+      copy: {
+        release: {
+          src: '<%= concat.dist.dest %>',
+          dest: '<%= dirs.dest %>/<%= pkg.name %>.js',
+        },
+        releaseMin: {
+          src: '<%= uglify.dist.dest %>',
+          dest: '<%= dirs.dest %>/<%= pkg.name %>.min.js',
+        },
+      },
       exec: {
          gitAddAll: 'git add --all'
       }
@@ -119,6 +129,8 @@ module.exports = function (grunt) {
    grunt.loadNpmTasks('grunt-contrib-uglify');
 
    grunt.loadNpmTasks('grunt-contrib-jasmine');
+   
+   grunt.loadNpmTasks('grunt-contrib-copy');
 
    grunt.loadNpmTasks('grunt-bower-task');
 
@@ -133,7 +145,11 @@ module.exports = function (grunt) {
    // Default task.
    grunt.registerTask('default', ['build']);
 
-   grunt.registerTask('releaseMinor', ['bump-only', 'build', 'exec', 'bump-commit'])
+   grunt.registerTask('releasePatch', ['bump-only:patch', 'build', 'copy', 'exec', 'bump-commit']);
+   
+   grunt.registerTask('releaseMinior', ['bump-only:minor', 'build', 'copy', 'exec', 'bump-commit']);
+   
+   grunt.registerTask('releaseMajor', ['bump-only:major', 'build', 'copy', 'exec', 'bump-commit']);
 
    // Build task.
    grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'concat', 'testProd', 'uglify']);

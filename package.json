@@ -10,6 +10,7 @@
       "grunt-contrib-concat": "*",
       "grunt-contrib-jshint": "*",
       "grunt-contrib-uglify": "*",
+      "grunt-contrib-copy": "*",
       "grunt-contrib-jasmine": "~0.6.1",
       "grunt-cli": ">= 0.1.7",
       "grunt-bower": "*",
