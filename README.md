@@ -3,12 +3,10 @@ ModuleSystem
 
 Dynamic Loading of Javascript based on DOM elements
 
-To do for 1.0
+To do for 1.0.1
 -------------
-- [x] only expose moduleSystem global variable 
-- [x] documentation
-- [ ] add to bower
-- [x] add one or multiple modules per dom Element
+- [ ] remove undefined string checks
+
 
 How To Use
 ----------
