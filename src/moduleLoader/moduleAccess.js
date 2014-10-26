@@ -12,10 +12,19 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
 
-   function initializeModule($element) {
-      var moduleName = $element.data('module'),
-         moduleDescriptor,
-         foundDependencies;
+   function initializeModules($element) {
+      var moduleNames = $element.data('module');
+
+      $.each(moduleNames.split(','), function(index, moduleName) {
+         moduleName = moduleName.trim();
+         
+         initializeModule($element, moduleName);
+      });
+   }
+   
+   function initializeModule($element, moduleName) {
+      var moduleDescriptor,
+          foundDependencies;
 
       //check if module to be loaded is registered
       if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
@@ -31,7 +40,6 @@ var moduleAccess = function (partAccess, eventBus) {
       } else {
          throw new Error('Module ' + moduleName + ' not registered but found in dom');
       }
-
    }
 
    function buildModule($element, moduleDescriptor, foundDependencies) {
@@ -113,7 +121,7 @@ var moduleAccess = function (partAccess, eventBus) {
 
    return {
       reset: reset,
-      provisionModule: initializeModule,
+      provisionModule: initializeModules,
       provisionFinished: callPostConstructs,
       addModuleDescriptor: addModuleDescriptor
    };

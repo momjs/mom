@@ -8,7 +8,7 @@ To do for 1.0
 - [x] only expose moduleSystem global variable 
 - [x] documentation
 - [ ] add to bower
-- [ ] add configurable one or multiple modules per dom Element
+- [x] add one or multiple modules per dom Element
 
 How To Use
 ----------

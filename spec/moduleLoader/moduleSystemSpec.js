@@ -14,6 +14,23 @@ describe('The Module Loader', function () {
       expect(spyModule).toHaveBeenCalled();
       expect(spyModule.calls.argsFor(0)[0]).toEqual($('#test-testModule'));
    });
+   
+   it('should load a comma seperated list of Modules found in dom', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+      var spyModule1 = jasmine.createSpy('creator');
+      moduleSystem.createModule('testModule1').creator(spyModule1);
+      
+      var spyModule2 = jasmine.createSpy('creator');
+      moduleSystem.createModule('testModule2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule1).toHaveBeenCalled();
+      expect(spyModule1.calls.argsFor(0)[0]).toEqual($('#test-testModule'));
+      
+      expect(spyModule2).toHaveBeenCalled();
+      expect(spyModule2.calls.argsFor(0)[0]).toEqual($('#test-testModule'));
+   });
 
    it('should not load a Module if not found in dom', function () {
       var spyModule = jasmine.createSpy('creator');
