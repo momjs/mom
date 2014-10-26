@@ -3,10 +3,6 @@ ModuleSystem
 
 Dynamic Loading of Javascript based on DOM elements
 
-To do for 1.0.1
--------------
-- [ ] remove undefined string checks
-
 
 How To Use
 ----------

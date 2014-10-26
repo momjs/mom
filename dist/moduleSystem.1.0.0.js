@@ -378,7 +378,7 @@ var eventBus = (function() {
     function publishEvent(event, source) {
 
         // if no event is provided, or event has no name, do not publish an event
-        if (typeof event === 'undefined' || typeof event.name === 'undefined') {
+        if (typeof event === undefined || typeof event.name === undefined) {
             return;
         }
 
@@ -402,7 +402,7 @@ var eventBus = (function() {
     }
 
     function addComponent(component, replaceDuplicates) {
-        if (typeof component === 'undefined') {
+        if (typeof component === undefined) {
             throw new Error('Component to be registered is undefined');
         }
         if (typeof component.name === 'undefined') {
