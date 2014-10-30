@@ -7,6 +7,10 @@ To do for 1.0.1
 -------------
 - [ ] remove undefined string checks
 
+To do for 1.1
+-------------
+- [ ] remove jQuery dependencie
+- [ ] simplify EventBus
 
 How To Use
 ----------
