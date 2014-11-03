@@ -87,6 +87,10 @@ module.exports = function (grunt) {
          prod: {
             src: '<%= concat.dist.dest %>',
             options: '<%= jasmine.options %>'
+         },
+         prodMin: {
+            src: '<%= uglify.dist.dest %>',
+            options: '<%= jasmine.options %>'
          }
       },
       bump: {
@@ -156,7 +160,7 @@ module.exports = function (grunt) {
 
    grunt.registerTask('test', ['jasmine:test']);
 
-   grunt.registerTask('testProd', ['jasmine:prod']);
+   grunt.registerTask('testProd', ['jasmine:prod','jasmine:prodMin']);
 
    grunt.registerTask('createSpecRunner', [
         'jasmine:test:build'
