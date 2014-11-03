@@ -10,18 +10,24 @@ var moduleLoader = function (moduleAccess, partAccess) {
 
 
       function initModules() {
-         var $modulesOnPage = $('[data-module]');
+         var modulesOnPage = document.querySelectorAll('[data-module]'),
+             i,
+             element;
 
-         $modulesOnPage.each(function (index, element) {
-            var $element = $(element);
-
-            moduleAccess.provisionModule($(element));
-
-         });
+         for(i = 0; i < modulesOnPage.length; i++) {
+            element = modulesOnPage[i];
+            init(element);
+         }
 
          partAccess.provisionFinished();
          moduleAccess.provisionFinished();
 
+      }
+      
+      function init(element) {
+            var $element = $(element);
+
+            moduleAccess.provisionModule($(element));
       }
 
    }
