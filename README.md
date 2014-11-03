@@ -4,6 +4,11 @@ ModuleSystem
 Dynamic Loading of Javascript based on DOM elements
 
 
+To do for 1.1
+-------------
+- [ ] remove jQuery dependencie
+- [ ] simplify EventBus
+
 How To Use
 ----------
 ###Parts
