@@ -58,7 +58,7 @@ var moduleAccess = function (partAccess, eventBus) {
       }
 
       //make moduleDomElement first arguments
-      args.unshift($element);
+      args.unshift($element.get(0));
 
       //create Module
       createdModule = moduleDescriptor.creator.apply(null, args);

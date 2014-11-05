@@ -16,7 +16,7 @@ var moduleLoader = function (moduleAccess, partAccess) {
 
          for(i = 0; i < modulesOnPage.length; i++) {
             element = modulesOnPage[i];
-            init(element);
+            initModule(element);
          }
 
          partAccess.provisionFinished();
@@ -24,7 +24,7 @@ var moduleLoader = function (moduleAccess, partAccess) {
 
       }
       
-      function init(element) {
+      function initModule(element) {
             var $element = $(element);
 
             moduleAccess.provisionModule($(element));

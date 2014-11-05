@@ -12,7 +12,7 @@ describe('The Module Loader', function () {
       moduleSystem.initModulePage();
 
       expect(spyModule).toHaveBeenCalled();
-      expect(spyModule.calls.argsFor(0)[0]).toEqual($('#test-testModule'));
+      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
    });
    
    it('should load a comma seperated list of Modules found in dom', function () {
@@ -26,10 +26,10 @@ describe('The Module Loader', function () {
       moduleSystem.initModulePage();
 
       expect(spyModule1).toHaveBeenCalled();
-      expect(spyModule1.calls.argsFor(0)[0]).toEqual($('#test-testModule'));
+      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
       
       expect(spyModule2).toHaveBeenCalled();
-      expect(spyModule2.calls.argsFor(0)[0]).toEqual($('#test-testModule'));
+      expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
    });
 
    it('should not load a Module if not found in dom', function () {
@@ -113,8 +113,8 @@ describe('The Module Loader', function () {
       moduleSystem.initModulePage();
 
       expect(spyModule.calls.count()).toBe(2);
-      expect(spyModule.calls.argsFor(0)[0]).toEqual($('#test-testModule1'));
-      expect(spyModule.calls.argsFor(1)[0]).toEqual($('#test-testModule2'));
+      expect(spyModule.calls.argsFor(0)[0]).toBe($('#test-testModule1').get(0));
+      expect(spyModule.calls.argsFor(1)[0]).toBe($('#test-testModule2').get(0));
    });
 
    it('should set incrementing name of a module to its moduleObj', function () {

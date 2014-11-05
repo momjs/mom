@@ -1,3 +1,3 @@
 /* jshint ignore:start */ 
-}(window));
+}(window, document));
 /* jshint ignore:end */
