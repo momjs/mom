@@ -74,14 +74,14 @@ moduleSystem.createModule("helloWorld")
         alert("Hello " + $moduleObj.data("text");
     });
 ```
-this module gets loaded when a DOM-element with attribute data-module="helloWorld" is found. The found DOM-Node is then given to the Module as the first parameter
+this module gets loaded when a DOM-element with attribute modules="helloWorld" is found. The found DOM-Node is then given to the Module as the first parameter
 ```html
-<div data-module="helloWorld" data-text="World"/> // alerts Hello World
+<div modules="helloWorld" data-text="World"/> // alerts Hello World
 ```
 Incase more than one DOM-Node with the same module is found more than one module-object are initialized
 ```html
-<div data-module="helloWorld" data-text="World1"/> //alerts Hello World1
-<div data-module="helloWorld" data-text="World2"/> //alerts Hello World2
+<div modules="helloWorld" data-text="World1"/> //alerts Hello World1
+<div modules="helloWorld" data-text="World2"/> //alerts Hello World2
 ```
 ####Configure
 like parts modules could be provisioned with settings
@@ -93,12 +93,12 @@ moduleSystem.createModule("staticHelloWorld")
     });
 ```
 ```html
-<div data-module="staticHelloWorld" /> //alerts Hello World
+<div modules="staticHelloWorld" /> //alerts Hello World
 ```
 #####Override from DOM
 an additional setting which overrides the default settings object could be provided via DOM
 ```html
-<div data-module="staticHelloWorld"> //alerts Hello Module
+<div modules="staticHelloWorld"> //alerts Hello Module
   <script type="staticHelloWorld/settings"> 
     {
       "staticText" : "Module"
@@ -118,7 +118,7 @@ moduleSystem.createModule("staticHelloWorldWithDependencies")
     });
 ```
 ```html
-<div data-module="staticHelloWorldWithDependencies" /> //alerts Hello World 3
+<div modules="staticHelloWorldWithDependencies" /> //alerts Hello World 3
 ```
 ####PostConstruct Hook
 every module could decide to publish a postConstruct method which gets executed after every module is properly initialized.
@@ -137,7 +137,7 @@ moduleSystem.createModule("helloWorldPublisher")
     });
 ```
 ```html
-<div data-module="helloWorldPublisher" /> //publish hello world changed
+<div modules="helloWorldPublisher" /> //publish hello world changed
 ```
 ####Communication between modules
 modules should communicate over the EventBus to prevent tight coupling. 
@@ -155,7 +155,7 @@ moduleSystem.createModule("helloWorldListener")
     });
 ```
 ```html
-<div data-module="helloWorldListener" /> // alerts Hello World if helloWorldPublisher is in place
+<div modules="helloWorldListener" /> // alerts Hello World if helloWorldPublisher is in place
 ```
 ####More than one Module per DOM-Element
 
@@ -163,7 +163,7 @@ not yet implemented
 
 sometimes it is useful to handle a dom element with more than one js-module. For this it is possible to load more than one module with a comma separated list
 ```html
-<div data-module="moduleToLoad1,otherModuleToLoad" /> // loads two modules with the same $moduleObj
+<div modules="moduleToLoad1,otherModuleToLoad" /> // loads two modules with the same $moduleObj
 ```
 ###Start Provisioning
 when every module is registered in the module system initModulePage() should be called. This would typically be done on DOM ready
