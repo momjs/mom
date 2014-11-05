@@ -12,14 +12,16 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
 
-   function initializeModules($element) {
-      var moduleNames = $element.data('module');
+   function initializeModules(element) {
+      var moduleNames = element.getAttribute('modules'),
+          moduleNamesArray = moduleNames.split(','),
+          i,
+          moduleName;
 
-      $.each(moduleNames.split(','), function(index, moduleName) {
-         moduleName = moduleName.trim();
-         
-         initializeModule($element, moduleName);
-      });
+      for(i = 0; i < moduleNamesArray.length; i++) {
+         moduleName = moduleNamesArray[i].trim();
+         initializeModule($(element), moduleName);
+      }
    }
    
    function initializeModule($element, moduleName) {

@@ -22,7 +22,7 @@ var moduleLoader = function (moduleAccess, partAccess) {
 
 
       function initModules() {
-         var modulesOnPage = document.querySelectorAll('[data-module]'),
+         var modulesOnPage = document.querySelectorAll('[modules]'),
              i,
              element;
 
@@ -37,9 +37,7 @@ var moduleLoader = function (moduleAccess, partAccess) {
       }
       
       function initModule(element) {
-            var $element = $(element);
-
-            moduleAccess.provisionModule($(element));
+            moduleAccess.provisionModule(element);
       }
 
    }
@@ -226,14 +224,16 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
 
-   function initializeModules($element) {
-      var moduleNames = $element.data('module');
+   function initializeModules(element) {
+      var moduleNames = element.getAttribute('modules'),
+          moduleNamesArray = moduleNames.split(','),
+          i,
+          moduleName;
 
-      $.each(moduleNames.split(','), function(index, moduleName) {
-         moduleName = moduleName.trim();
-         
-         initializeModule($element, moduleName);
-      });
+      for(i = 0; i < moduleNamesArray.length; i++) {
+         moduleName = moduleNamesArray[i].trim();
+         initializeModule($(element), moduleName);
+      }
    }
    
    function initializeModule($element, moduleName) {
