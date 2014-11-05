@@ -1,12 +1,12 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.0.0 - 2014-10-26 * @link 
+ * @version v1.0.0 - 2014-11-05 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
 ;
-(function (window, undefined) {
+(function (window, document, undefined) {
       'use strict';
 /* jshint ignore:end */
 
@@ -22,18 +22,24 @@ var moduleLoader = function (moduleAccess, partAccess) {
 
 
       function initModules() {
-         var $modulesOnPage = $('[data-module]');
+         var modulesOnPage = document.querySelectorAll('[data-module]'),
+             i,
+             element;
 
-         $modulesOnPage.each(function (index, element) {
-            var $element = $(element);
-
-            moduleAccess.provisionModule($(element));
-
-         });
+         for(i = 0; i < modulesOnPage.length; i++) {
+            element = modulesOnPage[i];
+            initModule(element);
+         }
 
          partAccess.provisionFinished();
          moduleAccess.provisionFinished();
 
+      }
+      
+      function initModule(element) {
+            var $element = $(element);
+
+            moduleAccess.provisionModule($(element));
       }
 
    }
@@ -266,7 +272,7 @@ var moduleAccess = function (partAccess, eventBus) {
       }
 
       //make moduleDomElement first arguments
-      args.unshift($element);
+      args.unshift($element.get(0));
 
       //create Module
       createdModule = moduleDescriptor.creator.apply(null, args);
@@ -405,7 +411,7 @@ var eventBus = (function() {
         if (typeof component === undefined) {
             throw new Error('Component to be registered is undefined');
         }
-        if (typeof component.name === 'undefined') {
+        if (typeof component.name === undefined) {
             throw new Error('Component name to be registered is undefined');
         }
 
@@ -474,5 +480,5 @@ window.moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, part
 
 })(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
 /* jshint ignore:start */ 
-}(window));
+}(window, document));
 /* jshint ignore:end */

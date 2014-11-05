@@ -156,7 +156,7 @@ module.exports = function (grunt) {
    grunt.registerTask('releaseMajor', ['bump-only:major', 'build', 'copy', 'exec', 'bump-commit']);
 
    // Build task.
-   grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'concat', 'testProd', 'uglify']);
+   grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'concat', 'uglify', 'testProd']);
 
    grunt.registerTask('test', ['jasmine:test']);
 
