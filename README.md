@@ -6,7 +6,7 @@ Dynamic Loading of Javascript based on DOM elements
 
 To do for 1.1
 -------------
-- [ ] remove jQuery dependencie
+- [x] remove jQuery dependencie
 - [ ] simplify EventBus
 
 How To Use
@@ -70,25 +70,25 @@ moduleSystem.createPart("calculator")
 ####Creation and registration
 ```js
 moduleSystem.createModule("helloWorld")
-    .creator(function($moduleObj) {
-        alert("Hello " + $moduleObj.data("text");
+    .creator(function(moduleObj) {
+        alert("Hello " + moduleObj.innerHTML;
     });
 ```
 this module gets loaded when a DOM-element with attribute modules="helloWorld" is found. The found DOM-Node is then given to the Module as the first parameter
 ```html
-<div modules="helloWorld" data-text="World"/> // alerts Hello World
+<div modules="helloWorld">World</div> // alerts Hello World
 ```
 Incase more than one DOM-Node with the same module is found more than one module-object are initialized
 ```html
-<div modules="helloWorld" data-text="World1"/> //alerts Hello World1
-<div modules="helloWorld" data-text="World2"/> //alerts Hello World2
+<div modules="helloWorld">World1</div> //alerts Hello World1
+<div modules="helloWorld">World2</div> //alerts Hello World2
 ```
 ####Configure
 like parts modules could be provisioned with settings
 ```js
 moduleSystem.createModule("staticHelloWorld")
     .settings({staticText : "World"})
-    .creator(function($moduleObj, settings) {
+    .creator(function(moduleObj, settings) {
         alert("Hello " + settings.staticText;
     });
 ```
@@ -113,7 +113,7 @@ It's a design decision to not allow modules to be injected in other modules. Use
 moduleSystem.createModule("staticHelloWorldWithDependencies")
     .settings({staticText : "World"})
     .dependencies(["adder"])
-    .creator(function($moduleObj, settings, adder) {
+    .creator(function(moduleObj, settings, adder) {
         alert("Hello " + settings.staticText + " " + adder.add(1,2);
     });
 ```
@@ -126,9 +126,9 @@ This should be used if a event could be resulting from the actions in place. Bec
 ```js
 moduleSystem.createModule("helloWorldPublisher")
     .dependencie(["eventBus"])
-    .creator(function($moduleObj, eventBus) {
+    .creator(function(moduleObj, eventBus) {
         function postConstruct() {
-            eventBus.publish(new eventBus.Events.HelloWorldChanged($moduleObj.data("text"));
+            eventBus.publish(new eventBus.Events.HelloWorldChanged(moduleObj.innerHTML);
         }
          
         return {
@@ -144,7 +144,7 @@ modules should communicate over the EventBus to prevent tight coupling.
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 ```js
 moduleSystem.createModule("helloWorldListener")
-    .creator(function($moduleObj) {
+    .creator(function(moduleObj) {
         function onHelloWorldChanged(event) {
             alert("Hello " + event.text);
         }
@@ -163,7 +163,7 @@ not yet implemented
 
 sometimes it is useful to handle a dom element with more than one js-module. For this it is possible to load more than one module with a comma separated list
 ```html
-<div modules="moduleToLoad1,otherModuleToLoad" /> // loads two modules with the same $moduleObj
+<div modules="moduleToLoad1,otherModuleToLoad" /> // loads two modules with the same moduleObj
 ```
 ###Start Provisioning
 when every module is registered in the module system initModulePage() should be called. This would typically be done on DOM ready
