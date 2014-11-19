@@ -11,11 +11,15 @@ var partAccess = function () {
    }
 
    function getOrInitializeParts(partNames) {
-      var parts = [];
+      var parts = [],
+         i,
+         partName;
 
-      $.each(partNames, function (i, partName) {
+      for (i = 0; i < partNames.length; i++) {
+         partName = partNames[i];
          parts.push(getOrInitializePart(partName));
-      });
+      }
+
 
       return parts;
    }
@@ -74,11 +78,18 @@ var partAccess = function () {
       callPostConstruct(loadedParts);
 
       function callPostConstruct(store) {
-         $.each(store, function (i, element) {
-            if (typeof element.postConstruct === 'function') {
-               element.postConstruct();
+         var elementName,
+            element;
+
+         for (elementName in store) {
+            if (store.hasOwnProperty(elementName)) {
+               element = store[elementName];
+               if (typeof element.postConstruct === 'function') {
+                  element.postConstruct();
+               }
             }
-         });
+
+         }
       }
    }
 
