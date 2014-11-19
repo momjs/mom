@@ -1,19 +1,18 @@
 {
-    "name": "moduleSystem",
-    "version": "1.0.0",
-    "main": "./dist/moduleSystem.min.js",
-    "description": "Dynamic Loading of Javascript based on DOM elements",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/alexan/ModuleSystem.git"
-    },
-    "dependencies": {
-        "jquery": ">=2"
-    },
-    "devDependencies": {
-        "jasmine-jquery": ">=2"
-    },
-    "ignore": [
+   "name": "moduleSystem",
+   "version": "1.0.0",
+   "main": "./dist/moduleSystem.min.js",
+   "description": "Dynamic Loading of Javascript based on DOM elements",
+   "repository": {
+      "type": "git",
+      "url": "git://github.com/alexan/ModuleSystem.git"
+   },
+   "dependencies": {},
+   "devDependencies": {
+      "jquery": ">=2",
+      "jasmine-jquery": ">=2"
+   },
+   "ignore": [
         "node_modules",
         "components",
         "lib"
