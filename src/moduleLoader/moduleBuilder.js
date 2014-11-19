@@ -33,9 +33,6 @@ var moduleBuilder = function (moduleAccess, partAccess) {
 
 
          function addDependencies(neededParts) {
-            if (!$.isArray(neededParts)) {
-               neededParts = [neededParts];
-            }
 
             dependencies = neededParts;
 
