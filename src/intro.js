@@ -1,5 +1,4 @@
 /* jshint ignore:start */
 ;
-(function (window, document, undefined) {
-      'use strict';
+(function (window, document, undefined) {   
 /* jshint ignore:end */
