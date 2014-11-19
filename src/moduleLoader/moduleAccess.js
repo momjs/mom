@@ -14,19 +14,19 @@ var moduleAccess = function (partAccess, eventBus) {
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute('modules'),
-          moduleNamesArray = moduleNames.split(','),
-          i,
-          moduleName;
+         moduleNamesArray = moduleNames.split(','),
+         i,
+         moduleName;
 
-      for(i = 0; i < moduleNamesArray.length; i++) {
+      for (i = 0; i < moduleNamesArray.length; i++) {
          moduleName = moduleNamesArray[i].trim();
-         initializeModule($(element), moduleName);
+         initializeModule(element, moduleName);
       }
    }
-   
-   function initializeModule($element, moduleName) {
+
+   function initializeModule(element, moduleName) {
       var moduleDescriptor,
-          foundDependencies;
+         foundDependencies;
 
       //check if module to be loaded is registered
       if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
@@ -35,7 +35,7 @@ var moduleAccess = function (partAccess, eventBus) {
          foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
          // check if all needed dependencies are found
          if (foundDependencies.length === moduleDescriptor.dependencies.length) {
-            buildModule($element, moduleDescriptor, foundDependencies);
+            buildModule(element, moduleDescriptor, foundDependencies);
          } else {
             throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
          }
@@ -44,23 +44,23 @@ var moduleAccess = function (partAccess, eventBus) {
       }
    }
 
-   function buildModule($element, moduleDescriptor, foundDependencies) {
+   function buildModule(element, moduleDescriptor, foundDependencies) {
       //build arguments
       var args = foundDependencies,
-         domSettings = getDOMSettings($element, moduleDescriptor.name),
+         domSettings = getDOMSettings(element, moduleDescriptor.name),
          mergedSettings,
          createdModule,
          name;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
-         mergedSettings = $.extend({}, moduleDescriptor.settings, domSettings);
+         mergedSettings = merge({}, moduleDescriptor.settings, domSettings);
 
          args.unshift(mergedSettings);
       }
 
       //make moduleDomElement first arguments
-      args.unshift($element.get(0));
+      args.unshift(element);
 
       //create Module
       createdModule = moduleDescriptor.creator.apply(null, args);
@@ -80,14 +80,18 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
 
-   function getDOMSettings($element, moduleName) {
+   function getDOMSettings(element, moduleName) {
 
-      var $settingsScript = $element.find('script[type="' + moduleName + '/settings"]'),
-         settingsAsHtml = $settingsScript.html();
+      var settingsScript = element.querySelector('script[type="' + moduleName + '/settings"]'),
+         settingsAsHtml,
+         settings;
 
-      if (settingsAsHtml !== undefined) {
-         return $.parseJSON(settingsAsHtml);
+      if (settingsScript !== null) {
+         settingsAsHtml = settingsScript.innerHTML;
+         settings = JSON.parse(settingsAsHtml);
       }
+
+      return settings;
    }
 
 
@@ -107,12 +111,34 @@ var moduleAccess = function (partAccess, eventBus) {
       callPostConstruct(loadedModules);
 
       function callPostConstruct(store) {
-         $.each(store, function (i, element) {
-            if (typeof element.postConstruct === 'function') {
-               element.postConstruct();
+         var elementName,
+            element;
+
+         for (elementName in store) {
+            if (store.hasOwnProperty(elementName)) {
+               element = store[elementName];
+               if (typeof element.postConstruct === 'function') {
+                  element.postConstruct();
+               }
             }
-         });
+
+         }
       }
+   }
+
+   function merge(mergeInto, overrider) {
+      var i,
+         key;
+
+      for (i = 1; i < arguments.length; i++) {
+         for (key in arguments[i]) {
+            if (arguments[i].hasOwnProperty(key)) {
+               arguments[0][key] = arguments[i][key];
+            }
+         }
+      }
+
+      return arguments[0];
    }
 
    function reset() {
