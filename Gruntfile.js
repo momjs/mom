@@ -73,8 +73,8 @@ module.exports = function (grunt) {
       jasmine: {
          options: {
             vendor: [
-               '<%= dirs.dep %>/jquery.js',
-               '<%= dirs.dep %>/jasmine-jquery.js'
+               '<%= dirs.dep %>/dist/jquery.js',
+               '<%= dirs.dep %>/lib/jasmine-jquery.js'
             ],
             specs: [
                '<%= dirs.test %>/**/*Spec.js'
