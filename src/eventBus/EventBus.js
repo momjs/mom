@@ -1,84 +1,51 @@
-/* global eventBus:true */
 /* jshint unused:false */
-var eventBus = (function() {
+function eventBus() {
     'use strict';
 
-    function Event(name) {
-        this.name = name;
-        this.getData = function() {
-            var result = {};
+    var ON_EVENT_FUNCTION_NAME = 'onEvent',
+        components = {};
 
-            for (var property in this) {
-                if (this.hasOwnProperty(property) && property !== 'name' && property !== 'getData') {
-                    result[property] = this[property];
-                }
-            }
+    function publishEvent(event) {
 
-            return result;
-        };
-    }
-
-    var components = {},
-        eventPrototype = new Event(),
-        Events = {
-
-            register: function(Event, name) {
-                if (typeof Event !== 'function') {
-                    throw new Error('No Event provided');
-                }
-
-                if (name in Events) {
-                    throw new Error('Error registering event, duplicate Event with name [' + name + ']');
-                }
-
-                Event.prototype = eventPrototype;
-
-                Events[name] = Event;
-
-                return Event;
-            }
-        };
-
-    function publishEvent(event, source) {
-
-        // if no event is provided, or event has no name, do not publish an event
-        if (typeof event === undefined || typeof event.name === undefined) {
+        if (event === undefined) {
             return;
         }
 
         var callbackFunctionName = 'on' + event.name,
-            componentName,
-            component,
-            callback;
+            componentName;
 
-        //call components
         for (componentName in components) {
             if(components.hasOwnProperty(componentName)) {
-                component = components[componentName];
-                callback = component[callbackFunctionName];
 
-                if (typeof callback === 'function') {
-                    source = source || component;
-                    callback.call(source, event.getData());
+                if (event.name !== undefined) {
+                    tryToCallComponent(componentName, callbackFunctionName, event);
                 }
+
+                tryToCallComponent(componentName, ON_EVENT_FUNCTION_NAME, event);
             }
         }
     }
 
-    function addComponent(component, replaceDuplicates) {
-        if (typeof component === undefined) {
+    function tryToCallComponent(componentName, functionName, event) {
+
+        var component = components[componentName],
+            callback = component[functionName];
+
+        if (typeof callback === 'function') {
+            callback.call(null, event);
+        }
+    }
+
+    function addComponent(component) {
+        if (component === undefined) {
             throw new Error('Component to be registered is undefined');
         }
-        if (typeof component.name === undefined) {
+        if (component.name === undefined) {
             throw new Error('Component name to be registered is undefined');
         }
 
         if (component.name in components) {
-            if (replaceDuplicates) {
-                removeComponent(component.name);
-            } else {
-                throw new Error('Component with name [' + component.name + '] already registered');
-            }
+            throw new Error('Component with name [' + component.name + '] already registered');
         }
 
         components[component.name] = component;
@@ -94,13 +61,10 @@ var eventBus = (function() {
         components = {};
     }
 
-
     return {
         publish: publishEvent,
         add: addComponent,
         remove: removeComponent,
-        reset: reset,
-        Events: Events
+        reset: reset
     };
-
-})();
+}

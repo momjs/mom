@@ -1,99 +1,93 @@
-describe("EventBus", function () {
+describe('EventBus', function() {
 
-   var eventBus = moduleSystem.getPart('eventBus');
+    var eventbus;
+    var testListener;
+    var event;
 
-   var TestChanged = function (testProperty) {
-      this.constructor("TestChanged");
+    beforeEach(function() {
 
-      this.testProperty = testProperty;
-   };
-   eventBus.Events.register(TestChanged, "TestChanged");
+        eventbus = moduleSystem.getPart('eventBus');
 
-   var testListener;
+        testListener = {
+            name : 'testListener',
+            onTestChanged : jasmine.createSpy('onTestChanged'),
+            onEvent : jasmine.createSpy('onEvent')
+        };
 
-   beforeEach(function () {
-      testListener = {
-         name: "testListener",
-         onTestChanged: jasmine.createSpy("onTestChanged")
-      }
+        event = {
+            name : 'TestChanged',
+            testProperty : 'testValue'
+        };
+    });
 
-   });
+    afterEach(function() {
+        eventbus.reset();
+    });
 
-   afterEach(function () {
-      eventBus.reset();
-   });
+    describe('when one listener is registered', function() {
 
+        beforeEach(function() {
 
-   it("should call onEventName from registered Modules, when a Event is published", function () {
-      eventBus.add(testListener);
+            eventbus.add(testListener);
+        });
 
-      eventBus.publish(new TestChanged("testValue"));
+        it('should call onEventName from registered Modules, when a Event is published', function() {
 
-      expect(testListener.onTestChanged).toHaveBeenCalledWith({
-         testProperty: "testValue"
-      });
-   });
+            eventbus.publish(event);
 
-   it("should call every registered listener", function () {
-      eventBus.add(testListener);
-      var secondTestListener = {
-         name: "secondTestListener",
-         onTestChanged: jasmine.createSpy("onTestChanged")
-      };
-      eventBus.add(secondTestListener);
+            expect(testListener.onTestChanged).toHaveBeenCalledWith(jasmine.objectContaining({
+                testProperty: 'testValue'
+            }));
+        });
 
-      eventBus.publish(new TestChanged("testValue"));
+        it('should not call onEventName if a module is removed from the EventBus', function() {
 
-      expect(testListener.onTestChanged).toHaveBeenCalledWith({
-         testProperty: "testValue"
-      });
-      expect(secondTestListener.onTestChanged).toHaveBeenCalledWith({
-         testProperty: "testValue"
-      });
+            eventbus.remove(testListener.name);
 
-   });
+            eventbus.publish(event);
 
-   it("should not call onEventName if a module is removed from the EventBus", function () {
-      eventBus.add(testListener);
-      eventBus.remove(testListener.name);
+            expect(testListener.onTestChanged).not.toHaveBeenCalled();
+        });
 
-      eventBus.publish(new TestChanged("testValue"));
+        it('should throw if a module with the same name is allready registered', function() {
 
-      expect(testListener.onTestChanged).not.toHaveBeenCalled();
-   });
+            expect(function() {
+                eventbus.add(testListener);
+            }).toThrow();
+        });
 
-   it("should throw if a module with the same name is allready registered", function () {
-      eventBus.add(testListener);
+        it('should send event without name to onEvent only', function() {
 
-      expect(function () {
-         eventBus.add(testListener);
-      }).toThrow();
-   });
+            eventbus.publish(event);
 
-   it("should not throw if a module with the same name is allready registered and override is on", function () {
-      eventBus.add(testListener);
+            expect(testListener.onEvent).toHaveBeenCalledWith(event);
+        });
 
-      expect(function () {
-         eventBus.add(testListener, true);
-      }).not.toThrow();
-   });
+        describe('when second listener is registered', function() {
 
-   it("should override a registered Module if override is on", function () {
-      eventBus.add(testListener);
-      var secondTestListener = {
-         name: testListener.name,
-         onTestChanged: jasmine.createSpy("onTestChanged")
-      };
-      eventBus.add(secondTestListener, true);
+            var secondTestListener;
 
-      eventBus.publish(new TestChanged("testValue"));
+            beforeEach(function() {
 
-      expect(testListener.onTestChanged).not.toHaveBeenCalledWith();
-      expect(secondTestListener.onTestChanged).toHaveBeenCalledWith({
-         testProperty: "testValue"
-      });
+                secondTestListener = {
+                    name: 'secondTestListener',
+                    onTestChanged: jasmine.createSpy('onTestChanged')
+                };
 
-   });
+                eventbus.add(secondTestListener, true);
+            });
 
+            it('should call every registered listener', function() {
 
+                eventbus.publish(event);
+
+                expect(testListener.onTestChanged).toHaveBeenCalledWith(jasmine.objectContaining({
+                    testProperty: 'testValue'
+                }));
+                expect(secondTestListener.onTestChanged).toHaveBeenCalledWith(jasmine.objectContaining({
+                    testProperty: 'testValue'
+                }));
+            });
+        });
+    });
 });

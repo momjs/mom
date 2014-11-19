@@ -1,9 +1,10 @@
-window.moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
+window.moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
    var partAccess = partAccessCreator(),
-      moduleAccess = moduleAccessCreator(partAccess, eventBus),
-      moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
-      moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
+       eventBus = eventBusCreator(),
+       moduleAccess = moduleAccessCreator(partAccess, eventBus),
+       moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
+       moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
 
 
    moduleBuilder.createPart('eventBus').creator(function () {
