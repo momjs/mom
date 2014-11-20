@@ -15,7 +15,7 @@ module.exports = function (grunt) {
                 ' * @author <%= pkg.author %>',
                 ' * @license MIT License, http://www.opensource.org/licenses/MIT',
                 ' */'
-            ].join('\n'),
+            ].join('\n')
       },
       dirs: {
          dest: 'dist',
@@ -111,12 +111,12 @@ module.exports = function (grunt) {
       copy: {
         release: {
           src: '<%= concat.dist.dest %>',
-          dest: '<%= dirs.dest %>/<%= pkg.name %>.js',
+          dest: '<%= dirs.dest %>/<%= pkg.name %>.js'
         },
         releaseMin: {
           src: '<%= uglify.dist.dest %>',
-          dest: '<%= dirs.dest %>/<%= pkg.name %>.min.js',
-        },
+          dest: '<%= dirs.dest %>/<%= pkg.name %>.min.js'
+        }
       },
       exec: {
          gitAddAll: 'git add --all'
