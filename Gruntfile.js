@@ -25,6 +25,7 @@ module.exports = function (grunt) {
       },
       files: {
          src: [
+               '<%= dirs.source %>/utils/arrayUtils.js',
                '<%= dirs.source %>/moduleLoader/moduleLoader.js',
                '<%= dirs.source %>/moduleLoader/moduleBuilder.js',
                '<%= dirs.source %>/moduleLoader/partAccess.js',

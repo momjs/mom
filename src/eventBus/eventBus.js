@@ -1,4 +1,5 @@
 /* jshint unused:false */
+
 function eventBus() {
     'use strict';
 
@@ -21,41 +22,6 @@ function eventBus() {
 
             tryToCallComponent(component, ON_EVENT_FUNCTION_NAME, event);
         });
-    }
-
-    function each(array, callback) {
-        var index,
-            length = array.length,
-            element,
-            breakLoop;
-
-        for(index = 0; index < length; index++) {
-            element = array[index];
-
-            breakLoop = callback(index, element);
-
-            if(breakLoop) {
-                break;
-            }
-        }
-    }
-
-    function contains(array, elementToSearch) {
-        var index,
-            length = array.length,
-            element,
-            contains = false;
-
-        for(index = 0; index < length; index++) {
-            element = array[index];
-
-            if(element === elementToSearch) {
-                contains = true;
-                break;
-            }
-        }
-
-        return contains;
     }
 
     function tryToCallComponent(component, functionName, event) {

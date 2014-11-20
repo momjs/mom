@@ -25,6 +25,8 @@
       "moduleBuilder": false,
       "moduleLoader": false,
       "partAccess": false,
-      "moduleAccess": false
+      "moduleAccess": false,
+      "contains": false,
+      "each": false
    }
 }
