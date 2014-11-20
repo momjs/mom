@@ -3,7 +3,7 @@ function eventBus() {
     'use strict';
 
     var ON_EVENT_FUNCTION_NAME = 'onEvent',
-        components = {};
+        components = [];
 
     function publishEvent(event) {
 
@@ -11,25 +11,56 @@ function eventBus() {
             return;
         }
 
-        var callbackFunctionName = 'on' + event.name,
-            componentName;
+        var callbackFunctionName = 'on' + event.name;
 
-        for (componentName in components) {
-            if(components.hasOwnProperty(componentName)) {
+        each(components, function(index, component) {
 
-                if (event.name !== undefined) {
-                    tryToCallComponent(componentName, callbackFunctionName, event);
-                }
+            if (event.name !== undefined) {
+                tryToCallComponent(component, callbackFunctionName, event);
+            }
 
-                tryToCallComponent(componentName, ON_EVENT_FUNCTION_NAME, event);
+            tryToCallComponent(component, ON_EVENT_FUNCTION_NAME, event);
+        });
+    }
+
+    function each(array, callback) {
+        var index,
+            length = array.length,
+            element,
+            breakLoop;
+
+        for(index = 0; index < length; index++) {
+            element = array[index];
+
+            breakLoop = callback(index, element);
+
+            if(breakLoop) {
+                break;
             }
         }
     }
 
-    function tryToCallComponent(componentName, functionName, event) {
+    function contains(array, elementToSearch) {
+        var index,
+            length = array.length,
+            element,
+            contains = false;
 
-        var component = components[componentName],
-            callback = component[functionName];
+        for(index = 0; index < length; index++) {
+            element = array[index];
+
+            if(element === elementToSearch) {
+                contains = true;
+                break;
+            }
+        }
+
+        return contains;
+    }
+
+    function tryToCallComponent(component, functionName, event) {
+
+        var callback = component[functionName];
 
         if (typeof callback === 'function') {
             callback.call(null, event);
@@ -40,31 +71,21 @@ function eventBus() {
         if (component === undefined) {
             throw new Error('Component to be registered is undefined');
         }
-        if (component.name === undefined) {
-            throw new Error('Component name to be registered is undefined');
+
+        if (contains(components, component)) {
+            throw new Error('Component is already registered');
         }
 
-        if (component.name in components) {
-            throw new Error('Component with name [' + component.name + '] already registered');
-        }
-
-        components[component.name] = component;
-    }
-
-    function removeComponent(name) {
-        if (name in components) {
-            delete components[name];
-        }
+        components.push(component);
     }
 
     function reset() {
-        components = {};
+        components = [];
     }
 
     return {
         publish: publishEvent,
         add: addComponent,
-        remove: removeComponent,
         reset: reset
     };
 }

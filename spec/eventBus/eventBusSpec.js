@@ -9,7 +9,6 @@ describe('EventBus', function() {
         eventbus = moduleSystem.getPart('eventBus');
 
         testListener = {
-            name : 'testListener',
             onTestChanged : jasmine.createSpy('onTestChanged'),
             onEvent : jasmine.createSpy('onEvent')
         };
@@ -40,15 +39,6 @@ describe('EventBus', function() {
             }));
         });
 
-        it('should not call onEventName if a module is removed from the EventBus', function() {
-
-            eventbus.remove(testListener.name);
-
-            eventbus.publish(event);
-
-            expect(testListener.onTestChanged).not.toHaveBeenCalled();
-        });
-
         it('should throw if a module with the same name is allready registered', function() {
 
             expect(function() {
@@ -70,7 +60,6 @@ describe('EventBus', function() {
             beforeEach(function() {
 
                 secondTestListener = {
-                    name: 'secondTestListener',
                     onTestChanged: jasmine.createSpy('onTestChanged')
                 };
 
