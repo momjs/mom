@@ -10,22 +10,20 @@ var moduleLoader = function (moduleAccess, partAccess) {
 
 
       function initModules() {
-         var modulesOnPage = document.querySelectorAll('[modules]'),
-             i,
-             element;
+         var modulesOnPage = document.querySelectorAll('[modules]');
 
-         for(i = 0; i < modulesOnPage.length; i++) {
-            element = modulesOnPage[i];
+         each(modulesOnPage, function (i, element) {
             initModule(element);
-         }
+         });
+
 
          partAccess.provisionFinished();
          moduleAccess.provisionFinished();
 
       }
-      
+
       function initModule(element) {
-            moduleAccess.provisionModule(element);
+         moduleAccess.provisionModule(element);
       }
 
    }

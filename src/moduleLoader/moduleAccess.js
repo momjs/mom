@@ -14,14 +14,12 @@ var moduleAccess = function (partAccess, eventBus) {
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute('modules'),
-         moduleNamesArray = moduleNames.split(','),
-         i,
-         moduleName;
+         moduleNamesArray = moduleNames.split(',');
 
-      for (i = 0; i < moduleNamesArray.length; i++) {
-         moduleName = moduleNamesArray[i].trim();
+      each(moduleNamesArray, function (i, moduleName) {
+         moduleName = moduleName.trim();
          initializeModule(element, moduleName);
-      }
+      });
    }
 
    function initializeModule(element, moduleName) {

@@ -15,11 +15,9 @@ var partAccess = function () {
          i,
          partName;
 
-      for (i = 0; i < partNames.length; i++) {
-         partName = partNames[i];
+      each(partNames, function (i, partName) {
          parts.push(getOrInitializePart(partName));
-      }
-
+      });
 
       return parts;
    }
