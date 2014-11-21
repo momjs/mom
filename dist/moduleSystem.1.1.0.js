@@ -64,42 +64,64 @@ function contains(array, elementToSearch) {
     return isContaining;
 }
 
+/* jshint unused:false */
+
+/**
+ * Iterates over all own properties of the specified object.
+ * @param object
+ * @param callback the callback function which will be called for each property key and value
+ */
+function eachProperty(object, callback) {
+    'use strict';
+
+    var propertyKey,
+        propertyValue,
+        breakup;
+
+    for(propertyKey in object) {
+        if(object.hasOwnProperty(propertyKey)) {
+
+            propertyValue = object[propertyKey];
+            breakup = callback(propertyKey, propertyValue);
+
+            if(breakup) {
+                break;
+            }
+        }
+    }
+}
+
 /* global moduleLoader:true */
 /* jshint unused:false */
 var moduleLoader = function (moduleAccess, partAccess) {
    'use strict';
 
-
    function initModulePage() {
 
       initModules();
 
-
       function initModules() {
          var modulesOnPage = document.querySelectorAll('[modules]');
 
-         each(modulesOnPage, function (i, element) {
+         each(modulesOnPage, function(index, element) {
             initModule(element);
          });
 
 
          partAccess.provisionFinished();
          moduleAccess.provisionFinished();
-
       }
 
       function initModule(element) {
          moduleAccess.provisionModule(element);
       }
-
    }
-
-
 
    return {
       initModulePage: initModulePage
    };
 };
+
 /* global moduleBuilder:true */
 /* jshint unused:false */
 var moduleBuilder = function (moduleAccess, partAccess) {
@@ -150,18 +172,14 @@ var moduleBuilder = function (moduleAccess, partAccess) {
             creator: add
          };
       };
-
-
    }
-
-
 
    return {
       createPart: create(partAccess.addPartDescriptor),
       createModule: create(moduleAccess.addModuleDescriptor)
    };
-
 };
+
 /* global partAccess:true */
 /* jshint unused:false */
 var partAccess = function () {
@@ -175,20 +193,18 @@ var partAccess = function () {
    }
 
    function getOrInitializeParts(partNames) {
-      var parts = [],
-         i,
-         partName;
+      var parts = [];
 
-      each(partNames, function (i, partName) {
+      each(partNames, function(index, partName) {
          parts.push(getOrInitializePart(partName));
       });
 
       return parts;
    }
 
-
    function getOrInitializePart(partName) {
       var part = loadedParts[partName];
+
       if (part === undefined) {
          part = initialize(partName);
       }
@@ -235,23 +251,18 @@ var partAccess = function () {
       return createdPart;
    }
 
-
    function callPostConstructs() {
       callPostConstruct(loadedParts);
 
       function callPostConstruct(store) {
-         var elementName,
-            element;
 
-         for (elementName in store) {
-            if (store.hasOwnProperty(elementName)) {
-               element = store[elementName];
-               if (typeof element.postConstruct === 'function') {
-                  element.postConstruct();
-               }
+         eachProperty(store, function(elementName, element) {
+
+            if (typeof element.postConstruct === 'function') {
+
+               element.postConstruct();
             }
-
-         }
+         });
       }
    }
 
@@ -268,6 +279,7 @@ var partAccess = function () {
       addPartDescriptor: addPartDescriptor
    };
 };
+
 /* global moduleAccess:true */
 /* jshint unused:false */
 var moduleAccess = function (partAccess, eventBus) {
@@ -276,17 +288,15 @@ var moduleAccess = function (partAccess, eventBus) {
    var loadedModules = {},
       availableModuleDescriptors = {};
 
-
    function addModuleDescriptor(moduleDescriptor) {
       availableModuleDescriptors[moduleDescriptor.name] = moduleDescriptor;
    }
-
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute('modules'),
          moduleNamesArray = moduleNames.split(',');
 
-      each(moduleNamesArray, function (i, moduleName) {
+      each(moduleNamesArray, function(index, moduleName) {
          moduleName = moduleName.trim();
          initializeModule(element, moduleName);
       });
@@ -360,44 +370,36 @@ var moduleAccess = function (partAccess, eventBus) {
 
 
    function callPostConstructs() {
-      callPostConstruct(loadedModules);
 
-      function callPostConstruct(store) {
-         var elementName,
-            element;
+      eachProperty(loadedModules, function(elementName, element) {
+         var postConstruct = element.postConstruct;
 
-         for (elementName in store) {
-            if (store.hasOwnProperty(elementName)) {
-               element = store[elementName];
-               if (typeof element.postConstruct === 'function') {
-                  element.postConstruct();
-               }
-            }
+         if(typeof postConstruct === 'function') {
 
+            postConstruct.call(element);
          }
-      }
+      });
    }
 
    function merge() {
-      var i,
-         key;
+      var mergeInto = arguments[0];
 
-      for (i = 1; i < arguments.length; i++) {
-         for (key in arguments[i]) {
-            if (arguments[i].hasOwnProperty(key)) {
-               arguments[0][key] = arguments[i][key];
-            }
+      each(arguments, function(index, argument) {
+         if(index > 0) {
+
+            eachProperty(argument, function(key, value) {
+               mergeInto[key] = value;
+            });
          }
-      }
+      });
 
-      return arguments[0];
+      return mergeInto;
    }
 
    function reset() {
       loadedModules = {};
       availableModuleDescriptors = {};
    }
-
 
    return {
       reset: reset,
@@ -406,6 +408,7 @@ var moduleAccess = function (partAccess, eventBus) {
       addModuleDescriptor: addModuleDescriptor
    };
 };
+
 /* jshint unused:false */
 
 function eventBus() {
@@ -467,6 +470,7 @@ function eventBus() {
 /* global moduleSystem:true */
 moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
+
    var partAccess = partAccessCreator(),
       eventBus = eventBusCreator(),
       moduleAccess = moduleAccessCreator(partAccess, eventBus),
@@ -498,6 +502,7 @@ moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessC
    };
 
 })(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
+
 /* jshint ignore:start */ 
 }(window, document));
 /* jshint ignore:end */

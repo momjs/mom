@@ -6,11 +6,9 @@ var moduleAccess = function (partAccess, eventBus) {
    var loadedModules = {},
       availableModuleDescriptors = {};
 
-
    function addModuleDescriptor(moduleDescriptor) {
       availableModuleDescriptors[moduleDescriptor.name] = moduleDescriptor;
    }
-
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute('modules'),
@@ -67,16 +65,11 @@ var moduleAccess = function (partAccess, eventBus) {
          createdModule = {};
       }
 
-      //increment module name if a module is found multiple times
-      name = getIncrementedModuleName(moduleDescriptor.name);
-
-      createdModule.name = name;
       loadedModules[name] = createdModule;
 
       //add module to eventBus
       eventBus.add(createdModule);
    }
-
 
    function getDOMSettings(element, moduleName) {
 
@@ -92,19 +85,6 @@ var moduleAccess = function (partAccess, eventBus) {
       return settings;
    }
 
-
-   function getIncrementedModuleName(name) {
-      var i = 0;
-      var foundName;
-
-      do {
-         foundName = name + i;
-         i++;
-      } while (loadedModules.hasOwnProperty(foundName));
-
-      return foundName;
-   }
-
    function callPostConstructs() {
 
       eachProperty(loadedModules, function(elementName, element) {
@@ -117,7 +97,8 @@ var moduleAccess = function (partAccess, eventBus) {
       });
    }
 
-   function merge(mergeInto, overrider) {
+   function merge() {
+      var mergeInto = arguments[0];
 
       each(arguments, function(index, argument) {
          if(index > 0) {

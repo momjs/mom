@@ -14,12 +14,13 @@ var moduleLoader = function (moduleAccess, partAccess) {
             initModule(element);
          });
 
+
          partAccess.provisionFinished();
          moduleAccess.provisionFinished();
       }
-      
+
       function initModule(element) {
-            moduleAccess.provisionModule(element);
+         moduleAccess.provisionModule(element);
       }
    }
 
