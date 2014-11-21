@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.1.0 - 2014-11-21 * @link 
+ * @version v1.1.0 - 2014-11-22 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -353,7 +353,6 @@ var moduleAccess = function (partAccess, eventBus) {
       eventBus.add(createdModule);
    }
 
-
    function getDOMSettings(element, moduleName) {
 
       var settingsScript = element.querySelector('script[type="' + moduleName + '/settings"]'),
@@ -367,7 +366,6 @@ var moduleAccess = function (partAccess, eventBus) {
 
       return settings;
    }
-
 
    function callPostConstructs() {
 
