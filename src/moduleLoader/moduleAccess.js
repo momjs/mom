@@ -108,7 +108,7 @@ var moduleAccess = function (partAccess, eventBus) {
       }
    }
 
-   function merge(mergeInto, overrider) {
+   function merge() {
       var i,
          key;
 
