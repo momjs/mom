@@ -14,12 +14,12 @@ describe('The Module Loader', function () {
       expect(spyModule).toHaveBeenCalled();
       expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
    });
-   
+
    it('should load a comma seperated list of Modules found in dom', function () {
       loadFixtures('moduleSystem/twoModules.html');
       var spyModule1 = jasmine.createSpy('creator');
       moduleSystem.createModule('testModule1').creator(spyModule1);
-      
+
       var spyModule2 = jasmine.createSpy('creator');
       moduleSystem.createModule('testModule2').creator(spyModule2);
 
@@ -27,7 +27,7 @@ describe('The Module Loader', function () {
 
       expect(spyModule1).toHaveBeenCalled();
       expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
-      
+
       expect(spyModule2).toHaveBeenCalled();
       expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
    });
@@ -94,17 +94,6 @@ describe('The Module Loader', function () {
 
    });
 
-   it('should set the name of a module to its moduleObj', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var moduleObj = {};
-      var spyModule = jasmine.createSpy('creator').and.returnValue(moduleObj);
-      moduleSystem.createModule('testModule').creator(spyModule);
-
-      moduleSystem.initModulePage();
-
-      expect(moduleObj.name).toBe('testModule0');
-   });
-
    it('should create a module for every module in dom', function () {
       loadFixtures('moduleSystem/twoIdenticalModules.html');
       var spyModule = jasmine.createSpy('creator');
@@ -117,17 +106,18 @@ describe('The Module Loader', function () {
       expect(spyModule.calls.argsFor(1)[0]).toBe($('#test-testModule2').get(0));
    });
 
-   // TODO please review and clean up
-   //it('should set incrementing name of a module to its moduleObj', function () {
-   //   loadFixtures('moduleSystem/twoIdenticalModules.html');
-   //   var moduleObj = {};
-   //   var spyModule = jasmine.createSpy('creator').and.returnValue(moduleObj);
-   //   moduleSystem.createModule('testModule').creator(spyModule);
-   //
-   //   moduleSystem.initModulePage();
-   //
-   //   expect(moduleObj.name).toBe('testModule1');
-   //});
+   it('should set incrementing name of a module to its moduleObj', function () {
+      loadFixtures('moduleSystem/twoIdenticalModules.html');
+
+      var spyModule = jasmine.createSpy('creator').and.callFake(function () {
+         return {};
+      });
+      moduleSystem.createModule('testModule').creator(spyModule);
+
+
+
+      expect(moduleSystem.initModulePage).not.toThrow();
+   });
 
    it('should Throw if a Module in the dom is not registered', function () {
       loadFixtures('moduleSystem/oneModule.html');
@@ -316,7 +306,6 @@ describe('The Module Loader', function () {
 
 
       expect(eventBus.add).toHaveBeenCalledWith({
-         name: 'testModule0',
          testProperty: 'test'
       });
    });

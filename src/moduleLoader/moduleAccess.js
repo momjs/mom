@@ -69,10 +69,6 @@ var moduleAccess = function (partAccess, eventBus) {
          createdModule = {};
       }
 
-      //increment module name if a module is found multiple times
-      name = getIncrementedModuleName(moduleDescriptor.name);
-
-      createdModule.name = name;
       loadedModules[name] = createdModule;
 
       //add module to eventBus
@@ -94,18 +90,6 @@ var moduleAccess = function (partAccess, eventBus) {
       return settings;
    }
 
-
-   function getIncrementedModuleName(name) {
-      var i = 0;
-      var foundName;
-
-      do {
-         foundName = name + i;
-         i++;
-      } while (loadedModules.hasOwnProperty(foundName));
-
-      return foundName;
-   }
 
    function callPostConstructs() {
       callPostConstruct(loadedModules);

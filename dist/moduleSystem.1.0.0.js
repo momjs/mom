@@ -1,14 +1,68 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.0.0 - 2014-11-05 * @link 
+ * @version v1.0.0 - 2014-11-21 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
 ;
-(function (window, document, undefined) {
-      'use strict';
+(function (window, document, undefined) {   
 /* jshint ignore:end */
+
+/* jshint unused:false */
+
+/**
+ * Iterates the array and callback function for each element.
+ *
+ * @param {Array} array the array to iterate
+ * @param {function} callback the callback function:
+ *      - first parameter delivers the current index, second the current element
+ *      - if the callback function returns true the iteration breaks up immediately
+ */
+function each(array, callback) {
+    'use strict';
+
+    var index,
+        length = array.length,
+        element,
+        breakLoop;
+
+    for(index = 0; index < length; index++) {
+        element = array[index];
+
+        breakLoop = callback(index, element);
+
+        if(breakLoop) {
+            break;
+        }
+    }
+}
+
+/**
+ * Indicates if the specified element looking for is containing in the specified array.
+ * @param array the array to lookup
+ * @param elementToSearch the element to lookup
+ * @returns {boolean} true if the array contains the element, false if not
+ */
+function contains(array, elementToSearch) {
+    'use strict';
+
+    var index,
+        length = array.length,
+        element,
+        isContaining = false;
+
+    for(index = 0; index < length; index++) {
+        element = array[index];
+
+        if(element === elementToSearch) {
+            isContaining = true;
+            break;
+        }
+    }
+
+    return isContaining;
+}
 
 /* global moduleLoader:true */
 /* jshint unused:false */
@@ -83,9 +137,6 @@ var moduleBuilder = function (moduleAccess, partAccess) {
 
 
          function addDependencies(neededParts) {
-            if (!$.isArray(neededParts)) {
-               neededParts = [neededParts];
-            }
 
             dependencies = neededParts;
 
@@ -126,11 +177,15 @@ var partAccess = function () {
    }
 
    function getOrInitializeParts(partNames) {
-      var parts = [];
+      var parts = [],
+         i,
+         partName;
 
-      $.each(partNames, function (i, partName) {
+      for (i = 0; i < partNames.length; i++) {
+         partName = partNames[i];
          parts.push(getOrInitializePart(partName));
-      });
+      }
+
 
       return parts;
    }
@@ -189,11 +244,18 @@ var partAccess = function () {
       callPostConstruct(loadedParts);
 
       function callPostConstruct(store) {
-         $.each(store, function (i, element) {
-            if (typeof element.postConstruct === 'function') {
-               element.postConstruct();
+         var elementName,
+            element;
+
+         for (elementName in store) {
+            if (store.hasOwnProperty(elementName)) {
+               element = store[elementName];
+               if (typeof element.postConstruct === 'function') {
+                  element.postConstruct();
+               }
             }
-         });
+
+         }
       }
    }
 
@@ -226,19 +288,19 @@ var moduleAccess = function (partAccess, eventBus) {
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute('modules'),
-          moduleNamesArray = moduleNames.split(','),
-          i,
-          moduleName;
+         moduleNamesArray = moduleNames.split(','),
+         i,
+         moduleName;
 
-      for(i = 0; i < moduleNamesArray.length; i++) {
+      for (i = 0; i < moduleNamesArray.length; i++) {
          moduleName = moduleNamesArray[i].trim();
-         initializeModule($(element), moduleName);
+         initializeModule(element, moduleName);
       }
    }
-   
-   function initializeModule($element, moduleName) {
+
+   function initializeModule(element, moduleName) {
       var moduleDescriptor,
-          foundDependencies;
+         foundDependencies;
 
       //check if module to be loaded is registered
       if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
@@ -247,7 +309,7 @@ var moduleAccess = function (partAccess, eventBus) {
          foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
          // check if all needed dependencies are found
          if (foundDependencies.length === moduleDescriptor.dependencies.length) {
-            buildModule($element, moduleDescriptor, foundDependencies);
+            buildModule(element, moduleDescriptor, foundDependencies);
          } else {
             throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
          }
@@ -256,23 +318,23 @@ var moduleAccess = function (partAccess, eventBus) {
       }
    }
 
-   function buildModule($element, moduleDescriptor, foundDependencies) {
+   function buildModule(element, moduleDescriptor, foundDependencies) {
       //build arguments
       var args = foundDependencies,
-         domSettings = getDOMSettings($element, moduleDescriptor.name),
+         domSettings = getDOMSettings(element, moduleDescriptor.name),
          mergedSettings,
          createdModule,
          name;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
-         mergedSettings = $.extend({}, moduleDescriptor.settings, domSettings);
+         mergedSettings = merge({}, moduleDescriptor.settings, domSettings);
 
          args.unshift(mergedSettings);
       }
 
       //make moduleDomElement first arguments
-      args.unshift($element.get(0));
+      args.unshift(element);
 
       //create Module
       createdModule = moduleDescriptor.creator.apply(null, args);
@@ -281,10 +343,6 @@ var moduleAccess = function (partAccess, eventBus) {
          createdModule = {};
       }
 
-      //increment module name if a module is found multiple times
-      name = getIncrementedModuleName(moduleDescriptor.name);
-
-      createdModule.name = name;
       loadedModules[name] = createdModule;
 
       //add module to eventBus
@@ -292,39 +350,53 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
 
-   function getDOMSettings($element, moduleName) {
+   function getDOMSettings(element, moduleName) {
 
-      var $settingsScript = $element.find('script[type="' + moduleName + '/settings"]'),
-         settingsAsHtml = $settingsScript.html();
+      var settingsScript = element.querySelector('script[type="' + moduleName + '/settings"]'),
+         settingsAsHtml,
+         settings;
 
-      if (settingsAsHtml !== undefined) {
-         return $.parseJSON(settingsAsHtml);
+      if (settingsScript !== null) {
+         settingsAsHtml = settingsScript.innerHTML;
+         settings = JSON.parse(settingsAsHtml);
       }
+
+      return settings;
    }
 
-
-   function getIncrementedModuleName(name) {
-      var i = 0;
-      var foundName;
-
-      do {
-         foundName = name + i;
-         i++;
-      } while (loadedModules.hasOwnProperty(foundName));
-
-      return foundName;
-   }
 
    function callPostConstructs() {
       callPostConstruct(loadedModules);
 
       function callPostConstruct(store) {
-         $.each(store, function (i, element) {
-            if (typeof element.postConstruct === 'function') {
-               element.postConstruct();
+         var elementName,
+            element;
+
+         for (elementName in store) {
+            if (store.hasOwnProperty(elementName)) {
+               element = store[elementName];
+               if (typeof element.postConstruct === 'function') {
+                  element.postConstruct();
+               }
             }
-         });
+
+         }
       }
+   }
+
+   function merge(mergeInto, overrider) {
+      var i,
+         key;
+
+      for (i = 1; i < arguments.length; i++) {
+         for (key in arguments[i]) {
+            if (arguments[i].hasOwnProperty(key)) {
+               arguments[0][key] = arguments[i][key];
+            }
+         }
+      }
+
+      return arguments[0];
    }
 
    function reset() {
@@ -340,116 +412,69 @@ var moduleAccess = function (partAccess, eventBus) {
       addModuleDescriptor: addModuleDescriptor
    };
 };
-/* global eventBus:true */
 /* jshint unused:false */
-var eventBus = (function() {
+
+function eventBus() {
     'use strict';
 
-    function Event(name) {
-        this.name = name;
-        this.getData = function() {
-            var result = {};
+    var ON_EVENT_FUNCTION_NAME = 'onEvent',
+        components = [];
 
-            for (var property in this) {
-                if (this.hasOwnProperty(property) && property !== 'name' && property !== 'getData') {
-                    result[property] = this[property];
-                }
-            }
+    function publishEvent(event) {
 
-            return result;
-        };
-    }
-
-    var components = {},
-        eventPrototype = new Event(),
-        Events = {
-
-            register: function(Event, name) {
-                if (typeof Event !== 'function') {
-                    throw new Error('No Event provided');
-                }
-
-                if (name in Events) {
-                    throw new Error('Error registering event, duplicate Event with name [' + name + ']');
-                }
-
-                Event.prototype = eventPrototype;
-
-                Events[name] = Event;
-
-                return Event;
-            }
-        };
-
-    function publishEvent(event, source) {
-
-        // if no event is provided, or event has no name, do not publish an event
-        if (typeof event === undefined || typeof event.name === undefined) {
+        if (event === undefined) {
             return;
         }
 
-        var callbackFunctionName = 'on' + event.name,
-            componentName,
-            component,
-            callback;
+        var callbackFunctionName = 'on' + event.name;
 
-        //call components
-        for (componentName in components) {
-            if(components.hasOwnProperty(componentName)) {
-                component = components[componentName];
-                callback = component[callbackFunctionName];
+        each(components, function(index, component) {
 
-                if (typeof callback === 'function') {
-                    source = source || component;
-                    callback.call(source, event.getData());
-                }
+            if (event.name !== undefined) {
+                tryToCallComponent(component, callbackFunctionName, event);
             }
+
+            tryToCallComponent(component, ON_EVENT_FUNCTION_NAME, event);
+        });
+    }
+
+    function tryToCallComponent(component, functionName, event) {
+
+        var callback = component[functionName];
+
+        if (typeof callback === 'function') {
+            callback.call(null, event);
         }
     }
 
-    function addComponent(component, replaceDuplicates) {
-        if (typeof component === undefined) {
+    function addComponent(component) {
+        if (component === undefined) {
             throw new Error('Component to be registered is undefined');
         }
-        if (typeof component.name === undefined) {
-            throw new Error('Component name to be registered is undefined');
+
+        if (contains(components, component)) {
+            throw new Error('Component is already registered');
         }
 
-        if (component.name in components) {
-            if (replaceDuplicates) {
-                removeComponent(component.name);
-            } else {
-                throw new Error('Component with name [' + component.name + '] already registered');
-            }
-        }
-
-        components[component.name] = component;
-    }
-
-    function removeComponent(name) {
-        if (name in components) {
-            delete components[name];
-        }
+        components.push(component);
     }
 
     function reset() {
-        components = {};
+        components = [];
     }
-
 
     return {
         publish: publishEvent,
         add: addComponent,
-        remove: removeComponent,
-        reset: reset,
-        Events: Events
+        reset: reset
     };
+}
 
-})();
-
-window.moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBus) {
+/* global moduleSystem:true */
+moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
    var partAccess = partAccessCreator(),
+      eventBus = eventBusCreator(),
       moduleAccess = moduleAccessCreator(partAccess, eventBus),
       moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
       moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
