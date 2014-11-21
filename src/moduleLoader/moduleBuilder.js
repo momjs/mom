@@ -48,15 +48,10 @@ var moduleBuilder = function (moduleAccess, partAccess) {
             creator: add
          };
       };
-
-
    }
-
-
 
    return {
       createPart: create(partAccess.addPartDescriptor),
       createModule: create(moduleAccess.addModuleDescriptor)
    };
-
 };

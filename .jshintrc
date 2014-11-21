@@ -27,6 +27,7 @@
       "partAccess": false,
       "moduleAccess": false,
       "contains": false,
-      "each": false
+      "each": false,
+      "eachProperty": false
    }
 }

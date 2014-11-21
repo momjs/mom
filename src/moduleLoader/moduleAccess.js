@@ -14,14 +14,12 @@ var moduleAccess = function (partAccess, eventBus) {
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute('modules'),
-         moduleNamesArray = moduleNames.split(','),
-         i,
-         moduleName;
+         moduleNamesArray = moduleNames.split(',');
 
-      for (i = 0; i < moduleNamesArray.length; i++) {
-         moduleName = moduleNamesArray[i].trim();
+      each(moduleNamesArray, function(index, moduleName) {
+         moduleName = moduleName.trim();
          initializeModule(element, moduleName);
-      }
+      });
    }
 
    function initializeModule(element, moduleName) {
@@ -108,44 +106,35 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
    function callPostConstructs() {
-      callPostConstruct(loadedModules);
 
-      function callPostConstruct(store) {
-         var elementName,
-            element;
+      eachProperty(loadedModules, function(elementName, element) {
+         var postConstruct = element.postConstruct;
 
-         for (elementName in store) {
-            if (store.hasOwnProperty(elementName)) {
-               element = store[elementName];
-               if (typeof element.postConstruct === 'function') {
-                  element.postConstruct();
-               }
-            }
+         if(typeof postConstruct === 'function') {
 
+            postConstruct.call(element);
          }
-      }
+      });
    }
 
    function merge(mergeInto, overrider) {
-      var i,
-         key;
 
-      for (i = 1; i < arguments.length; i++) {
-         for (key in arguments[i]) {
-            if (arguments[i].hasOwnProperty(key)) {
-               arguments[0][key] = arguments[i][key];
-            }
+      each(arguments, function(index, argument) {
+         if(index > 0) {
+
+            eachProperty(argument, function(key, value) {
+               mergeInto[key] = value;
+            });
          }
-      }
+      });
 
-      return arguments[0];
+      return mergeInto;
    }
 
    function reset() {
       loadedModules = {};
       availableModuleDescriptors = {};
    }
-
 
    return {
       reset: reset,

@@ -11,22 +11,18 @@ var partAccess = function () {
    }
 
    function getOrInitializeParts(partNames) {
-      var parts = [],
-         i,
-         partName;
+      var parts = [];
 
-      for (i = 0; i < partNames.length; i++) {
-         partName = partNames[i];
+      each(partNames, function(index, partName) {
          parts.push(getOrInitializePart(partName));
-      }
-
+      });
 
       return parts;
    }
 
-
    function getOrInitializePart(partName) {
       var part = loadedParts[partName];
+
       if (part === undefined) {
          part = initialize(partName);
       }
@@ -73,23 +69,18 @@ var partAccess = function () {
       return createdPart;
    }
 
-
    function callPostConstructs() {
       callPostConstruct(loadedParts);
 
       function callPostConstruct(store) {
-         var elementName,
-            element;
 
-         for (elementName in store) {
-            if (store.hasOwnProperty(elementName)) {
-               element = store[elementName];
-               if (typeof element.postConstruct === 'function') {
-                  element.postConstruct();
-               }
+         eachProperty(store, function(elementName, element) {
+
+            if (typeof element.postConstruct === 'function') {
+
+               element.postConstruct();
             }
-
-         }
+         });
       }
    }
 

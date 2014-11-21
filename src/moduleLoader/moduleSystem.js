@@ -1,6 +1,7 @@
 /* global moduleSystem:true */
 moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
+
    var partAccess = partAccessCreator(),
       eventBus = eventBusCreator(),
       moduleAccess = moduleAccessCreator(partAccess, eventBus),
