@@ -240,7 +240,7 @@ var partAccess = function () {
       }
 
       // create part
-      createdPart = partDescriptor.creator.apply(partDescriptor.creator, args);
+      createdPart = partDescriptor.creator.apply(partDescriptor, args);
 
       if (createdPart === undefined) {
          createdPart = {};
@@ -274,7 +274,6 @@ var partAccess = function () {
       addPartDescriptor: addPartDescriptor
    };
 };
-
 /* global moduleAccess:true */
 /* jshint unused:false */
 var moduleAccess = function (partAccess, eventBus) {
@@ -336,7 +335,7 @@ var moduleAccess = function (partAccess, eventBus) {
       args.unshift(element);
 
       //create Module
-      createdModule = moduleDescriptor.creator.apply(moduleDescriptor.creator, args);
+      createdModule = moduleDescriptor.creator.apply(moduleDescriptor, args);
 
       if (createdModule === undefined) {
          createdModule = {};
@@ -396,7 +395,6 @@ var moduleAccess = function (partAccess, eventBus) {
       addModuleDescriptor: addModuleDescriptor
    };
 };
-
 /* jshint unused:false */
 
 function eventBus() {
