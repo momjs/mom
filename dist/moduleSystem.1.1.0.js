@@ -195,7 +195,7 @@ var partAccess = function () {
    function getOrInitializeParts(partNames) {
       var parts = [];
 
-      each(partNames, function(index, partName) {
+      each(partNames, function (index, partName) {
          parts.push(getOrInitializePart(partName));
       });
 
@@ -256,7 +256,7 @@ var partAccess = function () {
 
       function callPostConstruct(store) {
 
-         eachProperty(store, function(elementName, element) {
+         eachProperty(store, function (elementName, element) {
 
             if (typeof element.postConstruct === 'function') {
 
@@ -266,20 +266,14 @@ var partAccess = function () {
       }
    }
 
-   function reset() {
-      loadedParts = {};
-      availablePartDescriptors = {};
-   }
 
    return {
-      reset: reset,
       provisionPart: getOrInitializePart,
       getParts: getOrInitializeParts,
       provisionFinished: callPostConstructs,
       addPartDescriptor: addPartDescriptor
    };
 };
-
 /* global moduleAccess:true */
 /* jshint unused:false */
 var moduleAccess = function (partAccess, eventBus) {
@@ -296,7 +290,7 @@ var moduleAccess = function (partAccess, eventBus) {
       var moduleNames = element.getAttribute('modules'),
          moduleNamesArray = moduleNames.split(',');
 
-      each(moduleNamesArray, function(index, moduleName) {
+      each(moduleNamesArray, function (index, moduleName) {
          moduleName = moduleName.trim();
          initializeModule(element, moduleName);
       });
@@ -369,10 +363,10 @@ var moduleAccess = function (partAccess, eventBus) {
 
    function callPostConstructs() {
 
-      eachProperty(loadedModules, function(elementName, element) {
+      eachProperty(loadedModules, function (elementName, element) {
          var postConstruct = element.postConstruct;
 
-         if(typeof postConstruct === 'function') {
+         if (typeof postConstruct === 'function') {
 
             postConstruct.call(element);
          }
@@ -382,10 +376,10 @@ var moduleAccess = function (partAccess, eventBus) {
    function merge() {
       var mergeInto = arguments[0];
 
-      each(arguments, function(index, argument) {
-         if(index > 0) {
+      each(arguments, function (index, argument) {
+         if (index > 0) {
 
-            eachProperty(argument, function(key, value) {
+            eachProperty(argument, function (key, value) {
                mergeInto[key] = value;
             });
          }
@@ -394,19 +388,13 @@ var moduleAccess = function (partAccess, eventBus) {
       return mergeInto;
    }
 
-   function reset() {
-      loadedModules = {};
-      availableModuleDescriptors = {};
-   }
 
    return {
-      reset: reset,
       provisionModule: initializeModules,
       provisionFinished: callPostConstructs,
       addModuleDescriptor: addModuleDescriptor
    };
 };
-
 /* jshint unused:false */
 
 function eventBus() {
@@ -469,38 +457,31 @@ function eventBus() {
 moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
 
-   var partAccess = partAccessCreator(),
-      eventBus = eventBusCreator(),
-      moduleAccess = moduleAccessCreator(partAccess, eventBus),
-      moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
-      moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
+   function newInstance() {
+      var partAccess = partAccessCreator(),
+         eventBus = eventBusCreator(),
+         moduleAccess = moduleAccessCreator(partAccess, eventBus),
+         moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
+         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
 
-
-   moduleBuilder.createPart('eventBus').creator(function () {
-      return eventBus;
-   });
-
-
-   function reset() {
-      partAccess.reset();
-      moduleAccess.reset();
-      eventBus.reset();
 
       moduleBuilder.createPart('eventBus').creator(function () {
          return eventBus;
       });
+
+      return {
+         createPart: moduleBuilder.createPart,
+         createModule: moduleBuilder.createModule,
+         initModulePage: moduleLoader.initModulePage,
+         newInstance: newInstance,
+         getPart: partAccess.provisionPart
+      };
    }
 
-   return {
-      createPart: moduleBuilder.createPart,
-      createModule: moduleBuilder.createModule,
-      initModulePage: moduleLoader.initModulePage,
-      reset: reset,
-      getPart: partAccess.provisionPart
-   };
+   return newInstance();
+
 
 })(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
-
 /* jshint ignore:start */ 
 }(window, document));
 /* jshint ignore:end */

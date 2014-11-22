@@ -32,9 +32,7 @@ module.exports = function (grunt) {
                '<%= dirs.source %>/moduleLoader/partAccess.js',
                '<%= dirs.source %>/moduleLoader/moduleAccess.js',
                '<%= dirs.source %>/eventBus/eventBus.js',
-               '<%= dirs.source %>/moduleLoader/moduleSystem.js',
-               '<%= dirs.source %>/moduleLoader/moduleLoader.js'
-         ]
+               '<%= dirs.source %>/moduleLoader/moduleSystem.js']
       },
       bower: {
          dev: {
