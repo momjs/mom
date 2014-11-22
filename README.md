@@ -7,7 +7,7 @@ Dynamic Loading of Javascript based on DOM elements
 To do for 1.1
 -------------
 - [x] remove jQuery dependencie
-- [ ] simplify EventBus
+- [x] simplify EventBus
 
 How To Use
 ----------
