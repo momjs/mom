@@ -29,7 +29,7 @@ function eventBus() {
         var callback = component[functionName];
 
         if (typeof callback === 'function') {
-            callback.call(null, event);
+            callback.call(component, event);
         }
     }
 
