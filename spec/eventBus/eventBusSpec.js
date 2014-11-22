@@ -39,18 +39,48 @@ describe('EventBus', function() {
             }));
         });
 
-        it('should throw if a module with the same name is allready registered', function() {
+        it('should call callback function with listener object as thisArg', function() {
+
+            var thisArg;
+            testListener.onTestChanged.and.callFake(function() {
+                thisArg = this;
+            });
+
+            eventbus.publish(event);
+
+            expect(thisArg).toBe(testListener);
+        });
+
+        it('should throw if a module with the same name is already registered', function() {
 
             expect(function() {
                 eventbus.add(testListener);
             }).toThrow();
         });
 
-        it('should send event without name to onEvent only', function() {
+        it('should send event every to onEvent', function() {
 
             eventbus.publish(event);
 
             expect(testListener.onEvent).toHaveBeenCalledWith(event);
+        });
+
+        it('should send event without name to onEvent', function() {
+
+            var eventWithoutName = {
+                testProperty : 'testValue'
+            };
+
+            eventbus.publish(eventWithoutName);
+
+            expect(testListener.onEvent).toHaveBeenCalledWith(eventWithoutName);
+        });
+
+        it('should do nothing when published event is undefined', function() {
+
+            expect(function() {
+                eventbus.publish()
+            }).toThrowError('Published event cannot be undefined');
         });
 
         describe('when second listener is registered', function() {

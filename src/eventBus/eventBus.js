@@ -9,7 +9,7 @@ function eventBus() {
     function publishEvent(event) {
 
         if (event === undefined) {
-            return;
+            throw new Error('Published event cannot be undefined');
         }
 
         var callbackFunctionName = 'on' + event.name;
@@ -29,7 +29,7 @@ function eventBus() {
         var callback = component[functionName];
 
         if (typeof callback === 'function') {
-            callback.call(null, event);
+            callback.call(component, event);
         }
     }
 

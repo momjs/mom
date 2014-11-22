@@ -25,5 +25,4 @@ moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessC
 
    return newInstance();
 
-
 })(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);

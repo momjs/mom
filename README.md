@@ -7,7 +7,7 @@ Dynamic Loading of Javascript based on DOM elements
 To do for 1.1
 -------------
 - [x] remove jQuery dependencie
-- [ ] simplify EventBus
+- [x] simplify EventBus
 
 How To Use
 ----------
@@ -122,13 +122,19 @@ moduleSystem.createModule("staticHelloWorldWithDependencies")
 ```
 ####PostConstruct Hook
 every module could decide to publish a postConstruct method which gets executed after every module is properly initialized.
-This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could'be not listening to the EventBus already and miss the event. 
+This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could not listening to the EventBus already and miss the event. 
 ```js
 moduleSystem.createModule("helloWorldPublisher")
     .dependencie(["eventBus"])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
-            eventBus.publish(new eventBus.Events.HelloWorldChanged(moduleObj.innerHTML);
+        
+            var event = {
+                name = 'HelloWorldChanged',
+                text = moduleObj.innerHTML
+            };
+            
+            eventBus.publish(event);
         }
          
         return {

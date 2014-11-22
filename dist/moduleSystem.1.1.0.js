@@ -274,6 +274,7 @@ var partAccess = function () {
       addPartDescriptor: addPartDescriptor
    };
 };
+
 /* global moduleAccess:true */
 /* jshint unused:false */
 var moduleAccess = function (partAccess, eventBus) {
@@ -395,6 +396,7 @@ var moduleAccess = function (partAccess, eventBus) {
       addModuleDescriptor: addModuleDescriptor
    };
 };
+
 /* jshint unused:false */
 
 function eventBus() {
@@ -406,7 +408,7 @@ function eventBus() {
     function publishEvent(event) {
 
         if (event === undefined) {
-            return;
+            throw new Error('Published event cannot be undefined');
         }
 
         var callbackFunctionName = 'on' + event.name;
@@ -426,7 +428,7 @@ function eventBus() {
         var callback = component[functionName];
 
         if (typeof callback === 'function') {
-            callback.call(null, event);
+            callback.call(component, event);
         }
     }
 
@@ -480,8 +482,8 @@ moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessC
 
    return newInstance();
 
-
 })(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
+
 /* jshint ignore:start */ 
 }(window, document));
 /* jshint ignore:end */

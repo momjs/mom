@@ -1,10 +1,9 @@
 describe('The Module Loader', function () {
 
    afterEach(function () {
+
       moduleSystem = moduleSystem.newInstance();
-
    });
-
 
    it('should load any Module found in dom', function () {
       loadFixtures('moduleSystem/oneModule.html');
@@ -127,7 +126,6 @@ describe('The Module Loader', function () {
       expect(moduleSystem.initModulePage).toThrow();
    });
 
-
    describe('with parts', function () {
       var spyModule;
 
@@ -195,7 +193,6 @@ describe('The Module Loader', function () {
             moduleSystem.getPart('testPart')
          }).toThrow();
       });
-
 
       it('should throw an exception on circular dependencies', function () {
          var spyPart = jasmine.createSpy();
@@ -271,13 +268,8 @@ describe('The Module Loader', function () {
 
             expect(spyPartObject.postConstruct).toHaveBeenCalled();
          });
-
       });
-
-
-
    });
-
 
    it('should throw an exception if a module dependencie couldnt be resolved', function () {
       loadFixtures('moduleSystem/oneModule.html');
@@ -286,9 +278,6 @@ describe('The Module Loader', function () {
 
       expect(moduleSystem.initModulePage).toThrow();
    });
-
-
-
 
    it('should add every module to the event bus', function () {
       loadFixtures('moduleSystem/oneModule.html');
@@ -335,8 +324,4 @@ describe('The Module Loader', function () {
 
       expect(spyModuleObject.postConstruct).toHaveBeenCalled();
    });
-
-
-
-
 });
