@@ -78,9 +78,9 @@ describe('EventBus', function() {
 
         it('should do nothing when published event is undefined', function() {
 
-            eventbus.publish();
-
-            expect(testListener.onEvent).not.toHaveBeenCalled();
+            expect(function() {
+                eventbus.publish()
+            }).toThrowError('Published event cannot be undefined');
         });
 
         describe('when second listener is registered', function() {
