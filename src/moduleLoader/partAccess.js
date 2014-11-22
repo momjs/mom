@@ -58,7 +58,7 @@ var partAccess = function () {
       }
 
       // create part
-      createdPart = partDescriptor.creator.apply(null, args);
+      createdPart = partDescriptor.creator.apply(partDescriptor.creator, args);
 
       if (createdPart === undefined) {
          createdPart = {};

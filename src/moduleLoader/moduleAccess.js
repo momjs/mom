@@ -59,7 +59,7 @@ var moduleAccess = function (partAccess, eventBus) {
       args.unshift(element);
 
       //create Module
-      createdModule = moduleDescriptor.creator.apply(null, args);
+      createdModule = moduleDescriptor.creator.apply(moduleDescriptor.creator, args);
 
       if (createdModule === undefined) {
          createdModule = {};
