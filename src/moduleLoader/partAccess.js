@@ -13,7 +13,7 @@ var partAccess = function () {
    function getOrInitializeParts(partNames) {
       var parts = [];
 
-      each(partNames, function(index, partName) {
+      each(partNames, function (index, partName) {
          parts.push(getOrInitializePart(partName));
       });
 
@@ -74,7 +74,7 @@ var partAccess = function () {
 
       function callPostConstruct(store) {
 
-         eachProperty(store, function(elementName, element) {
+         eachProperty(store, function (elementName, element) {
 
             if (typeof element.postConstruct === 'function') {
 
@@ -84,13 +84,8 @@ var partAccess = function () {
       }
    }
 
-   function reset() {
-      loadedParts = {};
-      availablePartDescriptors = {};
-   }
 
    return {
-      reset: reset,
       provisionPart: getOrInitializePart,
       getParts: getOrInitializeParts,
       provisionFinished: callPostConstructs,

@@ -14,7 +14,7 @@ var moduleAccess = function (partAccess, eventBus) {
       var moduleNames = element.getAttribute('modules'),
          moduleNamesArray = moduleNames.split(',');
 
-      each(moduleNamesArray, function(index, moduleName) {
+      each(moduleNamesArray, function (index, moduleName) {
          moduleName = moduleName.trim();
          initializeModule(element, moduleName);
       });
@@ -87,10 +87,10 @@ var moduleAccess = function (partAccess, eventBus) {
 
    function callPostConstructs() {
 
-      eachProperty(loadedModules, function(elementName, element) {
+      eachProperty(loadedModules, function (elementName, element) {
          var postConstruct = element.postConstruct;
 
-         if(typeof postConstruct === 'function') {
+         if (typeof postConstruct === 'function') {
 
             postConstruct.call(element);
          }
@@ -100,10 +100,10 @@ var moduleAccess = function (partAccess, eventBus) {
    function merge() {
       var mergeInto = arguments[0];
 
-      each(arguments, function(index, argument) {
-         if(index > 0) {
+      each(arguments, function (index, argument) {
+         if (index > 0) {
 
-            eachProperty(argument, function(key, value) {
+            eachProperty(argument, function (key, value) {
                mergeInto[key] = value;
             });
          }
@@ -112,13 +112,8 @@ var moduleAccess = function (partAccess, eventBus) {
       return mergeInto;
    }
 
-   function reset() {
-      loadedModules = {};
-      availableModuleDescriptors = {};
-   }
 
    return {
-      reset: reset,
       provisionModule: initializeModules,
       provisionFinished: callPostConstructs,
       addModuleDescriptor: addModuleDescriptor

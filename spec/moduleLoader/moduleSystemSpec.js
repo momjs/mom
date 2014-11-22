@@ -1,8 +1,10 @@
 describe('The Module Loader', function () {
-   'use strict';
+
    afterEach(function () {
-      moduleSystem.reset();
+      moduleSystem = moduleSystem.newInstance();
+
    });
+
 
    it('should load any Module found in dom', function () {
       loadFixtures('moduleSystem/oneModule.html');
