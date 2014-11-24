@@ -164,9 +164,6 @@ moduleSystem.createModule("helloWorldListener")
 <div modules="helloWorldListener" /> // alerts Hello World if helloWorldPublisher is in place
 ```
 ####More than one Module per DOM-Element
-
-not yet implemented
-
 sometimes it is useful to handle a dom element with more than one js-module. For this it is possible to load more than one module with a comma separated list
 ```html
 <div modules="moduleToLoad1,otherModuleToLoad" /> // loads two modules with the same moduleObj
