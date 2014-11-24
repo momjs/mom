@@ -187,9 +187,9 @@ moduleSystem.createModule("helloWorldListener")
 moduleSystem.createModule("unnamedEventListener")
     .creator(function(moduleObj) {
         function onEvent(event) {
-            if(name === 'HelloWorldChanged')
+            if(name === 'HelloWorldChanged') {
                alert("Hello " + event.text);
-            else {
+            } else {
                alert("Hello " + event.data);
             }
         }
