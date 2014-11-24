@@ -149,6 +149,30 @@ moduleSystem.createModule("helloWorldPublisher")
 modules should communicate over the EventBus to prevent tight coupling. 
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 ```js
+moduleSystem.createModule("helloWorldPublisher")
+    .dependencie(["eventBus"])
+    .creator(function(moduleObj, eventBus) {
+        function postConstruct() {
+        
+            var namedEvent = {
+                name : 'HelloWorldChanged',
+                text : moduleObj.innerHTML
+            };
+            
+            eventBus.publish(namedEvent);
+            
+            var event = {
+               data : 'testData'
+            };
+            
+            eventBus.publis(event)
+        }
+         
+        return {
+            postConstruct : postConstruct
+        }
+    });
+
 moduleSystem.createModule("helloWorldListener")
     .creator(function(moduleObj) {
         function onHelloWorldChanged(event) {
@@ -157,6 +181,21 @@ moduleSystem.createModule("helloWorldListener")
          
         return {
             onHelloWorldChanged: onHelloWorldChanged // gets called if a HelloWorldChanged event gets published
+        }
+    });
+    
+moduleSystem.createModule("helloWorldListener")
+    .creator(function(moduleObj) {
+        function onEvent(event) {
+            if(name === 'HelloWorldChanged')
+               alert("Hello " + event.text);
+            else {
+               alert("Hello " + event.data);
+            }
+        }
+         
+        return {
+            onEvent: onEvent // gets called by every named event and events without names
         }
     });
 ```
