@@ -4,10 +4,12 @@ ModuleSystem
 Dynamic Loading of Javascript based on DOM elements
 
 
-To do for 1.1
+To do for 1.2
 -------------
-- [x] remove jQuery dependencie
-- [x] simplify EventBus
+- [ ] configurable async loading of modoules and part
+- [ ] provide a method for unloading modules && dependencies
+- [ ] load module system only on parts of the dom
+- [ ] add plugin concept for spezialized modules
 
 How To Use
 ----------
