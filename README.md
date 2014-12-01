@@ -6,9 +6,13 @@ Dynamic Loading of Javascript based on DOM elements
 
 To do for 1.2
 -------------
-- [ ] configurable async loading of modoules and part
-- [ ] provide a method for unloading modules && dependencies
-- [ ] load module system only on parts of the dom
+- [ ] configurable async loading of modules and part
+- [ ] provide a method for dynamic loading and unloading of modules
+- [ ] initialize module system only on parts of the dom
+- [ ] initialize single dom node
+
+To do future releases
+-------------
 - [ ] add plugin concept for spezialized modules
 
 How To Use
