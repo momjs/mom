@@ -9,7 +9,8 @@ To do for 1.2
 - [ ] configurable async loading of modules and part
 - [ ] provide a method for dynamic loading and unloading of modules
 - [ ] initialize module system only on parts of the dom
-- [ ] initialize single dom node
+- [ ] provision single dom node
+- [ ] improve module access via console
 
 To do future releases
 -------------
