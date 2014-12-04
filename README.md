@@ -14,7 +14,7 @@ To do for 1.2
 
 To do future releases
 -------------
-- [ ] add plugin concept for spezialized modules
+- [ ] add plugin concept for spezialized modules and parts
 - [ ] scoped parts
 
 How To Use
