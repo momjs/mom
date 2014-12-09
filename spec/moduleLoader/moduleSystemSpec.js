@@ -107,7 +107,7 @@ describe('The Module Loader', function () {
       expect(spyModule.calls.argsFor(1)[0]).toBe($('#test-testModule2').get(0));
    });
 
-   it('should set incrementing name of a module to its moduleObj', function () {
+   it('should not throw if the same module is found multiple times in dom', function () {
       loadFixtures('moduleSystem/twoIdenticalModules.html');
 
       var spyModule = jasmine.createSpy('creator').and.callFake(function () {
@@ -115,9 +115,30 @@ describe('The Module Loader', function () {
       });
       moduleSystem.createModule('testModule').creator(spyModule);
 
-
-
       expect(moduleSystem.initModulePage).not.toThrow();
+   });
+
+   it('should call post construct from multiple times', function () {
+      loadFixtures('moduleSystem/twoIdenticalModules.html');
+
+      var spyModule1 = jasmine.createSpyObj('spyModule1', ['postConstruct']);
+      var spyModule2 = jasmine.createSpyObj('spyModule2', ['postConstruct']);
+      var first = true;
+      var creator = function () {
+         if (first) {
+            first = false;
+            return spyModule1;
+         } else {
+            return spyModule2;
+         }
+      };
+
+      moduleSystem.createModule('testModule').creator(creator);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule1.postConstruct).toHaveBeenCalled();
+      expect(spyModule2.postConstruct).toHaveBeenCalled();
    });
 
    it('should Throw if a Module in the dom is not registered', function () {
