@@ -279,7 +279,7 @@ var partAccess = function () {
 var moduleAccess = function (partAccess, eventBus) {
    'use strict';
 
-   var loadedModules = {},
+   var loadedModules = [],
       availableModuleDescriptors = {};
 
    function addModuleDescriptor(moduleDescriptor) {
@@ -341,7 +341,7 @@ var moduleAccess = function (partAccess, eventBus) {
          createdModule = {};
       }
 
-      loadedModules[name] = createdModule;
+      loadedModules.push(createdModule);
 
       //add module to eventBus
       eventBus.add(createdModule);
@@ -363,7 +363,7 @@ var moduleAccess = function (partAccess, eventBus) {
 
    function callPostConstructs() {
 
-      eachProperty(loadedModules, function (elementName, element) {
+      each(loadedModules, function (index, element) {
          var postConstruct = element.postConstruct;
 
          if (typeof postConstruct === 'function') {
