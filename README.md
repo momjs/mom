@@ -61,7 +61,7 @@ moduleSystem.createPart("adder")
         };
     });
 ```
-####Dependencie Injection
+####Dependency Injection
 parts could be composed of other parts
 ```js
 moduleSystem.createPart("calculator")

@@ -4,6 +4,21 @@ describe('The Module Loader', function () {
 
       moduleSystem = moduleSystem.newInstance();
    });
+   
+   it('should provide Modules with static dependencies', function() {
+      loadFixtures('moduleSystem/oneModule.html');
+      var spyModule = jasmine.createSpy('creator');
+      var staticDependencie = 'test Static';
+      
+      moduleSystem.createPart('staticDependency').returns(staticDependencie);
+      moduleSystem.createModule('testModule').dependencies(['staticDependency']).creator(spyModule);
+      
+      moduleSystem.initModulePage();
+      
+      expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependencie);
+      
+      
+   });
 
    it('should load any Module found in dom', function () {
       loadFixtures('moduleSystem/oneModule.html');

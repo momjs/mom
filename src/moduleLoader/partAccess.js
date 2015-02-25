@@ -33,20 +33,35 @@ var partAccess = function () {
    function initialize(partName) {
       var dependencies,
          foundDependencies,
-         partDescriptor;
+         partDescriptor,
+         builder;
 
       if (availablePartDescriptors.hasOwnProperty(partName)) {
          partDescriptor = availablePartDescriptors[partName];
          dependencies = partDescriptor.dependencies;
          foundDependencies = getOrInitializeParts(dependencies);
 
-         return buildPart(partDescriptor, foundDependencies);
+         builder = getBuilder(partDescriptor.type);
+         
+         return builder(partDescriptor, foundDependencies);
       } else {
          throw new Error('tried to load ' + partName + 'but was not registered');
       }
    }
+   
+   function getBuilder(type) {
+      switch(type) {
+            case "returns": return buildReturnsPart;
+            case "creator": return buildCreatorPart;
+            default: throw new Error("unknown type [" + type + "]");
+      }
+   }
+   
+   function buildReturnsPart(partDescriptor) {
+      return partDescriptor.returns;
+   }
 
-   function buildPart(partDescriptor, dependencies) {
+   function buildCreatorPart(partDescriptor, dependencies) {
       var args,
          createdPart;
 
@@ -68,6 +83,7 @@ var partAccess = function () {
 
       return createdPart;
    }
+
 
    function callPostConstructs() {
       callPostConstruct(loadedParts);

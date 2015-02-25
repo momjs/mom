@@ -2,56 +2,134 @@
 /* jshint unused:false */
 var moduleBuilder = function (moduleAccess, partAccess) {
    'use strict';
-
-   function create(store) {
-      return function (name) {
-         if (typeof name !== 'string') {
+   
+   
+   function createDescriptor(name) {
+      if (typeof name !== 'string') {
             throw new Error('Name missing');
-         }
-         var dependencies = [];
-         var settings;
-
-
-         function add(creator) {
-            var descriptor = {
-               creator: creator,
-               name: name,
-               dependencies: dependencies,
-               settings: settings
-            };
-            store(descriptor);
-         }
-
-         function addSettings(neededSettings) {
-            settings = neededSettings;
-
-            return {
-               dependencies: addDependencies,
-               creator: add
-            };
-         }
-
-
-         function addDependencies(neededParts) {
-
-            dependencies = neededParts;
-
-            return {
-               settings: addSettings,
-               creator: add
-            };
-         }
-
+      }
+      
+      return { name : name };
+   }
+   
+   function creatorDescriptor(name) {
+      var descriptor = createDescriptor(name);
+      descriptor.type = "creator";
+      
+      descriptor.settings = undefined;
+      descriptor.dependencies = [];
+      descriptor.creator = undefined;
+      
+      return descriptor;
+   }
+   
+   
+   function returnsDescriptor(name) {
+      var descriptor = creatorDescriptor(name);
+      descriptor.type = "returns";
+      
+      descriptor.returns = undefined;
+      
+      return descriptor;
+   }
+   
+   
+   function createModuleDescriptorBuilder(name) {
+         var descriptor = creatorDescriptor(name);
+      
          return {
             settings: addSettings,
             dependencies: addDependencies,
-            creator: add
+            creator: addCreator
          };
-      };
+
+         function addCreator(creator) {
+            descriptor.creator = creator;
+            save();
+         }
+
+         function addSettings(settings) {
+            descriptor.settings = settings;
+
+            return {
+               dependencies: addDependencies,
+               creator: addCreator
+            };
+         }
+      
+         function save() {
+            moduleAccess.addModuleDescriptor(descriptor);
+         }
+
+
+         function addDependencies(dependencies) {
+            descriptor.dependencies = dependencies;
+
+            return {
+               settings: addSettings,
+               creator: addCreator
+            };
+         }
    }
+   
+   
+   function createPartDescriptorBuilder(name) {
+         var descriptor;
+      
+         return {
+            settings: addSettings,
+            dependencies: addDependencies,
+            creator: addCreator,
+            returns: addReturns
+         };
+
+         function addCreator(creator) {
+            getOrInitCreatorDiscriptor().creator = creator;
+            save();
+         }
+      
+         function addReturns(returns) {
+            descriptor = returnsDescriptor(name);
+            descriptor.returns = returns;
+            save();
+         }
+
+         function addSettings(settings) {
+            getOrInitCreatorDiscriptor().settings = settings;
+
+            return {
+               dependencies: addDependencies,
+               creator: addCreator
+            };
+         }
+      
+         function addDependencies(dependencies) {
+            getOrInitCreatorDiscriptor().dependencies = dependencies;
+
+            return {
+               settings: addSettings,
+               creator: addCreator
+            };
+         }
+      
+         function getOrInitCreatorDiscriptor() {
+            if(descriptor === undefined) {
+               descriptor = creatorDescriptor(name);
+            }
+            
+            return descriptor;
+         }
+      
+         function save() {
+            partAccess.addPartDescriptor(descriptor);
+         }
+
+
+   }
+   
 
    return {
-      createPart: create(partAccess.addPartDescriptor),
-      createModule: create(moduleAccess.addModuleDescriptor)
+      createPart: createPartDescriptorBuilder,
+      createModule: createModuleDescriptorBuilder
    };
 };
