@@ -23,18 +23,19 @@ var partAccess = function () {
 
    function getOrInitializePart(partName) {
       var partDescriptor,
-         constructionStrategie,
+         constructionStrategy,
          part;
 
       if (availablePartDescriptors.hasOwnProperty(partName)) {
          partDescriptor = availablePartDescriptors[partName];
-         constructionStrategie = getConstructionStrategie(partDescriptor.scope);
-         part = constructionStrategie(partName, partDescriptor);
+         constructionStrategy = getConstructionStrategie(partDescriptor.scope);
+         part = constructionStrategy(partName, partDescriptor);
 
       } else {
          throw new Error('tried to load ' + partName + 'but was not registered');
       }
 
+       return part;
    }
 
    function getConstructionStrategie(scope) {
@@ -49,7 +50,7 @@ var partAccess = function () {
    }
 
    function defaultConstructionStrategy(partName, partDescriptor) {
-      var part = initialize(partName, part);
+      var part = initialize(partName, partDescriptor);
       loadedParts.push(part);
 
       return part;

@@ -14,8 +14,8 @@ var moduleBuilder = function (moduleAccess, partAccess) {
    
    function creatorDescriptor(name) {
       var descriptor = createDescriptor(name);
-      descriptor.type = "creator";
-      
+      descriptor.type = 'creator';
+      descriptor.scope = 'default';
       descriptor.settings = undefined;
       descriptor.dependencies = [];
       descriptor.creator = undefined;
@@ -80,7 +80,8 @@ var moduleBuilder = function (moduleAccess, partAccess) {
             settings: addSettings,
             dependencies: addDependencies,
             creator: addCreator,
-            returns: addReturns
+            returns: addReturns,
+            scope: addScope
          };
 
          function addCreator(creator) {
@@ -92,6 +93,22 @@ var moduleBuilder = function (moduleAccess, partAccess) {
             descriptor = returnsDescriptor(name);
             descriptor.returns = returns;
             save();
+         }
+
+         function addScope(scope) {
+
+             var descriptor = getOrInitCreatorDiscriptor();
+
+             if(scope !== undefined) {
+                 descriptor.scope = scope;
+             }
+
+             return {
+                 settings: addSettings,
+                 dependencies: addDependencies,
+                 creator: addCreator,
+                 returns: addReturns
+             }
          }
 
          function addSettings(settings) {
@@ -123,8 +140,6 @@ var moduleBuilder = function (moduleAccess, partAccess) {
          function save() {
             partAccess.addPartDescriptor(descriptor);
          }
-
-
    }
    
 
