@@ -32,10 +32,10 @@ var partAccess = function () {
          part = constructionStrategy(partName, partDescriptor);
 
       } else {
-         throw new Error('tried to load ' + partName + 'but was not registered');
+         throw new Error('tried to load ' + partName + ' but was not registered');
       }
 
-       return part;
+      return part;
    }
 
    function getConstructionStrategie(scope) {
