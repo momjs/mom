@@ -22,6 +22,15 @@ How To Use
 ###Parts
 Utility functions like z.B AJAX loader etc.
 ####Creation and registration
+
+###Returns Parts
+moduleSystem.createPart("staticPart")
+    .returns({
+         static : "static"
+    });
+```
+
+###Creator Parts
 ```js
 moduleSystem.createPart("adder")
     .creator(function() {
@@ -65,8 +74,9 @@ moduleSystem.createPart("adder")
 parts could be composed of other parts
 ```js
 moduleSystem.createPart("calculator")
-    .dependencies(["adder", "multiplier"])
-    .creator(function(adder, multiplier) {
+    .dependencies(["adder", "multiplier", "staticPart"])
+    .creator(function(adder, multiplier, staticPart) {
+        console.log(staticPart.static);
  
         return {
             add : adder.add,
