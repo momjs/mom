@@ -3,7 +3,8 @@
 var partAccess = function () {
    'use strict';
 
-   var loadedParts = {},
+   var loadedSingletonParts = {},
+      loadedParts = [],
       availablePartDescriptors = {};
 
    function addPartDescriptor(partDescriptor) {
@@ -21,42 +22,77 @@ var partAccess = function () {
    }
 
    function getOrInitializePart(partName) {
-      var part = loadedParts[partName];
+      var partDescriptor,
+         constructionStrategie,
+         part;
+
+      if (availablePartDescriptors.hasOwnProperty(partName)) {
+         partDescriptor = availablePartDescriptors[partName];
+         constructionStrategie = getConstructionStrategie(partDescriptor.scope);
+         part = constructionStrategie(partName, partDescriptor);
+
+      } else {
+         throw new Error('tried to load ' + partName + 'but was not registered');
+      }
+
+   }
+
+   function getConstructionStrategie(scope) {
+      switch (scope) {
+      case 'default':
+         return defaultConstructionStrategy;
+      case 'singleton':
+         return singletonConstructionStrategy;
+      default:
+         throw new Error('unknown scope [' + scope + ']');
+      }
+   }
+
+   function defaultConstructionStrategy(partName, partDescriptor) {
+      var part = initialize(partName, part);
+      loadedParts.push(part);
+
+      return part;
+   }
+
+   function singletonConstructionStrategy(partName, partDescriptor) {
+      var part = loadedSingletonParts[partName];
 
       if (part === undefined) {
-         part = initialize(partName);
+         part = defaultConstructionStrategy(partName, partDescriptor);
+         loadedSingletonParts[partName] = part;
       }
 
       return part;
    }
 
-   function initialize(partName) {
+   function initialize(partName, partDescriptor) {
       var dependencies,
          foundDependencies,
-         partDescriptor,
          builder;
 
-      if (availablePartDescriptors.hasOwnProperty(partName)) {
-         partDescriptor = availablePartDescriptors[partName];
-         dependencies = partDescriptor.dependencies;
-         foundDependencies = getOrInitializeParts(dependencies);
+      dependencies = partDescriptor.dependencies;
+      foundDependencies = getOrInitializeParts(dependencies);
 
-         builder = getBuilder(partDescriptor.type);
-         
-         return builder(partDescriptor, foundDependencies);
-      } else {
-         throw new Error('tried to load ' + partName + 'but was not registered');
-      }
+      builder = getBuilder(partDescriptor.type);
+
+      return builder(partDescriptor, foundDependencies);
+
    }
-   
+
+
+
    function getBuilder(type) {
-      switch(type) {
-            case "returns": return buildReturnsPart;
-            case "creator": return buildCreatorPart;
-            default: throw new Error("unknown type [" + type + "]");
+      switch (type) {
+      case 'returns':
+         return buildReturnsPart;
+      case 'creator':
+         return buildCreatorPart;
+      default:
+         throw new Error('unknown type [' + type + ']');
       }
    }
-   
+
    function buildReturnsPart(partDescriptor) {
       return partDescriptor.returns;
    }
@@ -78,8 +114,6 @@ var partAccess = function () {
       if (createdPart === undefined) {
          createdPart = {};
       }
-
-      loadedParts[partDescriptor.name] = createdPart;
 
       return createdPart;
    }
