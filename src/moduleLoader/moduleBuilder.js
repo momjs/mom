@@ -2,16 +2,18 @@
 /* jshint unused:false */
 var moduleBuilder = function (moduleAccess, partAccess) {
    'use strict';
-   
-   
+
+
    function createDescriptor(name) {
       if (typeof name !== 'string') {
-            throw new Error('Name missing');
+         throw new Error('Name missing');
       }
-      
-      return { name : name };
+
+      return {
+         name: name
+      };
    }
-   
+
    function creatorDescriptor(name) {
       var descriptor = createDescriptor(name);
       descriptor.type = 'creator';
@@ -19,129 +21,129 @@ var moduleBuilder = function (moduleAccess, partAccess) {
       descriptor.settings = undefined;
       descriptor.dependencies = [];
       descriptor.creator = undefined;
-      
+
       return descriptor;
    }
-   
-   
+
+
    function returnsDescriptor(name) {
       var descriptor = creatorDescriptor(name);
-      descriptor.type = "returns";
-      
+      descriptor.type = 'returns';
+
       descriptor.returns = undefined;
-      
+
       return descriptor;
    }
-   
-   
+
+
    function createModuleDescriptorBuilder(name) {
-         var descriptor = creatorDescriptor(name);
-      
+      var descriptor = creatorDescriptor(name);
+
+      return {
+         settings: addSettings,
+         dependencies: addDependencies,
+         creator: addCreator
+      };
+
+      function addCreator(creator) {
+         descriptor.creator = creator;
+         save();
+      }
+
+      function addSettings(settings) {
+         descriptor.settings = settings;
+
          return {
-            settings: addSettings,
             dependencies: addDependencies,
             creator: addCreator
          };
+      }
 
-         function addCreator(creator) {
-            descriptor.creator = creator;
-            save();
-         }
-
-         function addSettings(settings) {
-            descriptor.settings = settings;
-
-            return {
-               dependencies: addDependencies,
-               creator: addCreator
-            };
-         }
-      
-         function save() {
-            moduleAccess.addModuleDescriptor(descriptor);
-         }
+      function save() {
+         moduleAccess.addModuleDescriptor(descriptor);
+      }
 
 
-         function addDependencies(dependencies) {
-            descriptor.dependencies = dependencies;
+      function addDependencies(dependencies) {
+         descriptor.dependencies = dependencies;
 
-            return {
-               settings: addSettings,
-               creator: addCreator
-            };
-         }
+         return {
+            settings: addSettings,
+            creator: addCreator
+         };
+      }
    }
-   
-   
+
+
    function createPartDescriptorBuilder(name) {
-         var descriptor;
-      
+      var descriptor;
+
+      return {
+         settings: addSettings,
+         dependencies: addDependencies,
+         creator: addCreator,
+         returns: addReturns,
+         scope: addScope
+      };
+
+      function addCreator(creator) {
+         getOrInitCreatorDiscriptor().creator = creator;
+         save();
+      }
+
+      function addReturns(returns) {
+         descriptor = returnsDescriptor(name);
+         descriptor.returns = returns;
+         save();
+      }
+
+      function addScope(scope) {
+
+         var descriptor = getOrInitCreatorDiscriptor();
+
+         if (scope !== undefined) {
+            descriptor.scope = scope;
+         }
+
          return {
             settings: addSettings,
             dependencies: addDependencies,
             creator: addCreator,
-            returns: addReturns,
-            scope: addScope
+            returns: addReturns
          };
+      }
 
-         function addCreator(creator) {
-            getOrInitCreatorDiscriptor().creator = creator;
-            save();
-         }
-      
-         function addReturns(returns) {
-            descriptor = returnsDescriptor(name);
-            descriptor.returns = returns;
-            save();
-         }
+      function addSettings(settings) {
+         getOrInitCreatorDiscriptor().settings = settings;
 
-         function addScope(scope) {
+         return {
+            dependencies: addDependencies,
+            creator: addCreator
+         };
+      }
 
-             var descriptor = getOrInitCreatorDiscriptor();
+      function addDependencies(dependencies) {
+         getOrInitCreatorDiscriptor().dependencies = dependencies;
 
-             if(scope !== undefined) {
-                 descriptor.scope = scope;
-             }
+         return {
+            settings: addSettings,
+            creator: addCreator
+         };
+      }
 
-             return {
-                 settings: addSettings,
-                 dependencies: addDependencies,
-                 creator: addCreator,
-                 returns: addReturns
-             }
+      function getOrInitCreatorDiscriptor() {
+         if (descriptor === undefined) {
+            descriptor = creatorDescriptor(name);
          }
 
-         function addSettings(settings) {
-            getOrInitCreatorDiscriptor().settings = settings;
+         return descriptor;
+      }
 
-            return {
-               dependencies: addDependencies,
-               creator: addCreator
-            };
-         }
-      
-         function addDependencies(dependencies) {
-            getOrInitCreatorDiscriptor().dependencies = dependencies;
-
-            return {
-               settings: addSettings,
-               creator: addCreator
-            };
-         }
-      
-         function getOrInitCreatorDiscriptor() {
-            if(descriptor === undefined) {
-               descriptor = creatorDescriptor(name);
-            }
-            
-            return descriptor;
-         }
-      
-         function save() {
-            partAccess.addPartDescriptor(descriptor);
-         }
+      function save() {
+         partAccess.addPartDescriptor(descriptor);
+      }
    }
-   
+
 
    return {
       createPart: createPartDescriptorBuilder,

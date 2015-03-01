@@ -29,7 +29,7 @@ var partAccess = function () {
       if (availablePartDescriptors.hasOwnProperty(partName)) {
          partDescriptor = availablePartDescriptors[partName];
          constructionStrategy = getConstructionStrategie(partDescriptor.scope);
-         part = constructionStrategy(partName, partDescriptor);
+         part = constructionStrategy(partDescriptor);
 
       } else {
          throw new Error('tried to load ' + partName + ' but was not registered');
@@ -49,25 +49,26 @@ var partAccess = function () {
       }
    }
 
-   function defaultConstructionStrategy(partName, partDescriptor) {
-      var part = initialize(partName, partDescriptor);
+   function defaultConstructionStrategy(partDescriptor) {
+      var part = initialize(partDescriptor);
       loadedParts.push(part);
 
       return part;
    }
 
-   function singletonConstructionStrategy(partName, partDescriptor) {
-      var part = loadedSingletonParts[partName];
+   function singletonConstructionStrategy(partDescriptor) {
+      var partName = partDescriptor.name,
+         part = loadedSingletonParts[partName];
 
       if (part === undefined) {
-         part = defaultConstructionStrategy(partName, partDescriptor);
+         part = defaultConstructionStrategy(partDescriptor);
          loadedSingletonParts[partName] = part;
       }
 
       return part;
    }
 
-   function initialize(partName, partDescriptor) {
+   function initialize(partDescriptor) {
       var dependencies,
          foundDependencies,
          builder;
