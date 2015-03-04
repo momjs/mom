@@ -1,6 +1,6 @@
 /* global moduleAccess:true */
 /* jshint unused:false */
-var moduleAccess = function (partAccess, eventBus) {
+var moduleAccess = function (partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = [],
@@ -11,7 +11,7 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
    function initializeModules(element) {
-      var moduleNames = element.getAttribute('modules'),
+      var moduleNames = element.getAttribute(settings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
       each(moduleNamesArray, function (index, moduleName) {
@@ -97,20 +97,7 @@ var moduleAccess = function (partAccess, eventBus) {
       });
    }
 
-   function merge() {
-      var mergeInto = arguments[0];
 
-      each(arguments, function (index, argument) {
-         if (index > 0) {
-
-            eachProperty(argument, function (key, value) {
-               mergeInto[key] = value;
-            });
-         }
-      });
-
-      return mergeInto;
-   }
 
 
    return {

@@ -1,14 +1,14 @@
 /* global moduleLoader:true */
 /* jshint unused:false */
-var moduleLoader = function (moduleAccess, partAccess) {
-   'use strict';
+var moduleLoader = function (moduleAccess, partAccess, settings) {
+   'use strict'
 
    function initModulePage() {
 
       initModules();
 
       function initModules() {
-         var modulesOnPage = document.querySelectorAll('[modules]');
+         var modulesOnPage = document.querySelectorAll(settings.selector);
 
          each(modulesOnPage, function(index, element) {
             initModule(element);

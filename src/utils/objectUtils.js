@@ -24,3 +24,18 @@ function eachProperty(object, callback) {
         }
     }
 }
+
+function merge() {
+   var mergeInto = arguments[0];
+
+   each(arguments, function (index, argument) {
+      if (index > 0) {
+
+         eachProperty(argument, function (key, value) {
+            mergeInto[key] = value;
+         });
+      }
+   });
+
+   return mergeInto;
+}

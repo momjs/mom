@@ -121,6 +121,21 @@ describe('The Module Loader', function () {
       expect(spyModule).toHaveBeenCalled();
       expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
    });
+   
+   it('should load use configured selector and attribute', function () {
+      loadFixtures('moduleSystem/oneModule.html');
+      var spyModule = jasmine.createSpy('creator');
+      moduleSystem.createModule('testModule').creator(spyModule);
+
+      moduleSystem.initModulePage({
+         selector : ".js-module",
+         attribute : "data-modules"
+      });
+
+      expect(spyModule).toHaveBeenCalled();
+      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-otherSelectorTestModule'));
+   });
+   
 
    it('should load a comma seperated list of Modules found in dom', function () {
       loadFixtures('moduleSystem/twoModules.html');
