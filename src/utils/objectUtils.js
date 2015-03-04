@@ -26,6 +26,8 @@ function eachProperty(object, callback) {
 }
 
 function merge() {
+   'use strict';
+   
    var mergeInto = arguments[0];
 
    each(arguments, function (index, argument) {

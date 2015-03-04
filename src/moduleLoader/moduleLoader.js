@@ -1,7 +1,7 @@
 /* global moduleLoader:true */
 /* jshint unused:false */
 var moduleLoader = function (moduleAccess, partAccess, settings) {
-   'use strict'
+   'use strict';
 
    function initModulePage() {
 

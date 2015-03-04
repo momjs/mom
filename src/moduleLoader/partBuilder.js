@@ -8,7 +8,7 @@ var partBuilder = function (partAccess, moduleSystemSettings) {
       descriptor.type = 'returns';
       descriptor.scope = 'default';
 
-      descriptor.returns;
+      descriptor.returns = undefined;
 
       return descriptor;
    }

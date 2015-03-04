@@ -1,4 +1,4 @@
-/* global moduleSettings:true */
+/* global settings:true */
 /* jshint unused:false */
 var settings = function () {
    'use strict';
@@ -8,15 +8,15 @@ var settings = function () {
          attribute: 'modules',
          selector: '[modules]'
       },
-      settings = defaults;
+      actualSettings = defaults;
 
    function mergeWith(newSettings) {
-      merge(settings, newSettings);
+      merge(actualSettings, newSettings);
    }
 
 
    function get() {
-      return settings;
+      return actualSettings;
    }
 
    return {

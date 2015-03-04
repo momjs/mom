@@ -24,7 +24,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
             }
             
             intercepted();
-         }
+         };
       }
 
       return {

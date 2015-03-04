@@ -23,11 +23,15 @@
       "moduleSystem": false,
       "eventBus": false,
       "moduleBuilder": false,
+      "partBuilder": false,
       "moduleLoader": false,
       "partAccess": false,
       "moduleAccess": false,
       "contains": false,
       "each": false,
-      "eachProperty": false
+      "merge": false,
+      "creatorDescriptor": false,
+      "eachProperty": false,
+      "settings": false
    }
 }
