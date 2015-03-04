@@ -1,6 +1,5 @@
-/* global settings:true */
 /* jshint unused:false */
-var settings = function () {
+function settings() {
    'use strict';
 
    var defaults = {
@@ -23,4 +22,4 @@ var settings = function () {
       get: get,
       mergeWith: mergeWith
    };
-};
+}

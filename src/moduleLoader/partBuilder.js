@@ -1,6 +1,5 @@
-/* global partBuilder:true */
 /* jshint unused:false */
-var partBuilder = function (partAccess, moduleSystemSettings) {
+function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 
    function returnsDescriptor(name) {
@@ -86,4 +85,4 @@ var partBuilder = function (partAccess, moduleSystemSettings) {
 
 
    return createPart;
-};
+}

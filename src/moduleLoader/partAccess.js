@@ -1,6 +1,5 @@
-/* global partAccess:true */
 /* jshint unused:false */
-var partAccess = function () {
+function partAccess() {
    'use strict';
 
    var loadedSingletonParts = {},
@@ -143,4 +142,4 @@ var partAccess = function () {
       provisionFinished: callPostConstructs,
       addPartDescriptor: addPartDescriptor
    };
-};
+}

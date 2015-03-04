@@ -1,6 +1,5 @@
-/* global moduleLoader:true */
 /* jshint unused:false */
-var moduleLoader = function (moduleAccess, partAccess, settings) {
+function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
 
    function initModulePage() {
@@ -27,4 +26,4 @@ var moduleLoader = function (moduleAccess, partAccess, settings) {
    return {
       initModulePage: initModulePage
    };
-};
+}

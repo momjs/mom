@@ -1,6 +1,5 @@
-/* global moduleBuilder:true */
 /* jshint unused:false */
-var moduleBuilder = function (moduleAccess) {
+function moduleBuilder(moduleAccess) {
    'use strict';
 
    function createModule(name) {
@@ -41,7 +40,5 @@ var moduleBuilder = function (moduleAccess) {
       }
    }
 
-
-
    return createModule;
-};
+}

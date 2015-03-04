@@ -1,6 +1,5 @@
-/* global moduleAccess:true */
 /* jshint unused:false */
-var moduleAccess = function (partAccess, eventBus, settings) {
+function moduleAccess(partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = [],
@@ -105,4 +104,4 @@ var moduleAccess = function (partAccess, eventBus, settings) {
       provisionFinished: callPostConstructs,
       addModuleDescriptor: addModuleDescriptor
    };
-};
+}
