@@ -124,7 +124,8 @@ function partAccess() {
       if (typeof part.postConstruct === 'function') {
          part.postConstruct();
 
-         //delete post constructor so it can definetly not be called again 
+         //delete post constructor so it can definetly not be called again
+         //e.g. a singleton part is requested via provisionPart
          delete part.postConstruct;
       }
    }

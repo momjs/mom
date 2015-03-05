@@ -1,7 +1,11 @@
 ModuleSystem
 ============
 
-Dynamic Loading of Javascript based on DOM elements
+Dynamic Loading of Javascript based on DOM elements. 
+Especially usefull for Content Management Systems (CMS):
+   - where you don't know which javascript needs to be loaded on which page
+   - where you want to configure javascript on render time from the CMS
+   - where you want to loosely couple modules, because you don't now if the other module is even on the page 
 
 Breaking changes
 ----------------
@@ -30,7 +34,7 @@ How To Use
 Utility functions like z.B AJAX loader etc.
 ####Creation and registration
 
-###Returns Parts
+####Returns Parts
 ```js
 moduleSystem.createPart("staticPart")
     .returns({
@@ -38,7 +42,7 @@ moduleSystem.createPart("staticPart")
     });
 ```
 
-###Creator Parts
+####Creator Parts
 ```js
 moduleSystem.createPart("adder")
     .creator(function() {
@@ -55,7 +59,7 @@ moduleSystem.createPart("adder")
         };
     });
 ```
-####Configure
+#####Configure
 ```js
 moduleSystem.createPart("adder")
     .settings({
@@ -78,8 +82,8 @@ moduleSystem.createPart("adder")
         };
     });
 ```
-####Dependency Injection
-parts could be composed of other parts
+#####Dependency Injection
+creator parts could be composed of other parts
 ```js
 moduleSystem.createPart("calculator")
     .dependencies(["adder", "multiplier", "staticPart"])
@@ -245,6 +249,7 @@ To do for 1.2
 - [x] scoped parts
 - [x] parts without constructor functions
 - [x] basic config options
+- [ ] merge part settings with settings provided from initialization
 
 To do for 1.3
 -------------
