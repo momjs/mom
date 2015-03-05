@@ -25,18 +25,18 @@ module.exports = function (grunt) {
       },
       files: {
          src: [
-               '<%= dirs.source %>/moduleLoader/constants.js',
                '<%= dirs.source %>/utils/arrayUtils.js',
                '<%= dirs.source %>/utils/objectUtils.js',
-               '<%= dirs.source %>/moduleLoader/settings.js',
-               '<%= dirs.source %>/moduleLoader/descriptorCreators.js',
-               '<%= dirs.source %>/moduleLoader/moduleLoader.js',
-               '<%= dirs.source %>/moduleLoader/partBuilder.js',
-               '<%= dirs.source %>/moduleLoader/moduleBuilder.js',
-               '<%= dirs.source %>/moduleLoader/partAccess.js',
-               '<%= dirs.source %>/moduleLoader/moduleAccess.js',
+               '<%= dirs.source %>/moduleSystem/constants.js',
+               '<%= dirs.source %>/moduleSystem/settings.js',
+               '<%= dirs.source %>/moduleSystem/descriptorCreators.js',
+               '<%= dirs.source %>/moduleSystem/modules/moduleLoader.js',
+               '<%= dirs.source %>/moduleSystem/modules/moduleBuilder.js',
+               '<%= dirs.source %>/moduleSystem/modules/modules.js',
+               '<%= dirs.source %>/moduleSystem/parts/partBuilder.js',
+               '<%= dirs.source %>/moduleSystem/parts/parts.js',
                '<%= dirs.source %>/eventBus/eventBus.js',
-               '<%= dirs.source %>/moduleLoader/moduleSystem.js']
+               '<%= dirs.source %>/moduleSystem/moduleSystem.js']
       },
       bower: {
          dev: {
