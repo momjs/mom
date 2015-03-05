@@ -1,3 +1,5 @@
+/* jshint unused:false */
+/* global constants:true */
 var constants = {
    scope: {
       singleton: 'singleton',
@@ -8,4 +10,4 @@ var constants = {
       creator: 'creator'
    }
 
-}
+};
