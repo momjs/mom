@@ -4,7 +4,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
    function newInstance() {
       var settings = settingsCreator(),
-          actualSettings = settings.get(),
+         actualSettings = settings.get(),
          partAccess = partAccessCreator(),
          eventBus = eventBusCreator(),
          moduleAccess = moduleAccessCreator(partAccess, eventBus, actualSettings),
@@ -16,13 +16,13 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
       createPart('eventBus').creator(function () {
          return eventBus;
       });
-      
+
       function settingsInterceptor(intercepted) {
-         return function(newSettings) {
-            if(newSettings !== undefined) {
+         return function (newSettings) {
+            if (newSettings !== undefined) {
                settings.mergeWith(newSettings);
             }
-            
+
             intercepted();
          };
       }
@@ -32,7 +32,8 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          createModule: createModule,
          initModulePage: settingsInterceptor(moduleLoader.initModulePage),
          newInstance: newInstance,
-         getPart: partAccess.provisionPart
+         getPart: partAccess.provisionPart,
+         const: constants
       };
    }
 
