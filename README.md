@@ -34,14 +34,6 @@ How To Use
 Utility functions like z.B AJAX loader etc.
 ####Creation and registration
 
-####Returns Parts
-```js
-moduleSystem.createPart("staticPart")
-    .returns({
-         static : "static"
-    });
-```
-
 ####Creator Parts
 ```js
 moduleSystem.createPart("adder")
@@ -59,6 +51,24 @@ moduleSystem.createPart("adder")
         };
     });
 ```
+#####Scopes
+By default the module system creates a new instance each time it suplies a part.
+To change this behaviour a scope could be specified
+```js
+moduleSystem.createPart("singletonPart")
+    .scope('singleton')
+    .creator(function() {
+        ...
+    });
+```
+Or the default behaviour could be changed
+```js
+moduleSystem.initModuleSystem({
+   defaultScope : 'singleton'
+});
+```
+A singleton part gets created on the first request and is reused on following requests.
+
 #####Configure
 ```js
 moduleSystem.createPart("adder")
@@ -96,6 +106,15 @@ moduleSystem.createPart("calculator")
         };
     });
 ```
+####Returns Parts
+If a part don't need a constructor function to be called (e.g. has no dependencies, settings, etc), a returns part could be used
+```js
+moduleSystem.createPart("staticPart")
+    .returns({
+         static : "static"
+    });
+```
+
 ###Module
 ####Creation and registration
 ```js
@@ -250,15 +269,14 @@ To do for 1.2
 - [x] parts without constructor functions
 - [x] basic config options
 - [ ] merge part settings with settings provided from initialization
+- [ ] initialize every singleton part & add a lazy singleton scope
 
-To do for 1.3
--------------
-- [ ] configurable async loading of modules and part
-- [ ] provide a method for dynamic loading and unloading of modules
-- [ ] initialize module system only on parts of the dom
-- [ ] provision single dom node
-- [ ] improve module access via console
 
 To do future releases
 -------------
 - [ ] add plugin concept for spezialized modules and parts
+- [ ] configurable async loading of modules and part
+- [ ] provide a method for dynamic loading and unloading of modules
+- [ ] initialize module system only on parts of the dom
+- [ ] provision single dom node
+- [ ] debug module access with console
