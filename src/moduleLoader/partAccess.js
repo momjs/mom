@@ -115,23 +115,30 @@ function partAccess() {
 
 
    function callPostConstructs() {
-      callPostConstruct(loadedParts);
+      eachProperty(loadedParts, function (i, part) {
+         callPostConstruct(part);
+      });
+   }
 
-      function callPostConstruct(store) {
+   function callPostConstruct(part) {
+      if (typeof part.postConstruct === 'function') {
+         part.postConstruct();
 
-         eachProperty(store, function (elementName, element) {
-
-            if (typeof element.postConstruct === 'function') {
-
-               element.postConstruct();
-            }
-         });
+         //delete post constructor so it can definetly not be called again 
+         delete part.postConstruct;
       }
+   }
+
+   function provisionPart(partName) {
+      var part = getOrInitializePart(partName);
+      callPostConstruct(part);
+
+      return part;
    }
 
 
    return {
-      provisionPart: getOrInitializePart,
+      provisionPart: provisionPart,
       getParts: getOrInitializeParts,
       provisionFinished: callPostConstructs,
       addPartDescriptor: addPartDescriptor

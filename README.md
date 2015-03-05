@@ -3,19 +3,26 @@ ModuleSystem
 
 Dynamic Loading of Javascript based on DOM elements
 
+Breaking changes
+----------------
+#### 1.1 -> 1.2
+#####Scopes. 
+By default the module system creates a new instance each time it suplies a part.
+In 1.1 parts where singletons (created once and reused). 
 
-To do for 1.2
--------------
-- [ ] configurable async loading of modules and part
-- [ ] provide a method for dynamic loading and unloading of modules
-- [ ] initialize module system only on parts of the dom
-- [ ] provision single dom node
-- [ ] improve module access via console
-
-To do future releases
--------------
-- [ ] add plugin concept for spezialized modules and parts
-- [ ] scoped parts
+If logic relies on that behaviour, then these parts should be scoped singleton
+```js
+moduleSystem.createPart("singletonPart")
+    .scope('singleton')
+    .creator(function() {
+        ...
+    });
+    
+//or change the default behaviour
+moduleSystem.initModuleSystem({
+   defaultScope : 'singleton'
+});
+```
 
 How To Use
 ----------
@@ -24,6 +31,7 @@ Utility functions like z.B AJAX loader etc.
 ####Creation and registration
 
 ###Returns Parts
+```js
 moduleSystem.createPart("staticPart")
     .returns({
          static : "static"
@@ -232,3 +240,20 @@ $(function() {
     moduleSystem.initModulePage();
 });
 ```
+To do for 1.2
+-------------
+- [x] scoped parts
+- [x] parts without constructor functions
+- [x] basic config options
+
+To do for 1.3
+-------------
+- [ ] configurable async loading of modules and part
+- [ ] provide a method for dynamic loading and unloading of modules
+- [ ] initialize module system only on parts of the dom
+- [ ] provision single dom node
+- [ ] improve module access via console
+
+To do future releases
+-------------
+- [ ] add plugin concept for spezialized modules and parts

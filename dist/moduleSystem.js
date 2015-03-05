@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.2.0 - 2014-12-09 * @link 
+ * @version v1.2.0 - 2015-03-05 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -9,6 +9,19 @@
 (function (window, document, undefined) {   
 /* jshint ignore:end */
 
+/* jshint unused:false */
+/* global constants:true */
+var constants = {
+   scope: {
+      singleton: 'singleton',
+      multiInstance: 'multi-instance'
+   },
+   type: {
+      returns: 'returns',
+      creator: 'creator'
+   }
+
+};
 /* jshint unused:false */
 
 /**
@@ -91,9 +104,74 @@ function eachProperty(object, callback) {
     }
 }
 
-/* global moduleLoader:true */
+function merge() {
+   'use strict';
+   
+   var mergeInto = arguments[0];
+
+   each(arguments, function (index, argument) {
+      if (index > 0) {
+
+         eachProperty(argument, function (key, value) {
+            mergeInto[key] = value;
+         });
+      }
+   });
+
+   return mergeInto;
+}
+
 /* jshint unused:false */
-var moduleLoader = function (moduleAccess, partAccess) {
+function settings() {
+   'use strict';
+
+   var defaults = {
+         defaultScope: constants.scope.multiInstance,
+         attribute: 'modules',
+         selector: '[modules]'
+      },
+      actualSettings = defaults;
+
+   function mergeWith(newSettings) {
+      merge(actualSettings, newSettings);
+   }
+
+
+   function get() {
+      return actualSettings;
+   }
+
+   return {
+      get: get,
+      mergeWith: mergeWith
+   };
+}
+/* jshint unused:false */
+function createDescriptor(name) {
+   'use strict';
+
+   if (typeof name !== 'string') {
+      throw new Error('Name missing');
+   }
+
+   return {
+      name: name
+   };
+}
+
+function creatorDescriptor(name) {
+   'use strict';
+
+   var descriptor = createDescriptor(name);
+   descriptor.type = constants.type.creator;
+   descriptor.settings = undefined;
+   descriptor.dependencies = [];
+   descriptor.creator = undefined;
+
+   return descriptor;
+}
+/* jshint unused:false */
+function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
 
    function initModulePage() {
@@ -101,7 +179,7 @@ var moduleLoader = function (moduleAccess, partAccess) {
       initModules();
 
       function initModules() {
-         var modulesOnPage = document.querySelectorAll('[modules]');
+         var modulesOnPage = document.querySelectorAll(settings.selector);
 
          each(modulesOnPage, function(index, element) {
             initModule(element);
@@ -120,72 +198,153 @@ var moduleLoader = function (moduleAccess, partAccess) {
    return {
       initModulePage: initModulePage
    };
-};
+}
 
-/* global moduleBuilder:true */
 /* jshint unused:false */
-var moduleBuilder = function (moduleAccess, partAccess) {
+function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 
-   function create(store) {
-      return function (name) {
-         if (typeof name !== 'string') {
-            throw new Error('Name missing');
-         }
-         var dependencies = [];
-         var settings;
+   function returnsDescriptor(name) {
+      var descriptor = createDescriptor(name);
+      descriptor.type = constants.type.returns;
+
+      descriptor.scope = constants.scope.singleton;
+
+      descriptor.returns = undefined;
+
+      return descriptor;
+   }
+
+   function partDescriptor(name) {
+      var descriptor = creatorDescriptor(name);
+      descriptor.scope = moduleSystemSettings.defaultScope;
+
+      return descriptor;
+   }
 
 
-         function add(creator) {
-            var descriptor = {
-               creator: creator,
-               name: name,
-               dependencies: dependencies,
-               settings: settings
-            };
-            store(descriptor);
-         }
+   function createPart(name) {
+      var descriptor;
 
-         function addSettings(neededSettings) {
-            settings = neededSettings;
+      return {
+         settings: addSettings,
+         dependencies: addDependencies,
+         creator: addCreator,
+         returns: addReturns,
+         scope: addScope
+      };
 
-            return {
-               dependencies: addDependencies,
-               creator: add
-            };
-         }
+      function addCreator(creator) {
+         getOrInitCreatorDiscriptor().creator = creator;
+         save();
+      }
 
+      function addReturns(returns) {
+         descriptor = returnsDescriptor(name);
+         descriptor.returns = returns;
+         save();
+      }
 
-         function addDependencies(neededParts) {
+      function addScope(scope) {
 
-            dependencies = neededParts;
+         var descriptor = getOrInitCreatorDiscriptor();
 
-            return {
-               settings: addSettings,
-               creator: add
-            };
+         if (scope !== undefined) {
+            descriptor.scope = scope;
          }
 
          return {
             settings: addSettings,
             dependencies: addDependencies,
-            creator: add
+            creator: addCreator,
+            returns: addReturns
          };
-      };
+      }
+
+      function addSettings(settings) {
+         getOrInitCreatorDiscriptor().settings = settings;
+
+         return {
+            dependencies: addDependencies,
+            creator: addCreator
+         };
+      }
+
+      function addDependencies(dependencies) {
+         getOrInitCreatorDiscriptor().dependencies = dependencies;
+
+         return {
+            settings: addSettings,
+            creator: addCreator
+         };
+      }
+
+      function getOrInitCreatorDiscriptor() {
+         if (descriptor === undefined) {
+            descriptor = partDescriptor(name);
+         }
+
+         return descriptor;
+      }
+
+      function save() {
+         partAccess.addPartDescriptor(descriptor);
+      }
    }
 
-   return {
-      createPart: create(partAccess.addPartDescriptor),
-      createModule: create(moduleAccess.addModuleDescriptor)
-   };
-};
 
-/* global partAccess:true */
+   return createPart;
+}
 /* jshint unused:false */
-var partAccess = function () {
+function moduleBuilder(moduleAccess) {
    'use strict';
 
-   var loadedParts = {},
+   function createModule(name) {
+      var descriptor = creatorDescriptor(name);
+
+      return {
+         settings: addSettings,
+         dependencies: addDependencies,
+         creator: addCreator
+      };
+
+      function addCreator(creator) {
+         descriptor.creator = creator;
+         save();
+      }
+
+      function addSettings(settings) {
+         descriptor.settings = settings;
+
+         return {
+            dependencies: addDependencies,
+            creator: addCreator
+         };
+      }
+
+      function save() {
+         moduleAccess.addModuleDescriptor(descriptor);
+      }
+
+
+      function addDependencies(dependencies) {
+         descriptor.dependencies = dependencies;
+
+         return {
+            settings: addSettings,
+            creator: addCreator
+         };
+      }
+   }
+
+   return createModule;
+}
+/* jshint unused:false */
+function partAccess() {
+   'use strict';
+
+   var loadedSingletonParts = {},
+      loadedParts = [],
       availablePartDescriptors = {};
 
    function addPartDescriptor(partDescriptor) {
@@ -203,37 +362,83 @@ var partAccess = function () {
    }
 
    function getOrInitializePart(partName) {
-      var part = loadedParts[partName];
+      var partDescriptor,
+         constructionStrategy,
+         part;
 
-      if (part === undefined) {
-         part = initialize(partName);
+      if (availablePartDescriptors.hasOwnProperty(partName)) {
+         partDescriptor = availablePartDescriptors[partName];
+         constructionStrategy = getConstructionStrategie(partDescriptor.scope);
+         part = constructionStrategy(partDescriptor);
+
+      } else {
+         throw new Error('tried to load ' + partName + ' but was not registered');
       }
 
       return part;
    }
 
-   function initialize(partName) {
-      var dependencies,
-         foundDependencies,
-         partDescriptor;
-
-      if (availablePartDescriptors.hasOwnProperty(partName)) {
-         partDescriptor = availablePartDescriptors[partName];
-         dependencies = partDescriptor.dependencies;
-         foundDependencies = getOrInitializeParts(dependencies);
-
-         return buildPart(partDescriptor, foundDependencies);
-      } else {
-         throw new Error('tried to load ' + partName + 'but was not registered');
+   function getConstructionStrategie(scope) {
+      switch (scope) {
+      case constants.scope.multiInstance:
+         return multiInstanceConstructionStrategy;
+      case constants.scope.singleton:
+         return singletonConstructionStrategy;
+      default:
+         throw new Error('unknown scope [' + scope + ']');
       }
    }
 
-   function buildPart(partDescriptor, dependencies) {
-      var args,
+   function multiInstanceConstructionStrategy(partDescriptor) {
+      var part,
+         builder = getBuilder(partDescriptor.type);
+
+      part = builder(partDescriptor);
+
+      loadedParts.push(part);
+
+      return part;
+   }
+
+   function singletonConstructionStrategy(partDescriptor) {
+      var partName = partDescriptor.name,
+         part = loadedSingletonParts[partName];
+
+      if (part === undefined) {
+         part = multiInstanceConstructionStrategy(partDescriptor);
+         loadedSingletonParts[partName] = part;
+      }
+
+      return part;
+   }
+
+
+   function getBuilder(type) {
+      switch (type) {
+      case constants.type.returns:
+         return buildReturnsPart;
+      case constants.type.creator:
+         return buildCreatorPart;
+      default:
+         throw new Error('unknown type [' + type + ']');
+      }
+   }
+
+   function buildReturnsPart(partDescriptor) {
+      return partDescriptor.returns;
+   }
+
+   function buildCreatorPart(partDescriptor) {
+      var dependencies,
+         foundDependencies,
+         args,
          createdPart;
 
+      dependencies = partDescriptor.dependencies;
+      foundDependencies = getOrInitializeParts(dependencies);
+
       //initialize Parts here
-      args = dependencies;
+      args = foundDependencies;
       // add settings from descriptor
       if (partDescriptor.settings !== undefined) {
          args.unshift(partDescriptor.settings);
@@ -246,10 +451,9 @@ var partAccess = function () {
          createdPart = {};
       }
 
-      loadedParts[partDescriptor.name] = createdPart;
-
       return createdPart;
    }
+
 
    function callPostConstructs() {
       callPostConstruct(loadedParts);
@@ -273,10 +477,9 @@ var partAccess = function () {
       provisionFinished: callPostConstructs,
       addPartDescriptor: addPartDescriptor
    };
-};
-/* global moduleAccess:true */
+}
 /* jshint unused:false */
-var moduleAccess = function (partAccess, eventBus) {
+function moduleAccess(partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = [],
@@ -287,7 +490,7 @@ var moduleAccess = function (partAccess, eventBus) {
    }
 
    function initializeModules(element) {
-      var moduleNames = element.getAttribute('modules'),
+      var moduleNames = element.getAttribute(settings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
       each(moduleNamesArray, function (index, moduleName) {
@@ -373,20 +576,7 @@ var moduleAccess = function (partAccess, eventBus) {
       });
    }
 
-   function merge() {
-      var mergeInto = arguments[0];
 
-      each(arguments, function (index, argument) {
-         if (index > 0) {
-
-            eachProperty(argument, function (key, value) {
-               mergeInto[key] = value;
-            });
-         }
-      });
-
-      return mergeInto;
-   }
 
 
    return {
@@ -394,7 +584,7 @@ var moduleAccess = function (partAccess, eventBus) {
       provisionFinished: callPostConstructs,
       addModuleDescriptor: addModuleDescriptor
    };
-};
+}
 /* jshint unused:false */
 
 function eventBus() {
@@ -454,25 +644,38 @@ function eventBus() {
 }
 
 /* global moduleSystem:true */
-moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
+moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
 
    function newInstance() {
-      var partAccess = partAccessCreator(),
+      var settings = settingsCreator(),
+          actualSettings = settings.get(),
+         partAccess = partAccessCreator(),
          eventBus = eventBusCreator(),
-         moduleAccess = moduleAccessCreator(partAccess, eventBus),
-         moduleBuilder = moduleBuilderCreator(moduleAccess, partAccess),
-         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess);
+         moduleAccess = moduleAccessCreator(partAccess, eventBus, actualSettings),
+         createPart = partBuilderCreator(partAccess, actualSettings),
+         createModule = moduleBuilderCreator(moduleAccess),
+         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
 
 
-      moduleBuilder.createPart('eventBus').creator(function () {
+      createPart('eventBus').creator(function () {
          return eventBus;
       });
+      
+      function settingsInterceptor(intercepted) {
+         return function(newSettings) {
+            if(newSettings !== undefined) {
+               settings.mergeWith(newSettings);
+            }
+            
+            intercepted();
+         };
+      }
 
       return {
-         createPart: moduleBuilder.createPart,
-         createModule: moduleBuilder.createModule,
-         initModulePage: moduleLoader.initModulePage,
+         createPart: createPart,
+         createModule: createModule,
+         initModulePage: settingsInterceptor(moduleLoader.initModulePage),
          newInstance: newInstance,
          getPart: partAccess.provisionPart
       };
@@ -480,7 +683,7 @@ moduleSystem = (function (moduleBuilderCreator, moduleLoaderCreator, partAccessC
 
    return newInstance();
 
-})(moduleBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
+})(settings, moduleBuilder, partBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
 
 /* jshint ignore:start */ 
 }(window, document));
