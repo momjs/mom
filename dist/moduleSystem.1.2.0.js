@@ -127,6 +127,7 @@ function settings() {
 
    var defaults = {
          defaultScope: constants.scope.multiInstance,
+         settingsSelector: 'script[type="%moduleName%/settings"]',
          attribute: 'modules',
          selector: '[modules]'
       },
@@ -456,30 +457,38 @@ function partAccess() {
 
 
    function callPostConstructs() {
-      callPostConstruct(loadedParts);
+      eachProperty(loadedParts, function (i, part) {
+         callPostConstruct(part);
+      });
+   }
 
-      function callPostConstruct(store) {
+   function callPostConstruct(part) {
+      if (typeof part.postConstruct === 'function') {
+         part.postConstruct();
 
-         eachProperty(store, function (elementName, element) {
-
-            if (typeof element.postConstruct === 'function') {
-
-               element.postConstruct();
-            }
-         });
+         //delete post constructor so it can definetly not be called again
+         //e.g. a singleton part is requested via provisionPart
+         delete part.postConstruct;
       }
+   }
+
+   function provisionPart(partName) {
+      var part = getOrInitializePart(partName);
+      callPostConstruct(part);
+
+      return part;
    }
 
 
    return {
-      provisionPart: getOrInitializePart,
+      provisionPart: provisionPart,
       getParts: getOrInitializeParts,
       provisionFinished: callPostConstructs,
       addPartDescriptor: addPartDescriptor
    };
 }
 /* jshint unused:false */
-function moduleAccess(partAccess, eventBus, settings) {
+function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
    'use strict';
 
    var loadedModules = [],
@@ -490,7 +499,7 @@ function moduleAccess(partAccess, eventBus, settings) {
    }
 
    function initializeModules(element) {
-      var moduleNames = element.getAttribute(settings.attribute),
+      var moduleNames = element.getAttribute(moduleSystemSettings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
       each(moduleNamesArray, function (index, moduleName) {
@@ -552,7 +561,8 @@ function moduleAccess(partAccess, eventBus, settings) {
 
    function getDOMSettings(element, moduleName) {
 
-      var settingsScript = element.querySelector('script[type="' + moduleName + '/settings"]'),
+      var selector = moduleSystemSettings.settingsSelector.replace(/%moduleName%/g, moduleName),
+         settingsScript = element.querySelector(selector),
          settingsAsHtml,
          settings;
 

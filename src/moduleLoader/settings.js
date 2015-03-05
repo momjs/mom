@@ -4,8 +4,9 @@ function settings() {
 
    var defaults = {
          defaultScope: constants.scope.multiInstance,
+         settingsSelector: 'script[type="%moduleName%/settings"]',
          attribute: 'modules',
-         selector: '[modules]'
+         selector: '[%attribute%]'
       },
       actualSettings = defaults;
 

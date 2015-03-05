@@ -1,5 +1,5 @@
 /* jshint unused:false */
-function moduleAccess(partAccess, eventBus, settings) {
+function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
    'use strict';
 
    var loadedModules = [],
@@ -10,7 +10,7 @@ function moduleAccess(partAccess, eventBus, settings) {
    }
 
    function initializeModules(element) {
-      var moduleNames = element.getAttribute(settings.attribute),
+      var moduleNames = element.getAttribute(moduleSystemSettings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
       each(moduleNamesArray, function (index, moduleName) {
@@ -72,7 +72,8 @@ function moduleAccess(partAccess, eventBus, settings) {
 
    function getDOMSettings(element, moduleName) {
 
-      var settingsScript = element.querySelector('script[type="' + moduleName + '/settings"]'),
+      var selector = moduleSystemSettings.settingsSelector.replace(/%moduleName%/g, moduleName),
+         settingsScript = element.querySelector(selector),
          settingsAsHtml,
          settings;
 

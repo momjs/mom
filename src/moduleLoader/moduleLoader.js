@@ -7,9 +7,10 @@ function moduleLoader(moduleAccess, partAccess, settings) {
       initModules();
 
       function initModules() {
-         var modulesOnPage = document.querySelectorAll(settings.selector);
+         var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
+            modulesOnPage = document.querySelectorAll(selector);
 
-         each(modulesOnPage, function(index, element) {
+         each(modulesOnPage, function (index, element) {
             initModule(element);
          });
 

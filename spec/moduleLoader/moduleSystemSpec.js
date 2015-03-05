@@ -122,7 +122,7 @@ describe('The Module Loader', function () {
       expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
    });
 
-   it('should load use configured selector and attribute', function () {
+   it('should load module with configured selector and attribute', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var spyModule = jasmine.createSpy('creator');
       moduleSystem.createModule('testModule').creator(spyModule);
@@ -133,7 +133,20 @@ describe('The Module Loader', function () {
       });
 
       expect(spyModule).toHaveBeenCalled();
-      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-otherSelectorTestModule'));
+      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-selectorAndAttributeModule'));
+   });
+
+   it('should load module with configured attribute', function () {
+      loadFixtures('moduleSystem/oneModule.html');
+      var spyModule = jasmine.createSpy('creator');
+      moduleSystem.createModule('testModule').creator(spyModule);
+
+      moduleSystem.initModulePage({
+         attribute: "data-mods"
+      });
+
+      expect(spyModule).toHaveBeenCalled();
+      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-attributeModule'));
    });
 
 
