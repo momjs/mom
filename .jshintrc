@@ -30,8 +30,10 @@
       "contains": false,
       "each": false,
       "merge": false,
+      "createDescriptor": false,
       "creatorDescriptor": false,
       "eachProperty": false,
-      "settings": false
+      "settings": false,
+      "constants": false
    }
 }

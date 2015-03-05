@@ -1,7 +1,7 @@
 /* jshint unused:false */
 function createDescriptor(name) {
    'use strict';
-   
+
    if (typeof name !== 'string') {
       throw new Error('Name missing');
    }
@@ -13,9 +13,9 @@ function createDescriptor(name) {
 
 function creatorDescriptor(name) {
    'use strict';
-   
+
    var descriptor = createDescriptor(name);
-   descriptor.type = 'creator';
+   descriptor.type = constants.type.creator;
    descriptor.settings = undefined;
    descriptor.dependencies = [];
    descriptor.creator = undefined;

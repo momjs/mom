@@ -39,17 +39,21 @@ function partAccess() {
 
    function getConstructionStrategie(scope) {
       switch (scope) {
-      case 'default':
-         return defaultConstructionStrategy;
-      case 'singleton':
+      case constants.scope.multiInstance:
+         return multiInstanceConstructionStrategy;
+      case constants.scope.singleton:
          return singletonConstructionStrategy;
       default:
          throw new Error('unknown scope [' + scope + ']');
       }
    }
 
-   function defaultConstructionStrategy(partDescriptor) {
-      var part = initialize(partDescriptor);
+   function multiInstanceConstructionStrategy(partDescriptor) {
+      var part,
+         builder = getBuilder(partDescriptor.type);
+
+      part = builder(partDescriptor);
+
       loadedParts.push(part);
 
       return part;
@@ -60,34 +64,19 @@ function partAccess() {
          part = loadedSingletonParts[partName];
 
       if (part === undefined) {
-         part = defaultConstructionStrategy(partDescriptor);
+         part = multiInstanceConstructionStrategy(partDescriptor);
          loadedSingletonParts[partName] = part;
       }
 
       return part;
    }
 
-   function initialize(partDescriptor) {
-      var dependencies,
-         foundDependencies,
-         builder;
-
-      dependencies = partDescriptor.dependencies;
-      foundDependencies = getOrInitializeParts(dependencies);
-
-      builder = getBuilder(partDescriptor.type);
-
-      return builder(partDescriptor, foundDependencies);
-
-   }
-
-
 
    function getBuilder(type) {
       switch (type) {
-      case 'returns':
+      case constants.type.returns:
          return buildReturnsPart;
-      case 'creator':
+      case constants.type.creator:
          return buildCreatorPart;
       default:
          throw new Error('unknown type [' + type + ']');
@@ -98,12 +87,17 @@ function partAccess() {
       return partDescriptor.returns;
    }
 
-   function buildCreatorPart(partDescriptor, dependencies) {
-      var args,
+   function buildCreatorPart(partDescriptor) {
+      var dependencies,
+         foundDependencies,
+         args,
          createdPart;
 
+      dependencies = partDescriptor.dependencies;
+      foundDependencies = getOrInitializeParts(dependencies);
+
       //initialize Parts here
-      args = dependencies;
+      args = foundDependencies;
       // add settings from descriptor
       if (partDescriptor.settings !== undefined) {
          args.unshift(partDescriptor.settings);

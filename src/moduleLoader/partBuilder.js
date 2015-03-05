@@ -3,16 +3,24 @@ function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 
    function returnsDescriptor(name) {
-      var descriptor = creatorDescriptor(name);
-      descriptor.type = 'returns';
-      descriptor.scope = 'default';
+      var descriptor = createDescriptor(name);
+      descriptor.type = constants.type.returns;
+
+      descriptor.scope = constants.scope.singleton;
 
       descriptor.returns = undefined;
 
       return descriptor;
    }
-   
-   
+
+   function partDescriptor(name) {
+      var descriptor = creatorDescriptor(name);
+      descriptor.scope = moduleSystemSettings.defaultScope;
+
+      return descriptor;
+   }
+
+
    function createPart(name) {
       var descriptor;
 
@@ -71,8 +79,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
       function getOrInitCreatorDiscriptor() {
          if (descriptor === undefined) {
-            descriptor = creatorDescriptor(name);
-            descriptor.scope = moduleSystemSettings.defaultScope;
+            descriptor = partDescriptor(name);
          }
 
          return descriptor;
