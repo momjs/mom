@@ -12,7 +12,7 @@
       "grunt-contrib-uglify": "~0.8.0",
       "grunt-contrib-jasmine": "~0.6.0",
       "grunt-cli": "~0.1.13",
-      "grunt-bower": "~0.16.0",
+      "grunt-bower": "~0.17.0",
       "grunt-bower-task": "~0.4.0",
       "grunt-contrib-copy": "~0.7.0",
       "grunt-bump": "~0.0.16",
