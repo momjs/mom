@@ -1,4 +1,3 @@
-/* global moduleSystem:true */
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
 

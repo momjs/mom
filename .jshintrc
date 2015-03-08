@@ -18,7 +18,21 @@
    "strict": true,
    "browser": true,
    "globals": {
-      "moduleSystem": false,
+      "jQuery": false,
+      "$": false,
+      "jasmine": false,
+      "describe": false,
+      "xdescribe": false,
+      "before": false,
+      "beforeEach": false,
+      "after": false,
+      "afterEach": false,
+      "it": false,
+      "xit": false,
+      "expect": false,
+      "spyOn": false,
+      "loadFixtures": false,
+      "moduleSystem": true,
       "eventBus": false,
       "moduleBuilder": false,
       "partBuilder": false,
@@ -32,24 +46,6 @@
       "creatorDescriptor": false,
       "eachProperty": false,
       "settings": false,
-      "constants": false
-   },
-   "predef": [
-      "jQuery",
-      "$",
-      "jasmine",
-      "describe",
-      "xdescribe",
-      "before",
-      "beforeEach",
-      "after",
-      "afterEach",
-      "it",
-      "xit",
-      "it",
-      "inject",
-      "expect",
-      "spyOn",
-      "loadFixtures"
-]
+      "constants": true
+   }
 }

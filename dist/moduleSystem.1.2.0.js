@@ -109,7 +109,6 @@ function merge() {
 }
 
 /* jshint unused:false */
-/* global constants:true */
 var constants = {
    scope: {
       singleton: 'singleton',
@@ -652,7 +651,6 @@ function eventBus() {
     };
 }
 
-/* global moduleSystem:true */
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
    'use strict';
 
