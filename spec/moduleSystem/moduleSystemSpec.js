@@ -1,7 +1,6 @@
 describe('The Module Loader', function () {
 
    afterEach(function () {
-
       moduleSystem = moduleSystem.newInstance();
    });
 
@@ -400,24 +399,61 @@ describe('The Module Loader', function () {
             expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), publicMethodObject);
          });
 
-         it('should call postConstruct from parts when provision is finished', function () {
+         it('should call postConstruct when get part is called', function () {
             var spyPartObject = jasmine.createSpyObj('part object', ['postConstruct']);
             var postConstructSpy = spyPartObject.postConstruct;
 
 
-            var spyPart = jasmine.createSpy('spyPart').and.callFake(function () {
-               initWasCalled = true;
-               return spyPartObject;
-            });
+            moduleSystem.createPart('testPart')
+               .creator(function () {
+                  return spyPartObject;
+               });
 
 
-            moduleSystem.createPart('testPart').creator(spyPart);
-
-
-            moduleSystem.initModulePage();
+            moduleSystem.getPart('testPart');
 
 
             expect(postConstructSpy).toHaveBeenCalled();
+         });
+
+
+         it('should call postConstruct from multi instance parts again', function () {
+            var postConstructSpy = jasmine.createSpy('post construct');
+
+
+            moduleSystem.createPart('testPart')
+               .creator(function () {
+                  return {
+                     postConstruct: postConstructSpy
+                  };
+               });
+
+
+            moduleSystem.getPart('testPart');
+            moduleSystem.getPart('testPart');
+
+
+            expect(postConstructSpy.calls.count()).toEqual(2);
+         });
+
+         it('should call postConstruct from singleton parts once', function () {
+            var postConstructSpy = jasmine.createSpy('post construct');
+
+
+            moduleSystem.createPart('testPart')
+               .scope('singleton')
+               .creator(function () {
+                  return {
+                     postConstruct: postConstructSpy
+                  };
+               });
+
+
+            moduleSystem.getPart('testPart');
+            moduleSystem.getPart('testPart');
+
+
+            expect(postConstructSpy.calls.count()).toEqual(1);
          });
       });
    });
@@ -475,4 +511,7 @@ describe('The Module Loader', function () {
 
       expect(spyModuleObject.postConstruct).toHaveBeenCalled();
    });
+
+
+
 });

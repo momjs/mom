@@ -13,9 +13,11 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
 
 
-      createPart('eventBus').creator(function () {
-         return eventBus;
-      });
+      createPart('eventBus')
+         .scope(constants.scope.singleton)
+         .creator(function () {
+            return eventBus;
+         });
 
       function settingsInterceptor(intercepted) {
          return function (newSettings) {
