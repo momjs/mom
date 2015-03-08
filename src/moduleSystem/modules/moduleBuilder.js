@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported moduleBuilder */
 function moduleBuilder(moduleAccess) {
    'use strict';
 

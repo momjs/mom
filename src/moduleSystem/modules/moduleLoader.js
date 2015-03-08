@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported moduleLoader */
 function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
 

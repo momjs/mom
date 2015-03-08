@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported settings */
 function settings() {
    'use strict';
 

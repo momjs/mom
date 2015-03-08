@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported partBuilder */
 function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 

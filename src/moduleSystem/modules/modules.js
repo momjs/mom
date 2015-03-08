@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported moduleAccess */
 function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
    'use strict';
 

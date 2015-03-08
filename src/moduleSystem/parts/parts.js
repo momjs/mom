@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported partAccess */
 function partAccess() {
    'use strict';
 

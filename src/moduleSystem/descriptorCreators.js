@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported createDescriptor */
 function createDescriptor(name) {
    'use strict';
 
@@ -11,6 +11,7 @@ function createDescriptor(name) {
    };
 }
 
+/*exported creatorDescriptor */
 function creatorDescriptor(name) {
    'use strict';
 
