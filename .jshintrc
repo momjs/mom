@@ -18,8 +18,6 @@
    "strict": true,
    "browser": true,
    "globals": {
-      "jQuery": false,
-      "$": false,
       "moduleSystem": false,
       "eventBus": false,
       "moduleBuilder": false,
@@ -35,5 +33,23 @@
       "eachProperty": false,
       "settings": false,
       "constants": false
-   }
+   },
+   "predef": [
+      "jQuery",
+      "$",
+      "jasmine",
+      "describe",
+      "xdescribe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it",
+      "xit",
+      "it",
+      "inject",
+      "expect",
+      "spyOn",
+      "loadFixtures"
+]
 }

@@ -1,4 +1,5 @@
 describe('The Module Loader', function () {
+   'use strict';
 
    afterEach(function () {
       moduleSystem = moduleSystem.newInstance();
@@ -25,7 +26,7 @@ describe('The Module Loader', function () {
                /*
                 * returns empty part object
                 */
-            }
+            };
          }
       );
 
@@ -57,7 +58,7 @@ describe('The Module Loader', function () {
                /*
                 * returns empty part object
                 */
-            }
+            };
          }
       );
 
@@ -85,7 +86,7 @@ describe('The Module Loader', function () {
                /*
                 * returns empty part object
                 */
-            }
+            };
          }
       );
 
@@ -127,8 +128,8 @@ describe('The Module Loader', function () {
       moduleSystem.createModule('testModule').creator(spyModule);
 
       moduleSystem.initModulePage({
-         selector: ".js-module",
-         attribute: "data-modules"
+         selector: '.js-module',
+         attribute: 'data-modules'
       });
 
       expect(spyModule).toHaveBeenCalled();
@@ -141,7 +142,7 @@ describe('The Module Loader', function () {
       moduleSystem.createModule('testModule').creator(spyModule);
 
       moduleSystem.initModulePage({
-         attribute: "data-mods"
+         attribute: 'data-mods'
       });
 
       expect(spyModule).toHaveBeenCalled();
@@ -344,7 +345,7 @@ describe('The Module Loader', function () {
          moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(spyPart);
 
          expect(function () {
-            moduleSystem.getPart('testPart')
+            moduleSystem.getPart('testPart');
          }).toThrow();
       });
 
@@ -354,7 +355,7 @@ describe('The Module Loader', function () {
          moduleSystem.createPart('dependencyPart').dependencies(['testPart']).creator(spyPart);
 
          expect(function () {
-            moduleSystem.getPart('testPart')
+            moduleSystem.getPart('testPart');
          }).toThrow();
       });
 
