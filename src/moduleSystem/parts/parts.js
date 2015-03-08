@@ -1,5 +1,5 @@
-/*exported partAccess */
-function partAccess() {
+/*exported parts */
+function parts() {
    'use strict';
 
    var loadedSingletonParts = {},

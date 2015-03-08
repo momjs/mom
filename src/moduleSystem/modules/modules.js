@@ -1,5 +1,5 @@
-/*exported moduleAccess */
-function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
+/*exported modules */
+function modules(partAccess, eventBus, moduleSystemSettings) {
    'use strict';
 
    var loadedModules = [],

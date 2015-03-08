@@ -1,12 +1,12 @@
-moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partAccessCreator, moduleAccessCreator, eventBusCreator) {
+moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
    'use strict';
 
    function newInstance() {
       var settings = settingsCreator(),
          actualSettings = settings.get(),
-         partAccess = partAccessCreator(),
+         partAccess = partsCreator(),
          eventBus = eventBusCreator(),
-         moduleAccess = moduleAccessCreator(partAccess, eventBus, actualSettings),
+         moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
          createPart = partBuilderCreator(partAccess, actualSettings),
          createModule = moduleBuilderCreator(moduleAccess),
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
@@ -40,4 +40,4 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
    return newInstance();
 
-})(settings, moduleBuilder, partBuilder, moduleLoader, partAccess, moduleAccess, eventBus);
+})(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus);
