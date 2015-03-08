@@ -51,7 +51,7 @@ describe('The Module Loader', function () {
          }
       );
       var referencedPart = 'partName';
-      moduleSystem.createPart(referencedPart).scope('singleton').creator(
+      moduleSystem.createPart(referencedPart).scope(moduleSystem.const.scope.singleton).creator(
          function () {
             return {
                /*
@@ -298,7 +298,7 @@ describe('The Module Loader', function () {
             test: 'test'
          };
          var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
-         moduleSystem.createPart('testPart').scope('singleton').creator(spyPart);
+         moduleSystem.createPart('testPart').scope(moduleSystem.const.scope.singleton).creator(spyPart);
 
          moduleSystem.getPart('testPart');
          var partObjActual = moduleSystem.getPart('testPart');
@@ -441,7 +441,7 @@ describe('The Module Loader', function () {
 
 
             moduleSystem.createPart('testPart')
-               .scope('singleton')
+               .scope(moduleSystem.const.scope.singleton)
                .creator(function () {
                   return {
                      postConstruct: postConstructSpy
