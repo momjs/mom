@@ -29,14 +29,14 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          };
       }
 
-      return {
+      return merge({
          createPart: createPart,
          createModule: createModule,
          initModulePage: settingsInterceptor(moduleLoader.initModulePage),
          newInstance: newInstance,
          getPart: partAccess.provisionPart,
-         const: constants
-      };
+
+      }, constants);
    }
 
    return newInstance();
