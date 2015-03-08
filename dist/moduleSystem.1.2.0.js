@@ -119,7 +119,7 @@ var constants = {
       creator: 'creator'
    }
 };
-/* jshint unused:false */
+/*exported settings */
 function settings() {
    'use strict';
 
@@ -145,7 +145,7 @@ function settings() {
       mergeWith: mergeWith
    };
 }
-/* jshint unused:false */
+/*exported createDescriptor */
 function createDescriptor(name) {
    'use strict';
 
@@ -158,6 +158,7 @@ function createDescriptor(name) {
    };
 }
 
+/*exported creatorDescriptor */
 function creatorDescriptor(name) {
    'use strict';
 
@@ -169,7 +170,7 @@ function creatorDescriptor(name) {
 
    return descriptor;
 }
-/* jshint unused:false */
+/*exported moduleLoader */
 function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
 
@@ -199,7 +200,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
       initModulePage: initModulePage
    };
 }
-/* jshint unused:false */
+/*exported moduleBuilder */
 function moduleBuilder(moduleAccess) {
    'use strict';
 
@@ -243,7 +244,7 @@ function moduleBuilder(moduleAccess) {
 
    return createModule;
 }
-/* jshint unused:false */
+/*exported moduleAccess */
 function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
    'use strict';
 
@@ -289,8 +290,7 @@ function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
       var args = foundDependencies,
          domSettings = getDOMSettings(element, moduleDescriptor.name),
          mergedSettings,
-         createdModule,
-         name;
+         createdModule;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
@@ -351,7 +351,7 @@ function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
       addModuleDescriptor: addModuleDescriptor
    };
 }
-/* jshint unused:false */
+/*exported partBuilder */
 function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 
@@ -446,7 +446,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
    return createPart;
 }
-/* jshint unused:false */
+/*exported partAccess */
 function partAccess() {
    'use strict';
 

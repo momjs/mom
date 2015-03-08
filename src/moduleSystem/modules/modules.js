@@ -44,8 +44,7 @@ function moduleAccess(partAccess, eventBus, moduleSystemSettings) {
       var args = foundDependencies,
          domSettings = getDOMSettings(element, moduleDescriptor.name),
          mergedSettings,
-         createdModule,
-         name;
+         createdModule;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
