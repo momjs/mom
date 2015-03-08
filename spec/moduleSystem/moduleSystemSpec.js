@@ -1,5 +1,6 @@
 describe('The Module Loader', function () {
    'use strict';
+   var moduleSystem = window.moduleSystem;
 
    afterEach(function () {
       moduleSystem = moduleSystem.newInstance();
