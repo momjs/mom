@@ -9,5 +9,4 @@ var constants = {
       returns: 'returns',
       creator: 'creator'
    }
-
 };
