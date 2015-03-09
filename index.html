@@ -1,1 +1,36 @@
-Test
+<!doctype html>
+<html>
+
+<head>
+   <title>Website in HTML 5 als direktes Beispiel</title>
+   <link href="style.css" type="text/css" rel="stylesheet">
+</head>
+
+<body>
+   <div id="wrapper">
+      <div modules="useLocation,cityName">
+         Set Location:
+         <input class="js-city" type="text" /> Detect Location:
+         <input class="js-use-location" type="checkbox" />
+
+      </div>
+      <div class="container">
+         <div modules="map" class="box">
+
+         </div>
+         <div modules="weather" class="box">
+
+         </div>
+      </div>
+
+
+   </div>
+
+   <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+   <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+   <script type="text/javascript" src="moduleSystem.js"></script>
+   <script type="text/javascript" src="app.js"></script>
+
+</body>
+
+</html>
