@@ -1,5 +1,3 @@
-/* jshint unused:false */
-
 /**
  * Iterates the array and callback function for each element.
  *
@@ -8,23 +6,24 @@
  *      - first parameter delivers the current index, second the current element
  *      - if the callback function returns true the iteration breaks up immediately
  */
+/*exported each */
 function each(array, callback) {
-    'use strict';
+   'use strict';
 
-    var index,
-        length = array.length,
-        element,
-        breakLoop;
+   var index,
+      length = array.length,
+      element,
+      breakLoop;
 
-    for(index = 0; index < length; index++) {
-        element = array[index];
+   for (index = 0; index < length; index++) {
+      element = array[index];
 
-        breakLoop = callback(index, element);
+      breakLoop = callback(index, element);
 
-        if(breakLoop) {
-            break;
-        }
-    }
+      if (breakLoop) {
+         break;
+      }
+   }
 }
 
 /**
@@ -33,22 +32,23 @@ function each(array, callback) {
  * @param elementToSearch the element to lookup
  * @returns {boolean} true if the array contains the element, false if not
  */
+/*exported contains */
 function contains(array, elementToSearch) {
-    'use strict';
+   'use strict';
 
-    var index,
-        length = array.length,
-        element,
-        isContaining = false;
+   var index,
+      length = array.length,
+      element,
+      isContaining = false;
 
-    for(index = 0; index < length; index++) {
-        element = array[index];
+   for (index = 0; index < length; index++) {
+      element = array[index];
 
-        if(element === elementToSearch) {
-            isContaining = true;
-            break;
-        }
-    }
+      if (element === elementToSearch) {
+         isContaining = true;
+         break;
+      }
+   }
 
-    return isContaining;
+   return isContaining;
 }

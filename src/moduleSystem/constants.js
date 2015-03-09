@@ -1,4 +1,4 @@
-/* jshint unused:false */
+/*exported constants */
 var constants = {
    scope: {
       singleton: 'singleton',
