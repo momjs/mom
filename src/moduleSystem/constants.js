@@ -1,7 +1,8 @@
 /*exported constants */
 var constants = {
    scope: {
-      singleton: 'singleton',
+      lazySingleton: 'lazy-singleton',
+      eagerSingleton: 'eager-singleton',
       multiInstance: 'multi-instance'
    },
    type: {

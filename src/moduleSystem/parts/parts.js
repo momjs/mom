@@ -10,6 +10,18 @@ function parts() {
       availablePartDescriptors[partDescriptor.name] = partDescriptor;
    }
 
+   function initEagerSingletons() {
+      var eagerSingletonPartNames = [];
+
+      eachProperty(availablePartDescriptors, function (partName, partDescriptor) {
+         if (partDescriptor.scope === constants.scope.eagerSingleton) {
+            eagerSingletonPartNames.push(partDescriptor.name);
+         }
+      });
+
+      getOrInitializeParts(eagerSingletonPartNames);
+   }
+
    function getOrInitializeParts(partNames) {
       var parts = [];
 
@@ -41,7 +53,8 @@ function parts() {
       switch (scope) {
       case constants.scope.multiInstance:
          return multiInstanceConstructionStrategy;
-      case constants.scope.singleton:
+      case constants.scope.lazySingleton:
+      case constants.scope.eagerSingleton:
          return singletonConstructionStrategy;
       default:
          throw new Error('unknown scope [' + scope + ']');
@@ -139,6 +152,7 @@ function parts() {
 
 
    return {
+      initEagerSingletons: initEagerSingletons,
       provisionPart: provisionPart,
       getParts: getOrInitializeParts,
       provisionFinished: callPostConstructs,

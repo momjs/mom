@@ -54,9 +54,10 @@ moduleSystem.createPart("adder")
 #####Scopes
 By default the module system creates a new instance each time it suplies a part.
 To change this behaviour a scope could be specified
+######Lazy Singleton
 ```js
 moduleSystem.createPart("singletonPart")
-    .scope('singleton')
+    .scope('lazy-singleton')
     .creator(function() {
         ...
     });
@@ -64,10 +65,21 @@ moduleSystem.createPart("singletonPart")
 Or the default behaviour could be changed
 ```js
 moduleSystem.initModuleSystem({
-   defaultScope : 'singleton'
+   defaultScope : 'lazy-singleton'
 });
 ```
-A singleton part gets created on the first request and is reused on following requests.
+A lazy singleton part gets created on the first request and is reused on following requests.
+
+######Eager Singleton
+```js
+moduleSystem.createPart("singletonPart")
+    .scope('eager-singleton')
+    .creator(function() {
+        ...
+    });
+```
+A eager singleton part gets created every time initModulePage() is called, even when no module/part has it as an depedency.
+There is only one intance of this module which gets reused.
 
 #####Configure
 ```js

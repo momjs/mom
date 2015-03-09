@@ -6,7 +6,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
       var descriptor = createDescriptor(name);
       descriptor.type = constants.type.returns;
 
-      descriptor.scope = constants.scope.singleton;
+      descriptor.scope = constants.scope.lazySingleton;
 
       descriptor.returns = undefined;
 

@@ -13,7 +13,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
 
       createPart('eventBus')
-         .scope(constants.scope.singleton)
+         .scope(constants.scope.lazySingleton)
          .creator(function () {
             return eventBus;
          });

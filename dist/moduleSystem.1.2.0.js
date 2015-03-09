@@ -1,15 +1,13 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.2.0 - 2015-03-08 * @link 
+ * @version v1.2.0 - 2015-03-09 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
 ;
 (function (window, document, undefined) {   
 /* jshint ignore:end */
-
-/* jshint unused:false */
 
 /**
  * Iterates the array and callback function for each element.
@@ -19,23 +17,24 @@
  *      - first parameter delivers the current index, second the current element
  *      - if the callback function returns true the iteration breaks up immediately
  */
+/*exported each */
 function each(array, callback) {
-    'use strict';
+   'use strict';
 
-    var index,
-        length = array.length,
-        element,
-        breakLoop;
+   var index,
+      length = array.length,
+      element,
+      breakLoop;
 
-    for(index = 0; index < length; index++) {
-        element = array[index];
+   for (index = 0; index < length; index++) {
+      element = array[index];
 
-        breakLoop = callback(index, element);
+      breakLoop = callback(index, element);
 
-        if(breakLoop) {
-            break;
-        }
-    }
+      if (breakLoop) {
+         break;
+      }
+   }
 }
 
 /**
@@ -44,26 +43,26 @@ function each(array, callback) {
  * @param elementToSearch the element to lookup
  * @returns {boolean} true if the array contains the element, false if not
  */
+/*exported contains */
 function contains(array, elementToSearch) {
-    'use strict';
+   'use strict';
 
-    var index,
-        length = array.length,
-        element,
-        isContaining = false;
+   var index,
+      length = array.length,
+      element,
+      isContaining = false;
 
-    for(index = 0; index < length; index++) {
-        element = array[index];
+   for (index = 0; index < length; index++) {
+      element = array[index];
 
-        if(element === elementToSearch) {
-            isContaining = true;
-            break;
-        }
-    }
+      if (element === elementToSearch) {
+         isContaining = true;
+         break;
+      }
+   }
 
-    return isContaining;
+   return isContaining;
 }
-
 /* jshint unused:false */
 
 /**
@@ -108,10 +107,11 @@ function merge() {
    return mergeInto;
 }
 
-/* jshint unused:false */
+/*exported constants */
 var constants = {
    scope: {
-      singleton: 'singleton',
+      lazySingleton: 'lazy-singleton',
+      eagerSingleton: 'eager-singleton',
       multiInstance: 'multi-instance'
    },
    type: {
@@ -181,6 +181,8 @@ function moduleLoader(moduleAccess, partAccess, settings) {
       function initModules() {
          var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
             modulesOnPage = document.querySelectorAll(selector);
+
+         partAccess.initEagerSingletons();
 
          each(modulesOnPage, function (index, element) {
             initModule(element);
@@ -359,7 +361,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
       var descriptor = createDescriptor(name);
       descriptor.type = constants.type.returns;
 
-      descriptor.scope = constants.scope.singleton;
+      descriptor.scope = constants.scope.lazySingleton;
 
       descriptor.returns = undefined;
 
@@ -458,6 +460,18 @@ function parts() {
       availablePartDescriptors[partDescriptor.name] = partDescriptor;
    }
 
+   function initEagerSingletons() {
+      var eagerSingletonPartNames = [];
+
+      eachProperty(availablePartDescriptors, function (partName, partDescriptor) {
+         if (partDescriptor.scope === constants.scope.eagerSingleton) {
+            eagerSingletonPartNames.push(partDescriptor.name);
+         }
+      });
+
+      getOrInitializeParts(eagerSingletonPartNames);
+   }
+
    function getOrInitializeParts(partNames) {
       var parts = [];
 
@@ -489,7 +503,8 @@ function parts() {
       switch (scope) {
       case constants.scope.multiInstance:
          return multiInstanceConstructionStrategy;
-      case constants.scope.singleton:
+      case constants.scope.lazySingleton:
+      case constants.scope.eagerSingleton:
          return singletonConstructionStrategy;
       default:
          throw new Error('unknown scope [' + scope + ']');
@@ -587,70 +602,69 @@ function parts() {
 
 
    return {
+      initEagerSingletons: initEagerSingletons,
       provisionPart: provisionPart,
       getParts: getOrInitializeParts,
       provisionFinished: callPostConstructs,
       addPartDescriptor: addPartDescriptor
    };
 }
-/* jshint unused:false */
-
+/*exported eventBus */
 function eventBus() {
-    'use strict';
+   'use strict';
 
-    var ON_EVENT_FUNCTION_NAME = 'onEvent',
-        components = [];
+   var ON_EVENT_FUNCTION_NAME = 'onEvent',
+      components = [];
 
-    function publishEvent(event) {
+   function publishEvent(event) {
 
-        if (event === undefined) {
-            throw new Error('Published event cannot be undefined');
-        }
+      if (event === undefined) {
+         throw new Error('Published event cannot be undefined');
+      }
 
-        var callbackFunctionName = 'on' + event.name;
+      var callbackFunctionName = 'on' + event.name;
 
-        each(components, function(index, component) {
+      each(components, function (index, component) {
 
-            if (event.name !== undefined) {
-                tryToCallComponent(component, callbackFunctionName, event);
-            }
+         if (event.name !== undefined) {
+            tryToCallComponent(component, callbackFunctionName, event);
+         }
 
-            tryToCallComponent(component, ON_EVENT_FUNCTION_NAME, event);
-        });
-    }
+         tryToCallComponent(component, ON_EVENT_FUNCTION_NAME, event);
+      });
+   }
 
-    function tryToCallComponent(component, functionName, event) {
+   function tryToCallComponent(component, functionName, event) {
 
-        var callback = component[functionName];
+      var callback = component[functionName];
 
-        if (typeof callback === 'function') {
-            callback.call(component, event);
-        }
-    }
+      if (typeof callback === 'function') {
+         callback.call(component, event);
+      }
+   }
 
-    function addComponent(component) {
-        if (component === undefined) {
-            throw new Error('Component to be registered is undefined');
-        }
+   function addComponent(component) {
+      if (component === undefined) {
+         throw new Error('Component to be registered is undefined');
+      }
 
-        if (contains(components, component)) {
-            throw new Error('Component is already registered');
-        }
+      if (contains(components, component)) {
+         throw new Error('Component is already registered');
+      }
 
-        components.push(component);
-    }
+      components.push(component);
+   }
 
-    function reset() {
-        components = [];
-    }
+   function reset() {
+      components = [];
+   }
 
-    return {
-        publish: publishEvent,
-        add: addComponent,
-        reset: reset
-    };
+   return {
+      publish: publishEvent,
+      add: addComponent,
+      reset: reset
+   };
 }
-
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
    'use strict';
 
@@ -666,7 +680,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
 
       createPart('eventBus')
-         .scope(constants.scope.singleton)
+         .scope(constants.scope.lazySingleton)
          .creator(function () {
             return eventBus;
          });

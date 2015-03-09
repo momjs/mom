@@ -38,7 +38,7 @@ describe('The Module Loader', function () {
       expect(dependencyForFirstSpy).not.toBe(dependencyForSecondSpy);
    });
 
-   it('should get same instance of part when selecting singleton scope', function () {
+   it('should get same instance of part when selecting lazy singleton scope', function () {
 
       var dependencyForFirstSpy, dependencyForSecondSpy;
       var firstSpyPart = jasmine.createSpy('spyPart_1').and.callFake(
@@ -52,7 +52,40 @@ describe('The Module Loader', function () {
          }
       );
       var referencedPart = 'partName';
-      moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.singleton).creator(
+      moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.lazySingleton).creator(
+         function () {
+            return {
+               /*
+                * returns empty part object
+                */
+            };
+         }
+      );
+
+      moduleSystem.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
+      moduleSystem.createPart('spyPart2').dependencies([referencedPart]).creator(secondSpyPart);
+      moduleSystem.getPart('spyPart1');
+      moduleSystem.getPart('spyPart2');
+
+      expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
+   });
+
+
+   it('should get same instance of part when selecting eager singleton scope', function () {
+
+      var dependencyForFirstSpy, dependencyForSecondSpy;
+      var firstSpyPart = jasmine.createSpy('spyPart_1').and.callFake(
+         function (dependencyPart) {
+            dependencyForFirstSpy = dependencyPart;
+         }
+      );
+      var secondSpyPart = jasmine.createSpy('spyPart_2').and.callFake(
+         function (dependencyPart) {
+            dependencyForSecondSpy = dependencyPart;
+         }
+      );
+      var referencedPart = 'partName';
+      moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.eagerSingleton).creator(
          function () {
             return {
                /*
@@ -73,7 +106,7 @@ describe('The Module Loader', function () {
    it('should throw error when defining an invalid scope', function () {
       loadFixtures('moduleSystem/oneModule.html');
 
-      var dependencyForFirstSpy, dependencyForSecondSpy;
+      var dependencyForFirstSpy;
       var firstSpyPart = jasmine.createSpy('spyPart_1').and.callFake(
          function (dependencyPart) {
             dependencyForFirstSpy = dependencyPart;
@@ -120,6 +153,21 @@ describe('The Module Loader', function () {
 
       expect(spyModule).toHaveBeenCalled();
       expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
+   });
+
+   it('should load any eagersingleton part', function () {
+      var postConstructSpy = jasmine.createSpy('post construct');
+      var spyPart = jasmine.createSpy('creator').and.callFake(function () {
+         return {
+            postConstruct: postConstructSpy
+         };
+      });
+      moduleSystem.createPart('testPart').scope(moduleSystem.scope.eagerSingleton).creator(spyPart);
+
+      moduleSystem.initModulePage();
+
+      expect(spyPart).toHaveBeenCalled();
+      expect(postConstructSpy).toHaveBeenCalled();
    });
 
    it('should load module with configured selector and attribute', function () {
@@ -299,7 +347,7 @@ describe('The Module Loader', function () {
             test: 'test'
          };
          var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
-         moduleSystem.createPart('testPart').scope(moduleSystem.scope.singleton).creator(spyPart);
+         moduleSystem.createPart('testPart').scope(moduleSystem.scope.lazySingleton).creator(spyPart);
 
          moduleSystem.getPart('testPart');
          var partObjActual = moduleSystem.getPart('testPart');
@@ -307,6 +355,45 @@ describe('The Module Loader', function () {
          expect(partObj).toEqual(partObjActual);
          expect(spyPart.calls.count()).toEqual(1);
 
+      });
+
+      it('should call postConstruct from multi instance parts again', function () {
+         var postConstructSpy = jasmine.createSpy('post construct');
+
+
+         moduleSystem.createPart('testPart')
+            .creator(function () {
+               return {
+                  postConstruct: postConstructSpy
+               };
+            });
+
+
+         moduleSystem.getPart('testPart');
+         moduleSystem.getPart('testPart');
+
+
+         expect(postConstructSpy.calls.count()).toEqual(2);
+      });
+
+      it('should call postConstruct from lazy singleton parts once', function () {
+         var postConstructSpy = jasmine.createSpy('post construct');
+
+
+         moduleSystem.createPart('testPart')
+            .scope(moduleSystem.scope.lazySingleton)
+            .creator(function () {
+               return {
+                  postConstruct: postConstructSpy
+               };
+            });
+
+
+         moduleSystem.getPart('testPart');
+         moduleSystem.getPart('testPart');
+
+
+         expect(postConstructSpy.calls.count()).toEqual(1);
       });
 
       it('should provide a settings object to the part if specified', function () {
@@ -417,45 +504,6 @@ describe('The Module Loader', function () {
             expect(postConstructSpy).toHaveBeenCalled();
          });
 
-
-         it('should call postConstruct from multi instance parts again', function () {
-            var postConstructSpy = jasmine.createSpy('post construct');
-
-
-            moduleSystem.createPart('testPart')
-               .creator(function () {
-                  return {
-                     postConstruct: postConstructSpy
-                  };
-               });
-
-
-            moduleSystem.getPart('testPart');
-            moduleSystem.getPart('testPart');
-
-
-            expect(postConstructSpy.calls.count()).toEqual(2);
-         });
-
-         it('should call postConstruct from singleton parts once', function () {
-            var postConstructSpy = jasmine.createSpy('post construct');
-
-
-            moduleSystem.createPart('testPart')
-               .scope(moduleSystem.scope.singleton)
-               .creator(function () {
-                  return {
-                     postConstruct: postConstructSpy
-                  };
-               });
-
-
-            moduleSystem.getPart('testPart');
-            moduleSystem.getPart('testPart');
-
-
-            expect(postConstructSpy.calls.count()).toEqual(1);
-         });
       });
    });
 

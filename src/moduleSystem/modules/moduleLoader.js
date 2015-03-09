@@ -10,6 +10,8 @@ function moduleLoader(moduleAccess, partAccess, settings) {
          var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
             modulesOnPage = document.querySelectorAll(selector);
 
+         partAccess.initEagerSingletons();
+
          each(modulesOnPage, function (index, element) {
             initModule(element);
          });
