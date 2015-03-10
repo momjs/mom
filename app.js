@@ -89,7 +89,7 @@ moduleSystem.createModule("weather")
       var $domElement = $(domElement);
 
       function render(weather) {
-         var html = '<h2>' + weather.weather[0].description + ' <img src="http://openweathermap.org/img/w/' + weather.weather[0].icon + '.png"> ' + weather.main.temp + ' °C</h2>';
+         var html = '<h2>' + weather.weather[0].description + ' <img src="//openweathermap.org/img/w/' + weather.weather[0].icon + '.png"> ' + weather.main.temp + ' °C</h2>';
 
          $domElement.html(html);
       }
@@ -123,7 +123,7 @@ moduleSystem.createModule("useLocation")
 moduleSystem.createPart("weatherLoader")
    .dependencies(["eventBus"])
    .settings({
-      url: "http://api.openweathermap.org/data/2.5/weather?callback=?",
+      url: "//api.openweathermap.org/data/2.5/weather?callback=?",
       units: "metric" //imperial
    })
    .creator(function (settings, eventBus) {
