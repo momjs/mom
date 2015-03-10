@@ -155,14 +155,16 @@ moduleSystem.createPart("weatherLoader")
    .creator(function (settings, eventBus) {
       function loadWeather(lat, lng) {
          $.getJSON(settings.url, {
-            lat: lat,
-            lon: lng,
-            units: settings.units
-         }, successFunction);
+               lat: lat,
+               lon: lng,
+               units: settings.units
+            })
+            .done(successFunction);
 
          function successFunction(data) {
             eventBus.publish(weatherChangedEvent(data));
          }
+
 
       }
 
