@@ -64,22 +64,41 @@ moduleSystem.createModule("cityName")
    });
 
 moduleSystem.createModule("map")
-   .creator(function (domElement) {
+   .dependencies(["eventBus"])
+   .creator(function (domElement, eventBus) {
       var mapOptions = {
             zoom: 8
          },
          map = new google.maps.Map(domElement,
             mapOptions),
-         geocoder = new google.maps.Geocoder();
+         geocoder = new google.maps.Geocoder(),
+         marker;
 
       function onLocationChanged(event) {
          map.setCenter(event);
+         marker = new google.maps.Marker({
+            position: event,
+            map: map
+         });
       }
 
       $(window).on('resize', function () {
          var currCenter = map.getCenter();
          google.maps.event.trigger(map, 'resize');
          map.setCenter(currCenter);
+      });
+
+
+      google.maps.event.addListener(map, 'click', function (event) {
+         if (marker) {
+            marker.setMap(null);
+         }
+         marker = new google.maps.Marker({
+            position: event.latLng,
+            map: map
+         });
+
+         eventBus.publish(locationChangedEvent(event.latLng.lat(), event.latLng.lng()));
       })
 
 
