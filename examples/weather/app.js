@@ -1,8 +1,7 @@
-function useLocationChangedEvent(status) {
+function detectLocation() {
 
    return {
-      name: "UseLocationChanged",
-      status: status
+      name: "DetectLocation",
    };
 }
 
@@ -39,7 +38,7 @@ moduleSystem.createModule("cityName")
       var $domElement = $(domElement),
          $cityName = $domElement.find(settings.selector);
 
-      $cityName.val(settings.city);
+      setCity(settings.city);
 
       $cityName.on("change", function () {
          var cityName = $cityName.val();
@@ -47,9 +46,13 @@ moduleSystem.createModule("cityName")
          eventBus.publish(cityNameChangedEvent(cityName));
       });
 
-      function onUseLocationChanged(event) {
-         $cityName.val('');
-         $cityName.prop("disabled", event.status);
+      function onWeatherChanged(event) {
+         setCity(event.weather.name);
+      }
+
+      function setCity(name) {
+         $cityName.val(name);
+
       }
 
       function postConstruct() {
@@ -59,7 +62,7 @@ moduleSystem.createModule("cityName")
 
       return {
          postConstruct: postConstruct,
-         onUseLocationChanged: onUseLocationChanged
+         onWeatherChanged: onWeatherChanged
       };
    });
 
@@ -128,20 +131,18 @@ moduleSystem.createModule("weather")
       };
    });
 
-moduleSystem.createModule("useLocation")
+moduleSystem.createModule("detectLocation")
    .dependencies(["eventBus"])
    .settings({
-      selector: ".js-use-location"
+      selector: ".js-detect-location"
    })
    .creator(function (domElement, settings, eventBus) {
       var $domElement = $(domElement),
-         $useLocation = $domElement.find(settings.selector);
+         $detectLocation = $domElement.find(settings.selector);
 
 
-      $useLocation.on("change", function () {
-         var useLocation = $useLocation.is(":checked");
-
-         eventBus.publish(useLocationChangedEvent(useLocation));
+      $detectLocation.on("click", function () {
+         eventBus.publish(detectLocation());
       });
    });
 
@@ -195,16 +196,8 @@ moduleSystem.createPart("nearestLocation")
          }
       }
 
-      function onUseLocationChanged(event) {
-         var useLocation = event.status;
-
-         if (useLocation) {
-            getLocation();
-         }
-      }
-
       eventBus.add({
-         onUseLocationChanged: onUseLocationChanged
+         onDetectLocation: getLocation
       });
    });
 

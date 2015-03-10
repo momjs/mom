@@ -13,7 +13,7 @@ body {
 header {
    margin: 5px;
    flex-grow: 0;
-   border: 1px solid #000;
+   border: 1px solid #292920;
    border-radius: 7pt;
    display: flex;
    flex-direction: row;
@@ -38,7 +38,7 @@ header > div {
 
 .box {
    margin: 5px;
-   border: 1px solid #000;
+   border: 1px solid #292920;
    border-radius: 7pt;
    flex-grow: 1;
    flex-basis: 200px;
@@ -60,7 +60,8 @@ header > div {
    justify-content: center;
 }
 
-input {
+input,
+button {
    margin: 5px;
    padding: 5px
 }
