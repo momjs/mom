@@ -15,7 +15,6 @@ header {
    margin: 5px;
    flex-grow: 0;
    border: 1px solid #292920;
-   border-radius: 7pt;
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
@@ -40,7 +39,6 @@ header > div {
 .box {
    margin: 5px;
    border: 1px solid #292920;
-   border-radius: 7pt;
    flex-grow: 1;
    flex-basis: 200px;
    display: flex;

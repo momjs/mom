@@ -32,7 +32,7 @@ moduleSystem.createModule("cityName")
    .dependencies(["eventBus"])
    .settings({
       selector: ".js-city",
-      city: "Berlin",
+      city: "New York",
    })
    .creator(function (domElement, settings, eventBus) {
       var $domElement = $(domElement),
@@ -53,7 +53,6 @@ moduleSystem.createModule("cityName")
 
       function postConstruct() {
          eventBus.publish(cityNameChangedEvent(settings.city));
-
       }
 
       return {
@@ -69,7 +68,6 @@ moduleSystem.createModule("map")
          },
          map = new google.maps.Map(domElement,
             mapOptions),
-         geocoder = new google.maps.Geocoder(),
          marker;
 
       function onLocationChanged(event) {
@@ -87,18 +85,15 @@ moduleSystem.createModule("map")
          map.setCenter(currCenter);
       });
 
-
       google.maps.event.addListener(map, 'click', function (event) {
          eventBus.publish(locationChangedEvent(event.latLng.lat(), event.latLng.lng()));
-      })
+      });
 
       function clearMarker() {
          if (marker) {
             marker.setMap(null);
          }
       }
-
-
 
       return {
          onLocationChanged: onLocationChanged
@@ -114,10 +109,8 @@ moduleSystem.createModule("weather")
       function render(weather) {
          var current_condition = weather.current_condition[0],
             description = current_condition.weatherDesc[0].value,
-            icon = current_condition.weatherIconUrl[0].value;
-
-
-         var html = '<div class="weather">' + description + ' <img class="weather-image" src="' + icon + '"> ' + current_condition.temp_C + ' °C</div>';
+            icon = current_condition.weatherIconUrl[0].value,
+            html = '<div class="weather">' + description + ' <img class="weather-image" src="' + icon + '"> ' + current_condition.temp_C + ' °C</div>';
 
          $domElement.html(html);
       }
@@ -139,7 +132,6 @@ moduleSystem.createModule("detectLocation")
    .creator(function (domElement, settings, eventBus) {
       var $domElement = $(domElement),
          $detectLocation = $domElement.find(settings.selector);
-
 
       $detectLocation.on("click", function () {
          eventBus.publish(detectLocation());
@@ -194,9 +186,12 @@ moduleSystem.createPart("nearestLocation")
    .scope(moduleSystem.scope.eagerSingleton)
    .dependencies(["eventBus"])
    .creator(function (eventBus) {
+
       function getLocation() {
          if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+         } else {
+            alert("your browser dosen't support geolocalization");
          }
          //Get the latitude and the longitude;
          function successFunction(position) {
@@ -206,7 +201,7 @@ moduleSystem.createPart("nearestLocation")
          }
 
          function errorFunction() {
-            alert("Geocoder failed");
+            alert("Geolocalization failed");
          }
       }
 
@@ -223,13 +218,17 @@ moduleSystem.createPart("cityLocation")
 
 
       function onCityNameChanged(event) {
+         translateToCoordinates(event.cityName);
+      }
+
+      function translateToCoordinates(cityName) {
          geocoder.geocode({
-            'address': event.cityName
+            'address': cityName
          }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                eventBus.publish(locationChangedEvent(results[0].geometry.location.lat(), results[0].geometry.location.lng()));
             } else {
-               alert("Could not find location: " + event.cityName);
+               alert("Could not find location: " + cityName);
             }
          });
       }
@@ -240,8 +239,5 @@ moduleSystem.createPart("cityLocation")
       });
 
    });
-
-
-
 
 moduleSystem.initModulePage();
