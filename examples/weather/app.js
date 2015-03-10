@@ -149,17 +149,31 @@ moduleSystem.createModule("detectLocation")
 moduleSystem.createPart("weatherLoader")
    .dependencies(["eventBus"])
    .settings({
-      url: "//api.openweathermap.org/data/2.5/weather?callback=?",
+      key: "2cb49277948a9e176a0edf968c0f9c91",
+      url: "http://api.openweathermap.org/data/2.5/weather?callback=?",
       units: "metric" //imperial
    })
    .creator(function (settings, eventBus) {
       function loadWeather(lat, lng) {
-         $.getJSON(settings.url, {
+         var req = $.ajax({
+            url: settings.url,
+            data: {
+               units: settings.units,
                lat: lat,
                lon: lng,
-               units: settings.units
-            })
-            .done(successFunction);
+               APPID: settings.key,
+               cache: true
+            },
+            dataType: "jsonp",
+            timeout: 10000
+         });
+
+         req.success(successFunction);
+
+         req.error(function () {
+            alert("weather api not reachable wait for a while");
+         });
+
 
          function successFunction(data) {
             eventBus.publish(weatherChangedEvent(data));
