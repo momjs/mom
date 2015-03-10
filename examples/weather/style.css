@@ -70,3 +70,8 @@ button {
    margin: 5px;
    padding: 5px
 }
+
+.weather-image {
+   border-radius: 40px;
+   margin: 5px;
+}

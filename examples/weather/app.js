@@ -46,10 +46,6 @@ moduleSystem.createModule("cityName")
          eventBus.publish(cityNameChangedEvent(cityName));
       });
 
-      function onWeatherChanged(event) {
-         setCity(event.weather.name);
-      }
-
       function setCity(name) {
          $cityName.val(name);
 
@@ -61,8 +57,7 @@ moduleSystem.createModule("cityName")
       }
 
       return {
-         postConstruct: postConstruct,
-         onWeatherChanged: onWeatherChanged
+         postConstruct: postConstruct
       };
    });
 
@@ -117,7 +112,12 @@ moduleSystem.createModule("weather")
       var $domElement = $(domElement);
 
       function render(weather) {
-         var html = '<div class="weather">' + weather.weather[0].description + ' <img src="//openweathermap.org/img/w/' + weather.weather[0].icon + '.png"> ' + weather.main.temp + ' °C</div>';
+         var current_condition = weather.current_condition[0],
+            description = current_condition.weatherDesc[0].value,
+            icon = current_condition.weatherIconUrl[0].value;
+
+
+         var html = '<div class="weather">' + description + ' <img class="weather-image" src="' + icon + '"> ' + current_condition.temp_C + ' °C</div>';
 
          $domElement.html(html);
       }
@@ -149,23 +149,21 @@ moduleSystem.createModule("detectLocation")
 moduleSystem.createPart("weatherLoader")
    .dependencies(["eventBus"])
    .settings({
-      key: "2cb49277948a9e176a0edf968c0f9c91",
-      url: "http://api.openweathermap.org/data/2.5/weather?callback=?",
-      units: "metric" //imperial
+      k: "e95b16b710ec21d99e0c5f2997885",
+      url: "//api.worldweatheronline.com/free/v2/weather.ashx?callback=?",
    })
    .creator(function (settings, eventBus) {
       function loadWeather(lat, lng) {
          var req = $.ajax({
             url: settings.url,
             data: {
-               units: settings.units,
-               lat: lat,
-               lon: lng,
-               APPID: settings.key,
-               cache: true
+               format: "json",
+               key: settings.k,
+               q: lat + "," + lng
             },
             dataType: "jsonp",
-            timeout: 10000
+            timeout: 10000,
+            cache: true
          });
 
          req.success(successFunction);
@@ -176,7 +174,7 @@ moduleSystem.createPart("weatherLoader")
 
 
          function successFunction(data) {
-            eventBus.publish(weatherChangedEvent(data));
+            eventBus.publish(weatherChangedEvent(data.data));
          }
 
 
