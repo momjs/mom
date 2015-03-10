@@ -75,6 +75,7 @@ moduleSystem.createModule("map")
          marker;
 
       function onLocationChanged(event) {
+         clearMarker();
          map.setCenter(event);
          marker = new google.maps.Marker({
             position: event,
@@ -90,16 +91,14 @@ moduleSystem.createModule("map")
 
 
       google.maps.event.addListener(map, 'click', function (event) {
+         eventBus.publish(locationChangedEvent(event.latLng.lat(), event.latLng.lng()));
+      })
+
+      function clearMarker() {
          if (marker) {
             marker.setMap(null);
          }
-         marker = new google.maps.Marker({
-            position: event.latLng,
-            map: map
-         });
-
-         eventBus.publish(locationChangedEvent(event.latLng.lat(), event.latLng.lng()));
-      })
+      }
 
 
 
