@@ -1,18 +1,66 @@
-.box {
-   height: 250px;
-   flex-grow: 1;
-   flex-shrink: 0;
-   flex-basis: 200px;
-   justify-content: center;
-   align-items: center;
+html,
+body {
+   font: 24px Helvetica;
+   height: 100%;
+   padding: 0;
+   margin: 0;
+   display: flex;
+   flex-direction: column;
+   align-items: stretch;
+   flex-wrap: nowrap;
 }
 
-.container {
-   height: 75%;
+header {
+   margin: 5px;
+   flex-grow: 0;
+   border: 1px solid #000;
+   border-radius: 7pt;
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
-   justify-content: flex-start;
-   align-content: flex-start;
-   align-items: flex-start;
+}
+
+header > div {
+   margin: 5px;
+   flex-grow: 1;
+   flex-basis: 200px;
+   display: flex;
+   align-items: center;
+   align-content: center;
+}
+
+.container {
+   flex-grow: 1;
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+}
+
+.box {
+   margin: 5px;
+   border: 1px solid #000;
+   border-radius: 7pt;
+   flex-grow: 1;
+   flex-basis: 200px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.box > div {
+   flex-grow: 1;
+   flex-basis: 200px;
+   vertical-align: center;
+   padding-bottom: 15px;
+}
+
+.weather {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+input {
+   margin: 5px;
+   padding: 5px
 }

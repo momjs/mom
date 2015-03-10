@@ -7,24 +7,30 @@
 </head>
 
 <body>
-   <div id="wrapper">
-      <div modules="useLocation,cityName">
-         Set Location:
-         <input class="js-city" type="text" /> Detect Location:
-         <input class="js-use-location" type="checkbox" />
+   <header modules="useLocation,cityName">
+      <div>
+         <label for="city">Set Location:</label>
+         <input class="js-city" type="text" id="city" />
 
       </div>
-      <div class="container">
-         <div modules="map" class="box">
+      <div>
+         <label for="detectLocation">Detect Location:</label>
+         <input class="js-use-location" type="checkbox" id="detectLocation" />
 
-         </div>
-         <div modules="weather" class="box">
-
-         </div>
       </div>
 
+   </header>
 
+   <div class="container">
+      <div modules="map" class="box">
+      </div>
+      <div modules="weather" class="box">
+
+      </div>
    </div>
+
+
+
 
    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>

@@ -76,6 +76,13 @@ moduleSystem.createModule("map")
          map.setCenter(event);
       }
 
+      $(window).on('resize', function () {
+         var currCenter = map.getCenter();
+         google.maps.event.trigger(map, 'resize');
+         map.setCenter(currCenter);
+      })
+
+
 
       return {
          onLocationChanged: onLocationChanged
@@ -89,7 +96,7 @@ moduleSystem.createModule("weather")
       var $domElement = $(domElement);
 
       function render(weather) {
-         var html = '<h2>' + weather.weather[0].description + ' <img src="//openweathermap.org/img/w/' + weather.weather[0].icon + '.png"> ' + weather.main.temp + ' °C</h2>';
+         var html = '<div class="weather">' + weather.weather[0].description + ' <img src="//openweathermap.org/img/w/' + weather.weather[0].icon + '.png"> ' + weather.main.temp + ' °C</div>';
 
          $domElement.html(html);
       }
