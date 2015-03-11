@@ -112,14 +112,24 @@ moduleSystem.createModule("color-changer")
       ]
    })
    .creator(function (domElement, settings) {
-      var $domElement = $(domElement);
+      var $domElement = $(domElement)
+      var currentIndex = 0;
 
       function onWeatherChanged() {
          $domElement.css("background-color", randomColor());
       }
 
       function randomColor() {
-         return settings.colors[Math.floor(Math.random() * settings.colors.length)];
+         var index;
+         do {
+            index = randomIndex();
+         } while (index !== currentIndex);
+
+         return settings.colors[index];
+      }
+
+      function randomIndex() {
+         return Math.floor(Math.random() * settings.colors.length);;
       }
 
       return {
