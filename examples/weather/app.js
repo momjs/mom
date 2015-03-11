@@ -48,7 +48,6 @@ moduleSystem.createModule("cityName")
 
       function setCity(name) {
          $cityName.val(name);
-
       }
 
       function postConstruct() {
