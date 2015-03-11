@@ -33,7 +33,8 @@ header > div {
 }
 
 input,
-button {
+button,
+i {
    margin: 5px;
    padding: 5px
 }
@@ -60,7 +61,6 @@ button {
    padding-bottom: 15px;
 }
 
-
 .weather-image {
    border-radius: 40px;
    margin: 5px;
@@ -75,5 +75,4 @@ button {
 .weather-container {
    color: #fff;
    background-color: #cdd419;
-   
 }
