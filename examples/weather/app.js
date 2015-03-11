@@ -123,7 +123,7 @@ moduleSystem.createModule("color-changer")
          var index;
          do {
             index = randomIndex();
-         } while (index !== currentIndex);
+         } while (index === currentIndex);
 
          return settings.colors[index];
       }
