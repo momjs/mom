@@ -99,6 +99,35 @@ moduleSystem.createModule("map")
       };
    });
 
+moduleSystem.createModule("color-changer")
+   .settings({
+      colors: [
+         "#c48d8d",
+         "#918dc4",
+         "#8dc4bc",
+         "#c48d8d",
+         "#c0c48d",
+         "#0f2b88",
+         "#cdd419"
+      ]
+   })
+   .creator(function (domElement, settings) {
+      var $domElement = $(domElement);
+
+      function onWeatherChanged() {
+         $domElement.css("background-color", randomColor());
+      }
+
+      function randomColor() {
+         return settings.colors[Math.floor(Math.random() * settings.colors.length)];
+      }
+
+      return {
+         onWeatherChanged: onWeatherChanged
+      };
+
+   });
+
 
 moduleSystem.createModule("weather")
    .dependencies(["weatherLoader"])

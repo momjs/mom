@@ -12,16 +12,14 @@ body {
 }
 
 header {
-   margin: 5px;
+   padding: 20px;
    flex-grow: 0;
-   border: 1px solid #292920;
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
 }
 
 header > div {
-   margin: 5px;
    flex-grow: 1;
    flex-basis: 200px;
    display: flex;
@@ -29,7 +27,18 @@ header > div {
    align-content: center;
 }
 
-.container {
+.location {
+   display: flex;
+   flex-wrap: wrap
+}
+
+input,
+button {
+   margin: 5px;
+   padding: 5px
+}
+
+.box-container {
    flex-grow: 1;
    display: flex;
    flex-direction: row;
@@ -37,8 +46,6 @@ header > div {
 }
 
 .box {
-   margin: 5px;
-   border: 1px solid #292920;
    flex-grow: 1;
    flex-basis: 200px;
    display: flex;
@@ -53,24 +60,20 @@ header > div {
    padding-bottom: 15px;
 }
 
+
+.weather-image {
+   border-radius: 40px;
+   margin: 5px;
+}
+
 .weather {
    display: flex;
    align-items: center;
    justify-content: center;
 }
 
-.location {
-   display: flex;
-   flex-wrap: wrap
-}
-
-input,
-button {
-   margin: 5px;
-   padding: 5px
-}
-
-.weather-image {
-   border-radius: 40px;
-   margin: 5px;
+.weather-container {
+   color: #fff;
+   background-color: #cdd419;
+   
 }
