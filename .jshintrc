@@ -1,5 +1,6 @@
 {
    "curly": true,
+   "bitwise": true,
    "camelcase": true,
    "eqeqeq": true,
    "eqnull": true,
@@ -10,6 +11,7 @@
    "newcap": true,
    "noarg": true,
    "noempty": true,
+   "notypeof": true,
    "nonbsp": true,
    "nonew": true,
    "quotmark": "single",

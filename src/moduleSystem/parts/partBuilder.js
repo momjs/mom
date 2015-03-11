@@ -64,7 +64,8 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
          return {
             dependencies: addDependencies,
-            creator: addCreator
+            creator: addCreator,
+            scope: addScope
          };
       }
 
@@ -73,7 +74,8 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
          return {
             settings: addSettings,
-            creator: addCreator
+            creator: addCreator,
+            scope: addScope
          };
       }
 
