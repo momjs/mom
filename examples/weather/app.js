@@ -1,18 +1,3 @@
-function detectLocation() {
-
-   return {
-      name: "DetectLocation",
-   };
-}
-
-function cityNameChangedEvent(cityName) {
-   return {
-      name: "CityNameChanged",
-      cityName: cityName
-   };
-}
-
-
 function locationChangedEvent(lat, lng) {
    return {
       name: "LocationChanged",
@@ -28,33 +13,43 @@ function weatherChangedEvent(weather) {
    };
 }
 
-moduleSystem.createModule("cityName")
-   .dependencies(["eventBus"])
+moduleSystem.createModule("set-location")
+   .dependencies(["location-translator", "eventBus"])
    .settings({
-      selector: ".js-city",
-      city: "New York",
+      city: "New York"
    })
-   .creator(function (domElement, settings, eventBus) {
-      var $domElement = $(domElement),
-         $cityName = $domElement.find(settings.selector);
+   .creator(function (domElement, settings, translator, eventBus) {
+      var $location = $(domElement);
 
       setCity(settings.city);
 
-      $cityName.on("change", function () {
-         var cityName = $cityName.val();
-
-         eventBus.publish(cityNameChangedEvent(cityName));
+      $location.on("change", function () {
+         var cityName = $location.val();
+         publishCity(cityName);
       });
 
       function setCity(name) {
-         $cityName.val(name);
+         $location.val(name);
+      }
+
+      function publishCity(cityName) {
+         translator.toCoordinates(cityName, function (lat, lng) {
+            eventBus.publish(locationChangedEvent(lat, lng));
+         });
+      }
+
+      function onLocationChanged(event) {
+         translator.toLocation(event.lat, event.lng, function (cityName) {
+            setCity(cityName);
+         });
       }
 
       function postConstruct() {
-         eventBus.publish(cityNameChangedEvent(settings.city));
+         publishCity(settings.city);
       }
 
       return {
+         onLocationChanged: onLocationChanged,
          postConstruct: postConstruct
       };
    });
@@ -112,8 +107,8 @@ moduleSystem.createModule("color-changer")
       ]
    })
    .creator(function (domElement, settings) {
-      var $domElement = $(domElement)
-      var currentIndex = 0;
+      var $domElement = $(domElement),
+         currentIndex = 0;
 
       function onWeatherChanged() {
          $domElement.css("background-color", randomColor());
@@ -140,7 +135,6 @@ moduleSystem.createModule("color-changer")
 
 
 moduleSystem.createModule("weather")
-   .dependencies(["weatherLoader"])
    .creator(function (domElement) {
       var $domElement = $(domElement);
 
@@ -162,22 +156,22 @@ moduleSystem.createModule("weather")
       };
    });
 
-moduleSystem.createModule("detectLocation")
-   .dependencies(["eventBus"])
-   .settings({
-      selector: ".js-detect-location"
-   })
-   .creator(function (domElement, settings, eventBus) {
-      var $domElement = $(domElement),
-         $detectLocation = $domElement.find(settings.selector);
+moduleSystem.createModule("detect-location")
+   .dependencies(["nearest-location", "eventBus"])
+   .creator(function (domElement, nearestLocation, eventBus) {
+      var $detectLocation = $(domElement);
 
       $detectLocation.on("click", function () {
-         eventBus.publish(detectLocation());
+         nearestLocation.getLocation(function (lat, lng) {
+            eventBus.publish(locationChangedEvent(lat, lng));
+
+         });
       });
    });
 
-moduleSystem.createPart("weatherLoader")
+moduleSystem.createPart("weather-loader")
    .dependencies(["eventBus"])
+   .scope(moduleSystem.scope.eagerSingleton)
    .settings({
       k: "e95b16b710ec21d99e0c5f2997885",
       url: "//api.worldweatheronline.com/free/v2/weather.ashx?callback=?",
@@ -196,18 +190,13 @@ moduleSystem.createPart("weatherLoader")
             cache: true
          });
 
-         req.success(successFunction);
+         req.success(function (data) {
+            eventBus.publish(weatherChangedEvent(data.data));
+         });
 
          req.error(function () {
             alert("weather api not reachable wait for a while");
          });
-
-
-         function successFunction(data) {
-            eventBus.publish(weatherChangedEvent(data.data));
-         }
-
-
       }
 
       function onLocationChanged(event) {
@@ -220,12 +209,11 @@ moduleSystem.createPart("weatherLoader")
    });
 
 
-moduleSystem.createPart("nearestLocation")
+moduleSystem.createPart("nearest-location")
    .scope(moduleSystem.scope.eagerSingleton)
-   .dependencies(["eventBus"])
-   .creator(function (eventBus) {
+   .creator(function () {
 
-      function getLocation() {
+      function getLocation(callback) {
          if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
          } else {
@@ -235,7 +223,7 @@ moduleSystem.createPart("nearestLocation")
          function successFunction(position) {
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
-            eventBus.publish(locationChangedEvent(lat, lng));
+            callback(lat, lng);
          }
 
          function errorFunction() {
@@ -243,38 +231,48 @@ moduleSystem.createPart("nearestLocation")
          }
       }
 
-      eventBus.add({
-         onDetectLocation: getLocation
-      });
+      return {
+         getLocation: getLocation
+      }
    });
 
-moduleSystem.createPart("cityLocation")
-   .scope(moduleSystem.scope.eagerSingleton)
-   .dependencies(["eventBus"])
-   .creator(function (eventBus)  {
+moduleSystem.createPart("location-translator")
+   .scope(moduleSystem.lazySingleton)
+   .creator(function ()  {
       var geocoder = new google.maps.Geocoder();
 
-
-      function onCityNameChanged(event) {
-         translateToCoordinates(event.cityName);
-      }
-
-      function translateToCoordinates(cityName) {
+      function toCoordinates(cityName, callback) {
          geocoder.geocode({
             'address': cityName
          }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-               eventBus.publish(locationChangedEvent(results[0].geometry.location.lat(), results[0].geometry.location.lng()));
+               callback(results[0].geometry.location.lat(), results[0].geometry.location.lng());
             } else {
                alert("Could not find location: " + cityName);
             }
          });
       }
 
+      function toLocation(lat, lng, callback) {
+         var latlng = new google.maps.LatLng(lat, lng);
+         geocoder.geocode({
+            'latLng': latlng
+         }, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+               callback(results[0].formatted_address)
+            } else {
+               callback("");
+            }
+         });
+      }
 
-      eventBus.add({
-         onCityNameChanged: onCityNameChanged
-      });
+
+
+      return {
+         toLocation: toLocation,
+         toCoordinates: toCoordinates
+      };
+
 
    });
 

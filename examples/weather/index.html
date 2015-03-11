@@ -9,14 +9,14 @@
 </head>
 
 <body>
-   <header modules="detectLocation,cityName">
+   <header>
       <div class="location">
          <label for="city"><i class="fa fa-map-marker fa-5"></i>
          </label>
-         <input class="js-city" type="text" id="city" />
+         <input modules="set-location" type="text" id="city" />
       </div>
       <div>
-         <button class="js-detect-location">Detect Location</button>
+         <button modules="detect-location" class="js-detect-location">Detect Location</button>
       </div>
 
    </header>

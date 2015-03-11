@@ -32,6 +32,10 @@ header > div {
    flex-wrap: wrap
 }
 
+input {
+   width: 83%;
+}
+
 input,
 button,
 i {

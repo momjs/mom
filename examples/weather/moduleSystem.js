@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.2.0 - 2015-03-09 * @link 
+ * @version v1.2.0 - 2015-03-11 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -419,7 +419,8 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
          return {
             dependencies: addDependencies,
-            creator: addCreator
+            creator: addCreator,
+            scope: addScope
          };
       }
 
@@ -428,7 +429,8 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
          return {
             settings: addSettings,
-            creator: addCreator
+            creator: addCreator,
+            scope: addScope
          };
       }
 
