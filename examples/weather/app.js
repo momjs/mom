@@ -56,10 +56,14 @@ moduleSystem.createModule("set-location")
 
 moduleSystem.createModule("map")
    .dependencies(["eventBus"])
-   .creator(function (domElement, eventBus) {
-      var mapOptions = {
-            zoom: 8
-         },
+   .settings({})
+   .creator(function (domElement, settings, eventBus) {
+      var mapOptions = $.extend({
+            mapTypeControl: false,
+            panControl: false,
+            zoom: 8,
+            streetViewControl: false
+         }, settings.mapOptions),
          map = new google.maps.Map(domElement,
             mapOptions),
          marker;
@@ -142,7 +146,7 @@ moduleSystem.createModule("weather")
          var current_condition = weather.current_condition[0],
             description = current_condition.weatherDesc[0].value,
             icon = current_condition.weatherIconUrl[0].value,
-            html = '<div class="weather">' + description + ' <img class="weather-image" src="' + icon + '"> ' + current_condition.temp_C + ' °C</div>';
+            html = '<div class="weather"><span class="weather-text1">' + description + '</span><img class="weather-image" src="' + icon + '"><span class="weather-text2">' + current_condition.temp_C + ' °C</span></div>';
 
          $domElement.html(html);
       }

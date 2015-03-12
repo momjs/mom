@@ -1,0 +1,137 @@
+html,
+body {
+   font: 24px Helvetica;
+   height: 100%;
+   padding: 0;
+   margin: 0;
+}
+
+i {
+   color: white
+}
+
+header {
+   position: absolute;
+   background-color: rgb(0, 142, 223);
+   height: 4em;
+   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+   z-index: 1;
+   top: 1em;
+   left: 1em;
+   right: 1em
+}
+
+.detect-location {
+   position: absolute;
+   right: 1em;
+   bottom: -1.25em;
+   background-color: rgb(215, 0, 108);
+   border-radius: 50px;
+   width: 2.5em;
+   height: 2.5em;
+   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+   z-index: 2;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.location-container {
+   position: absolute;
+   right: 1em;
+   top: 0.5em;
+   left: 14em;
+}
+
+.location {
+   display: flex;
+   align-items: center;
+   justify-content: flex-end;
+}
+
+.location * {
+   flex: none;
+}
+
+.location input {
+   margin-left: 10px;
+   flex-grow: 1;
+}
+
+.detect-location i {
+   flex: none;
+   font-size: 1.7em;
+}
+
+.map {
+   height: 100%;
+}
+
+.weather-image {
+   border-radius: 40px;
+   margin: 5px;
+}
+
+.weather {
+   display: flex;
+   align-items: center;
+   justify-content: space-around;
+   align-content: center;
+   flex-wrap: wrap;
+   flex-flow: column;
+   flex-grow: 1;
+}
+
+.weather-container {
+   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+   z-index: 1;
+   bottom: 3em;
+   width: 8em;
+   left: 1.5em;
+   top: 4em;
+   position: absolute;
+   color: #fff;
+   background-color: white;
+   color: black;
+   font-size: 1em;
+   display: flex;
+   align-items: stretch;
+   justify-content: center;
+}
+
+@media screen and (max-width: 500px) {
+   .location-container {
+      left: 1em;
+   }
+   .controll {
+      bottom: 1em;
+      left: 1em;
+      right: 1em;
+      position: absolute;
+   }
+   header {
+      top: 0;
+      right: 0;
+      left: 0;
+      position: relative;
+      overflow: visible;
+      z-index: 2;
+   }
+   .weather-container {
+      z-index: 1;
+      position: relative;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      top: 0;
+      background-color: white;
+      height: 4em;
+   }
+   .weather {
+      flex-wrap: nowrap;
+      flex-flow: row;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+   }
+}

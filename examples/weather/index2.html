@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+
+<head>
+   <title>Module System Weather</title>
+   <link href="css/font-awesome.min.css" rel="stylesheet">
+   <link href="style2.css" type="text/css" rel="stylesheet">
+   <meta name="viewport" content="width=device-width" />
+
+
+</head>
+
+<body>
+   <div class="controll">
+      <header modules="color-changer">
+         <div class="location-container">
+            <div class="location">
+               <label for="city"><i class="fa fa-map-marker fa-1x"></i>
+               </label>
+               <input modules="set-location" type="text" id="city" />
+            </div>
+         </div>
+         <div modules="detect-location" class="detect-location"><i class="fa fa-crosshairs fa-1x"></i>
+
+         </div>
+
+      </header>
+
+
+      <div modules="weather" class="box weather-container">
+      </div>
+   </div>
+
+   <div modules="map" class="box map">
+      <script type="map/settings">
+         { "mapOptions": { "zoomControl": true, "zoomControlOptions": { "style": 1, "position": 8 } } }
+      </script>
+   </div>
+
+
+
+
+
+   <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+   <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+   <script type="text/javascript" src="moduleSystem.js"></script>
+   <script type="text/javascript" src="app.js"></script>
+
+</body>
+
+</html>
