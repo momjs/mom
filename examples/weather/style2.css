@@ -70,6 +70,18 @@ header {
 .weather-image {
    border-radius: 40px;
    margin: 5px;
+   flex-shrink: 0;
+}
+
+.weather-text1 {
+   flex-basis: 5em;
+   display: flex;
+   align-items: flex-end;
+   justify-content: flex-end
+}
+
+.weather-text2 {
+   flex-basis: 5em;
 }
 
 .weather {
@@ -85,7 +97,7 @@ header {
 .weather-container {
    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
    z-index: 1;
-   bottom: 3em;
+   bottom: 1.5em;
    width: 8em;
    left: 1.5em;
    top: 4em;
