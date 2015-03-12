@@ -77,11 +77,13 @@ header {
    flex-basis: 5em;
    display: flex;
    align-items: flex-end;
-   justify-content: flex-end
+   justify-content: flex-end;
+   text-align: center;
 }
 
 .weather-text2 {
    flex-basis: 5em;
+   text-align: center;
 }
 
 .weather {
