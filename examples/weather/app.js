@@ -101,7 +101,7 @@ moduleSystem.createModule("map")
 moduleSystem.createModule("color-changer")
    .settings({
       colors: [
-         "rgb(0, 142, 223)";
+         "rgb(0, 142, 223)",
          "#918dc4",
          "#8dc4bc",
          "#c48d8d",
