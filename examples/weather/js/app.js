@@ -25,7 +25,10 @@ moduleSystem.createModule("set-location")
 
       $location.on("change", function () {
          var cityName = $location.val();
-         publishCity(cityName);
+
+         if (cityName !== "") {
+            publishCity(cityName);
+         }
       });
 
       function setCity(name) {
@@ -61,6 +64,7 @@ moduleSystem.createModule("map")
       var mapOptions = $.extend({
             mapTypeControl: false,
             panControl: false,
+            zoomControl: false,
             zoom: 8,
             streetViewControl: false
          }, settings.mapOptions),

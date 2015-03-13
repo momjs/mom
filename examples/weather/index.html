@@ -3,38 +3,32 @@
 
 <head>
    <title>Module System Weather</title>
-   <link href="css/entypo.css" rel="stylesheet">
-   <link href="style2.css" type="text/css" rel="stylesheet">
+   <link href="css/materialize.css" rel="stylesheet">
+   <link href="css/style.css" type="text/css" rel="stylesheet">
    <meta name="viewport" content="width=device-width" />
-
-
 </head>
 
 <body>
    <div class="controll">
-      <header modules="color-changer">
+      <header class="z-depth-2" modules="color-changer">
          <div class="location-container">
-            <div class="location center">
-               <label for="city"><i class="icon-location-pin center"></i>
-               </label>
-               <input modules="set-location" type="text" id="city" />
+            <div class="right-align input-field">
+               <i class="mdi-maps-place prefix"></i>
+               <input modules="set-location" id="icon_prefix" type="text" class="set-location">
             </div>
          </div>
-         <div modules="detect-location" class="detect-location center"><i class="icon-hair-cross center"></i>
+         <a modules="detect-location" class="detect-location center btn-floating btn-large waves-effect waves-light"><i class="mdi-maps-my-location"></i>
 
-         </div>
+         </a>
 
       </header>
 
 
-      <div modules="weather" class="box weather-container">
+      <div modules="weather" class="weather-container z-depth-2">
       </div>
    </div>
 
-   <div modules="map" class="box map">
-      <script type="map/settings">
-         { "mapOptions": { "zoomControl": true, "zoomControlOptions": { "style": 1, "position": 8 } } }
-      </script>
+   <div modules="map" class="map">
    </div>
 
 
@@ -43,8 +37,9 @@
 
    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-   <script type="text/javascript" src="moduleSystem.js"></script>
-   <script type="text/javascript" src="app.js"></script>
+   <script type="text/javascript" src="js/materialize.js"></script>
+   <script type="text/javascript" src="js/moduleSystem.js"></script>
+   <script type="text/javascript" src="js/app.js"></script>
 
 </body>
 
