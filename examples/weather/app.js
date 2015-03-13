@@ -62,7 +62,8 @@ moduleSystem.createModule("map")
             mapTypeControl: false,
             panControl: false,
             zoom: 8,
-            streetViewControl: false
+            streetViewControl: false,
+            zoomControl: false
          }, settings.mapOptions),
          map = new google.maps.Map(domElement,
             mapOptions),
