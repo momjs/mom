@@ -67,6 +67,10 @@ header {
    background-color: rgb(215, 0, 108);
 }
 
+.detect-location:hover {
+   background-color: rgb(215, 0, 108);
+}
+
 .detect-location i {}
 
 .map {
