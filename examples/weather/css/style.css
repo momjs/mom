@@ -77,6 +77,10 @@ header {
    height: 100%;
 }
 
+.box {
+   border-radius: 2px;
+}
+
 .weather-image {
    border-radius: 40px;
    margin: 5px;
