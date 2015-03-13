@@ -66,7 +66,8 @@ moduleSystem.createModule("map")
             panControl: false,
             zoomControl: false,
             zoom: 8,
-            streetViewControl: false
+            streetViewControl: false,
+            zoomControl: false
          }, settings.mapOptions),
          map = new google.maps.Map(domElement,
             mapOptions),
@@ -84,7 +85,7 @@ moduleSystem.createModule("map")
       $(window).on('resize', function () {
          var currCenter = map.getCenter();
          google.maps.event.trigger(map, 'resize');
-         map.setCenter(currCenter);
+         map.panTo(currCenter);
       });
 
       google.maps.event.addListener(map, 'click', function (event) {
