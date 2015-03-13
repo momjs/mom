@@ -46,14 +46,14 @@ header {
 
 .detect-location i {
    flex: none;
-   font-size: 1.5em;
+   font-size: 1.2em;
 }
 
 .location-container {
    position: absolute;
    right: 1em;
    top: 0.5em;
-   left: 14em;
+   left: 12em;
 }
 
 .location {
@@ -63,12 +63,11 @@ header {
 }
 
 .location input {
-   margin-left: 0.3em;
+   margin-left: 0.1em;
    flex-grow: 1;
 }
 
 .location label {
-   padding-top: 0.05em;
    font-size: 0.8em;
 }
 
