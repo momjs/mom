@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2015 by original authors @ fontello.com</metadata>
+<defs>
+<font id="entypo" horiz-adv-x="1000" >
+<font-face font-family="entypo" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="hair-cross" unicode="&#xe800;" d="m500 830c-265 0-480-215-480-480 0-265 215-480 480-480 265 0 480 215 480 480 0 265-215 480-480 480z m50-856v226h-100v-226c-170 22-304 156-326 326h226v100h-226c22 170 156 304 326 326v-226h100v226c170-22 304-156 326-326h-226v-100h226c-22-170-156-304-326-326z" horiz-adv-x="1000" />
+<glyph glyph-name="location-pin" unicode="&#xe801;" d="m500 750c-138 0-250-112-250-250 0-239 250-550 250-550s250 311 250 550c0 138-112 250-250 250z m0-388c-75 0-135 60-135 135s60 135 135 135c75 0 135-60 135-135s-60-135-135-135z" horiz-adv-x="1000" />
+</font>
+</defs>
+</svg>

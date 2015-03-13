@@ -1,3 +1,14 @@
+* {
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+}
+
+.center {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
 html,
 body {
    font: 24px Helvetica;
@@ -31,9 +42,11 @@ header {
    height: 2.5em;
    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
    z-index: 2;
-   display: flex;
-   align-items: center;
-   justify-content: center;
+}
+
+.detect-location i {
+   flex: none;
+   font-size: 1.5em;
 }
 
 .location-container {
@@ -45,22 +58,18 @@ header {
 
 .location {
    display: flex;
-   align-items: center;
+   flex-flow: row;
    justify-content: flex-end;
 }
 
-.location * {
-   flex: none;
-}
-
 .location input {
-   margin-left: 10px;
+   margin-left: 0.3em;
    flex-grow: 1;
 }
 
-.detect-location i {
-   flex: none;
-   font-size: 1.7em;
+.location label {
+   padding-top: 0.05em;
+   font-size: 0.8em;
 }
 
 .map {
