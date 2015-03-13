@@ -24,12 +24,12 @@ i {
 
 .input-field .prefix.active {
    color: #fff;
-   margin-top: -0.2rem;
 }
 
 .input-field .prefix {
    color: #fff;
    font-size: 1.5em;
+   margin-top: -0.2rem;
 }
 
 header {
