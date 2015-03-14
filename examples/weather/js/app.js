@@ -153,13 +153,11 @@ moduleSystem.createModule("weather")
          $domElement.html(html);
       }
 
-
       function loading() {
          var html = '<div class="preloader-wrapper big active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"> <div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></div>';
 
          $domElement.html(html);
       }
-
 
       function onWeatherChanged(event) {
          render(event.weather);
@@ -203,66 +201,6 @@ moduleSystem.createPart("weather-loader")
       eventBus.add({
          onLocationChanged: onLocationChanged
       });
-   });
-
-moduleSystem.createPart("owm-loader")
-   .dependencies(["owm-mapper"])
-   .settings({
-      key: "2cb49277948a9e176a0edf968c0f9c91",
-      url: "http://api.openweathermap.org/data/2.5/weather?callback=?",
-      units: "metric" //imperial
-   })
-   .creator(function (settings, mapper) {
-      function loadWeather(lat, lng, callback) {
-         var req = $.ajax({
-            url: settings.url,
-            data: {
-               units: settings.units,
-               lat: lat,
-               lon: lng,
-               APPID: settings.key
-            },
-            cache: true,
-            dataType: "jsonp",
-            timeout: 10000
-         });
-
-         req.success(function (data) {
-            callback(mapper.map(data));
-         });
-
-         req.error(function () {
-            alert("Open Weather Map api not reachable. Wait for a while");
-         });
-      }
-
-
-      return {
-         load: loadWeather
-      };
-   });
-
-moduleSystem.createPart("owm-mapper")
-   .creator(function () {
-
-      function map(weather) {
-         var temp = weather.main.temp,
-            description = weather.weather[0].description,
-            icon = "//openweathermap.org/img/w/" + weather.weather[0].icon + ".png";
-
-
-         return {
-            supplier: "Open Weather Map",
-            temp: temp,
-            description: description,
-            icon: icon
-         };
-
-      }
-
-      return {
-         map: map
-      };
    });
 
 
