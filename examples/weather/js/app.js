@@ -21,34 +21,34 @@ moduleSystem.createModule("set-location")
    .creator(function (domElement, settings, translator, eventBus) {
       var $location = $(domElement);
 
-      setCity(settings.city);
+      setLocation(settings.city);
 
       $location.on("change", function () {
-         var cityName = $location.val();
+         var location = $location.val();
 
-         if (cityName !== "") {
-            publishCity(cityName);
+         if (location !== "") {
+            publishLocation(location);
          }
       });
 
-      function setCity(name) {
+      function setLocation(name) {
          $location.val(name);
       }
 
-      function publishCity(cityName) {
-         translator.toCoordinates(cityName, function (lat, lng) {
+      function publishLocation(location) {
+         translator.toCoordinates(location, function (lat, lng) {
             eventBus.publish(locationChangedEvent(lat, lng));
          });
       }
 
       function onLocationChanged(event) {
          translator.toLocation(event.lat, event.lng, function (cityName) {
-            setCity(cityName);
+            setLocation(cityName);
          });
       }
 
       function postConstruct() {
-         publishCity(settings.city);
+         publishLocation(settings.city);
       }
 
       return {
@@ -148,19 +148,25 @@ moduleSystem.createModule("weather")
       var $domElement = $(domElement);
 
       function render(weather) {
-         var current_condition = weather.current_condition[0],
-            description = current_condition.weatherDesc[0].value,
-            icon = current_condition.weatherIconUrl[0].value,
-            html = '<div class="weather"><span class="weather-text1">' + description + '</span><img class="weather-image" src="' + icon + '"><span class="weather-text2">' + current_condition.temp_C + ' °C</span></div>';
+         var html = '<div class="weather"><span class="weather-text1">' + weather.description + '</span><img class="weather-image" src="' + weather.icon + '"><span class="weather-text2">' + weather.temp + ' °C</span></div>';
 
          $domElement.html(html);
       }
+
+
+      function loading() {
+         var html = '<div class="preloader-wrapper big active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"> <div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></div>';
+
+         $domElement.html(html);
+      }
+
 
       function onWeatherChanged(event) {
          render(event.weather);
       }
 
       return {
+         onLocationChanged: loading,
          onWeatherChanged: onWeatherChanged
       };
    });
@@ -179,14 +185,95 @@ moduleSystem.createModule("detect-location")
    });
 
 moduleSystem.createPart("weather-loader")
-   .dependencies(["eventBus"])
+   .dependencies(["eventBus", "wwo-loader"])
    .scope(moduleSystem.scope.eagerSingleton)
+   .creator(function (eventBus, loader) {
+      function loadWeather(lat, lng) {
+         loader.load(lat, lng, function (weather) {
+            eventBus.publish(
+               weatherChangedEvent(weather)
+            );
+         });
+      }
+
+      function onLocationChanged(event) {
+         loadWeather(event.lat, event.lng);
+      }
+
+      eventBus.add({
+         onLocationChanged: onLocationChanged
+      });
+   });
+
+moduleSystem.createPart("owm-loader")
+   .dependencies(["owm-mapper"])
+   .settings({
+      key: "2cb49277948a9e176a0edf968c0f9c91",
+      url: "http://api.openweathermap.org/data/2.5/weather?callback=?",
+      units: "metric" //imperial
+   })
+   .creator(function (settings, mapper) {
+      function loadWeather(lat, lng, callback) {
+         var req = $.ajax({
+            url: settings.url,
+            data: {
+               units: settings.units,
+               lat: lat,
+               lon: lng,
+               APPID: settings.key
+            },
+            cache: true,
+            dataType: "jsonp",
+            timeout: 10000
+         });
+
+         req.success(function (data) {
+            callback(mapper.map(data));
+         });
+
+         req.error(function () {
+            alert("Open Weather Map api not reachable. Wait for a while");
+         });
+      }
+
+
+      return {
+         load: loadWeather
+      };
+   });
+
+moduleSystem.createPart("owm-mapper")
+   .creator(function () {
+
+      function map(weather) {
+         var temp = weather.main.temp,
+            description = weather.weather[0].description,
+            icon = "//openweathermap.org/img/w/" + weather.weather[0].icon + ".png";
+
+
+         return {
+            supplier: "Open Weather Map",
+            temp: temp,
+            description: description,
+            icon: icon
+         };
+
+      }
+
+      return {
+         map: map
+      };
+   });
+
+
+moduleSystem.createPart("wwo-loader")
+   .dependencies(["wwo-mapper"])
    .settings({
       k: "e95b16b710ec21d99e0c5f2997885",
-      url: "//api.worldweatheronline.com/free/v2/weather.ashx?callback=?",
+      url: "//api2.worldweatheronline.com/free/v2/weather.ashx?callback=?",
    })
-   .creator(function (settings, eventBus) {
-      function loadWeather(lat, lng) {
+   .creator(function (settings, mapper) {
+      function load(lat, lng, callback) {
          var req = $.ajax({
             url: settings.url,
             data: {
@@ -200,11 +287,11 @@ moduleSystem.createPart("weather-loader")
          });
 
          req.success(function (data) {
-            eventBus.publish(weatherChangedEvent(data.data));
+            callback(mapper.map(data));
          });
 
          req.error(function () {
-            alert("weather api not reachable wait for a while");
+            alert("World Weather Online api not reachable. Wait for a while");
          });
       }
 
@@ -212,9 +299,35 @@ moduleSystem.createPart("weather-loader")
          loadWeather(event.lat, event.lng);
       }
 
-      eventBus.add({
-         onLocationChanged: onLocationChanged
-      });
+      return {
+         load: load
+      };
+   });
+
+
+moduleSystem.createPart("wwo-mapper")
+   .creator(function () {
+
+      function map(data) {
+         var weather = data.data,
+            current_condition = weather.current_condition[0],
+            temp = current_condition.temp_C,
+            description = current_condition.weatherDesc[0].value,
+            icon = current_condition.weatherIconUrl[0].value;
+
+
+         return {
+            supplier: "World Weather Online",
+            temp: temp,
+            description: description,
+            icon: icon
+         };
+
+      }
+
+      return {
+         map: map
+      };
    });
 
 
@@ -226,9 +339,9 @@ moduleSystem.createPart("nearest-location")
          if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
          } else {
-            alert("your browser dosen't support geolocalization");
+            alert("browser dosen't support geolocalization");
          }
-         //Get the latitude and the longitude;
+
          function successFunction(position) {
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
@@ -246,7 +359,7 @@ moduleSystem.createPart("nearest-location")
    });
 
 moduleSystem.createPart("location-translator")
-   .scope(moduleSystem.lazySingleton)
+   .scope(moduleSystem.scope.lazySingleton)
    .creator(function ()  {
       var geocoder = new google.maps.Geocoder();
 
@@ -268,7 +381,7 @@ moduleSystem.createPart("location-translator")
             'latLng': latlng
          }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-               callback(results[0].formatted_address)
+               callback(results[0].formatted_address);
             } else {
                callback("");
             }

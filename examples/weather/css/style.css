@@ -160,12 +160,13 @@ header {
       top: 0;
       background-color: white;
       height: 7rem;
-   }
-   .weather {
       flex-wrap: nowrap;
       flex-flow: row;
-      justify-content: center;
-      align-items: center;
-      align-content: center;
+   }
+   .weather {
+      flex-flow: row;
+   }
+   .hide {
+      display: none;
    }
 }
