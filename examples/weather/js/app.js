@@ -61,7 +61,8 @@ moduleSystem.createModule("map")
    .dependencies(["eventBus"])
    .settings({
       smallOffSetX: 0,
-      smallOffSetY: 100
+      smallOffSetY: 100,
+      smallWidthSize: 500
    })
    .creator(function (domElement, settings, eventBus) {
       var mapOptions = $.extend({
@@ -117,7 +118,7 @@ moduleSystem.createModule("map")
 
       function getSize() {
          var width = $window.width();
-         if (width <= 500) {
+         if (width <= settings.smallWidthSize) {
             return small;
          } else {
             return big;
