@@ -280,15 +280,15 @@ To do for 1.2
 - [x] scoped parts
 - [x] parts without constructor functions
 - [x] basic config options
-- [ ] merge part settings with settings provided from initialization
-- [ ] initialize every singleton part & add a lazy singleton scope
+- [x] initialize every singleton part & add a lazy singleton scope
 
 
 To do future releases
 -------------
-- [ ] add plugin concept for spezialized modules and parts
-- [ ] configurable async loading of modules and part
-- [ ] provide a method for dynamic loading and unloading of modules
 - [ ] initialize module system only on parts of the dom
 - [ ] provision single dom node
+- [ ] provide a method for dynamic loading and unloading of modules
+- [ ] merge part settings with settings provided from initialization
+- [ ] add plugin concept for spezialized modules and parts
+- [ ] configurable async loading of modules and part
 - [ ] debug module access with console
