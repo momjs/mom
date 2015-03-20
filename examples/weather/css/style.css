@@ -1,17 +1,5 @@
-* {
-   -webkit-font-smoothing: antialiased;
-   -moz-osx-font-smoothing: grayscale;
-}
-
-.center {
-   display: flex;
-   align-items: center;
-   justify-content: center;
-}
-
 html,
 body {
-   font: 24px Helvetica;
    height: 100%;
    padding: 0;
    margin: 0;
@@ -20,59 +8,77 @@ body {
 i {
    color: white
 }
+/* label underline focus color */
+
+.input-field input[type=text] {
+   border-bottom: 1px solid #fff;
+   box-shadow: 0 1px 0 0 #fff;
+}
+
+.input-field input[type=text]:focus {
+   border-bottom: 1px solid #2bbbad;
+   box-shadow: 0 1px 0 0 #2bbbad;
+   color: #fff;
+}
+/* icon prefix focus color */
+
+.input-field .prefix.active {
+   color: #fff;
+}
+
+.input-field .prefix {
+   color: #fff;
+   font-size: 1.5em;
+   margin-top: -0.2rem;
+}
 
 header {
    position: absolute;
    background-color: rgb(0, 142, 223);
-   height: 4em;
-   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+   height: 7rem;
    z-index: 1;
-   top: 1em;
-   left: 1em;
-   right: 1em
+   top: 1rem;
+   left: 1rem;
+   right: 1rem
+}
+
+.location-container {
+   padding-right: 1rem;
+   width: 100%;
+}
+
+.input-field .prefix {
+   height: 2rem;
+   margin-top: 0;
+}
+
+.input-field .prefix ~.set-location {
+   width: 60%;
+   max-width: 30rem;
+   color: #fff;
+   height: 2rem;
 }
 
 .detect-location {
    position: absolute;
-   right: 1em;
-   bottom: -1.25em;
+   right: 1rem;
+   margin-bottom: 0;
+   bottom: calc(55.5px / -2);
    background-color: rgb(215, 0, 108);
-   border-radius: 50px;
-   width: 2.5em;
-   height: 2.5em;
-   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-   z-index: 2;
 }
 
-.detect-location i {
-   flex: none;
-   font-size: 1.2em;
+.detect-location:hover {
+   background-color: rgb(215, 0, 108);
 }
 
-.location-container {
-   position: absolute;
-   right: 1em;
-   top: 0.5em;
-   left: 12em;
-}
-
-.location {
-   display: flex;
-   flex-flow: row;
-   justify-content: flex-end;
-}
-
-.location input {
-   margin-left: 0.1em;
-   flex-grow: 1;
-}
-
-.location label {
-   font-size: 0.8em;
-}
+.detect-location i {}
 
 .map {
    height: 100%;
+}
+
+.box {
+   border-radius: 2px;
 }
 
 .weather-image {
@@ -105,25 +111,31 @@ header {
 }
 
 .weather-container {
-   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
    z-index: 1;
-   bottom: 1.5em;
-   width: 8em;
-   left: 1.5em;
-   top: 4em;
+   bottom: 4rem;
+   width: 25%;
+   left: 2rem;
+   top: 4rem;
    position: absolute;
    color: #fff;
    background-color: white;
    color: black;
    font-size: 1em;
    display: flex;
-   align-items: stretch;
+   align-items: center;
    justify-content: center;
 }
 
 @media screen and (max-width: 500px) {
    .location-container {
-      left: 1em;
+      padding-right: 2rem;
+      width: 100%;
+   }
+   .input-field {
+      padding-top: 1rem;
+   }
+   .input-field .prefix ~.set-location {
+      width: calc(100% - 3rem);
    }
    .controll {
       bottom: 1em;
@@ -147,13 +159,14 @@ header {
       left: 0;
       top: 0;
       background-color: white;
-      height: 4em;
-   }
-   .weather {
+      height: 7rem;
       flex-wrap: nowrap;
       flex-flow: row;
-      justify-content: center;
-      align-items: center;
-      align-content: center;
+   }
+   .weather {
+      flex-flow: row;
+   }
+   .hide {
+      display: none;
    }
 }

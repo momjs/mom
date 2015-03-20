@@ -21,31 +21,34 @@ moduleSystem.createModule("set-location")
    .creator(function (domElement, settings, translator, eventBus) {
       var $location = $(domElement);
 
-      setCity(settings.city);
+      setLocation(settings.city);
 
       $location.on("change", function () {
-         var cityName = $location.val();
-         publishCity(cityName);
+         var location = $location.val();
+
+         if (location !== "") {
+            publishLocation(location);
+         }
       });
 
-      function setCity(name) {
+      function setLocation(name) {
          $location.val(name);
       }
 
-      function publishCity(cityName) {
-         translator.toCoordinates(cityName, function (lat, lng) {
+      function publishLocation(location) {
+         translator.toCoordinates(location, function (lat, lng) {
             eventBus.publish(locationChangedEvent(lat, lng));
          });
       }
 
       function onLocationChanged(event) {
          translator.toLocation(event.lat, event.lng, function (cityName) {
-            setCity(cityName);
+            setLocation(cityName);
          });
       }
 
       function postConstruct() {
-         publishCity(settings.city);
+         publishLocation(settings.city);
       }
 
       return {
@@ -56,32 +59,92 @@ moduleSystem.createModule("set-location")
 
 moduleSystem.createModule("map")
    .dependencies(["eventBus"])
-   .settings({})
+   .settings({
+      smallOffSetX: 0,
+      smallOffSetY: 100,
+      smallWidthSize: 500
+   })
    .creator(function (domElement, settings, eventBus) {
       var mapOptions = $.extend({
             mapTypeControl: false,
             panControl: false,
+            zoomControl: false,
             zoom: 8,
             streetViewControl: false,
             zoomControl: false
          }, settings.mapOptions),
          map = new google.maps.Map(domElement,
             mapOptions),
-         marker;
+         marker,
+         small = 0,
+         big = 1,
+         $window = $(window),
+         currentSize = getSize();
 
       function onLocationChanged(event) {
          clearMarker();
-         map.setCenter(event);
+         setCenter(new google.maps.LatLng(event.lat, event.lng));
          marker = new google.maps.Marker({
             position: event,
             map: map
          });
       }
 
-      $(window).on('resize', function () {
-         var currCenter = map.getCenter();
+      function setCenter(latLng) {
+         if (getSize() === small) {
+            map.panTo(latLng);
+            latLng = getProjection(latLng);
+         }
+         map.panTo(latLng);
+      }
+
+      function getProjection(latLng, revertOffset) {
+         var scale = Math.pow(2, map.getZoom()),
+            offSetX = (revertOffset) ? -settings.smallOffSetX : settings.smallOffSetX,
+            offSetY = (revertOffset) ? -settings.smallOffSetY : settings.smallOffSetY,
+            nw = new google.maps.LatLng(
+               map.getBounds().getNorthEast().lat(),
+               map.getBounds().getSouthWest().lng()
+            ),
+            worldCoordinateCenter = map.getProjection().fromLatLngToPoint(latLng),
+            pixelOffset = new google.maps.Point((offSetX / scale) || 0, (offSetY / scale) || 0),
+            worldCoordinateNewCenter = new google.maps.Point(
+               worldCoordinateCenter.x - pixelOffset.x,
+               worldCoordinateCenter.y + pixelOffset.y
+            );
+
+         return map.getProjection().fromPointToLatLng(worldCoordinateNewCenter);
+      }
+
+      function getSize() {
+         var width = $window.width();
+         if (width <= settings.smallWidthSize) {
+            return small;
+         } else {
+            return big;
+         }
+      }
+
+      $window.on('resize', function () {
+         var center = map.getCenter();
          google.maps.event.trigger(map, 'resize');
-         map.panTo(currCenter);
+
+         var size = getSize();
+         //center correction if size changes
+         if (currentSize !== size) {
+            if (currentSize === small) {
+               //change from samll to big
+               //move center down
+               center = getProjection(center, true);
+            } else {
+               //change from big to small 
+               //move center up
+               center = getProjection(center);
+            }
+            currentSize = size;
+         }
+
+         map.panTo(center);
       });
 
       google.maps.event.addListener(map, 'click', function (event) {
@@ -144,10 +207,13 @@ moduleSystem.createModule("weather")
       var $domElement = $(domElement);
 
       function render(weather) {
-         var current_condition = weather.current_condition[0],
-            description = current_condition.weatherDesc[0].value,
-            icon = current_condition.weatherIconUrl[0].value,
-            html = '<div class="weather"><span class="weather-text1">' + description + '</span><img class="weather-image" src="' + icon + '"><span class="weather-text2">' + current_condition.temp_C + ' °C</span></div>';
+         var html = '<div class="weather"><span class="weather-text1">' + weather.description + '</span><img class="weather-image" src="' + weather.icon + '"><span class="weather-text2">' + weather.temp + ' °C</span></div>';
+
+         $domElement.html(html);
+      }
+
+      function loading() {
+         var html = '<div class="preloader-wrapper big active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"> <div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></div>';
 
          $domElement.html(html);
       }
@@ -157,6 +223,7 @@ moduleSystem.createModule("weather")
       }
 
       return {
+         onLocationChanged: loading,
          onWeatherChanged: onWeatherChanged
       };
    });
@@ -175,32 +242,14 @@ moduleSystem.createModule("detect-location")
    });
 
 moduleSystem.createPart("weather-loader")
-   .dependencies(["eventBus"])
+   .dependencies(["eventBus", "wwo-loader"])
    .scope(moduleSystem.scope.eagerSingleton)
-   .settings({
-      k: "e95b16b710ec21d99e0c5f2997885",
-      url: "//api.worldweatheronline.com/free/v2/weather.ashx?callback=?",
-   })
-   .creator(function (settings, eventBus) {
+   .creator(function (eventBus, loader) {
       function loadWeather(lat, lng) {
-         var req = $.ajax({
-            url: settings.url,
-            data: {
-               format: "json",
-               key: settings.k,
-               q: lat + "," + lng
-            },
-            dataType: "jsonp",
-            timeout: 10000,
-            cache: true
-         });
-
-         req.success(function (data) {
-            eventBus.publish(weatherChangedEvent(data.data));
-         });
-
-         req.error(function () {
-            alert("weather api not reachable wait for a while");
+         loader.load(lat, lng, function (weather) {
+            eventBus.publish(
+               weatherChangedEvent(weather)
+            );
          });
       }
 
@@ -214,6 +263,71 @@ moduleSystem.createPart("weather-loader")
    });
 
 
+moduleSystem.createPart("wwo-loader")
+   .dependencies(["wwo-mapper"])
+   .settings({
+      k: "e95b16b710ec21d99e0c5f2997885",
+      url: "//api2.worldweatheronline.com/free/v2/weather.ashx?callback=?",
+   })
+   .creator(function (settings, mapper) {
+      function load(lat, lng, callback) {
+         var req = $.ajax({
+            url: settings.url,
+            data: {
+               format: "json",
+               key: settings.k,
+               q: lat + "," + lng
+            },
+            dataType: "jsonp",
+            timeout: 10000,
+            cache: true
+         });
+
+         req.success(function (data) {
+            callback(mapper.map(data));
+         });
+
+         req.error(function () {
+            alert("World Weather Online api not reachable. Wait for a while");
+         });
+      }
+
+      function onLocationChanged(event) {
+         loadWeather(event.lat, event.lng);
+      }
+
+      return {
+         load: load
+      };
+   });
+
+
+moduleSystem.createPart("wwo-mapper")
+   .creator(function () {
+
+      function map(data) {
+         var weather = data.data,
+            current_condition = weather.current_condition[0],
+            temp = current_condition.temp_C,
+            description = current_condition.weatherDesc[0].value,
+            icon = current_condition.weatherIconUrl[0].value;
+
+
+         return {
+            supplier: "World Weather Online",
+            temp: temp,
+            description: description,
+            icon: icon
+         };
+
+      }
+
+      return {
+         map: map
+      };
+   });
+
+
 moduleSystem.createPart("nearest-location")
    .scope(moduleSystem.scope.eagerSingleton)
    .creator(function () {
@@ -222,9 +336,9 @@ moduleSystem.createPart("nearest-location")
          if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
          } else {
-            alert("your browser dosen't support geolocalization");
+            alert("browser dosen't support geolocalization");
          }
-         //Get the latitude and the longitude;
+
          function successFunction(position) {
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
@@ -242,7 +356,7 @@ moduleSystem.createPart("nearest-location")
    });
 
 moduleSystem.createPart("location-translator")
-   .scope(moduleSystem.lazySingleton)
+   .scope(moduleSystem.scope.lazySingleton)
    .creator(function ()  {
       var geocoder = new google.maps.Geocoder();
 
@@ -264,7 +378,7 @@ moduleSystem.createPart("location-translator")
             'latLng': latlng
          }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-               callback(results[0].formatted_address)
+               callback(results[0].formatted_address);
             } else {
                callback("");
             }
