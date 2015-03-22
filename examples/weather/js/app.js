@@ -352,7 +352,7 @@ moduleSystem.createPart("nearest-location")
 
       return {
          getLocation: getLocation
-      }
+      };
    });
 
 moduleSystem.createPart("location-translator")
