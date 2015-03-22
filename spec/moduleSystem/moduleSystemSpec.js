@@ -199,20 +199,57 @@ describe('The Module Loader', function () {
 
 
    it('should load a comma seperated list of Modules found in dom', function () {
-      loadFixtures('moduleSystem/twoModules.html');
+      loadFixtures('moduleSystem/twoModulesSameNode.html');
       var spyModule1 = jasmine.createSpy('creator');
-      moduleSystem.createModule('testModule1').creator(spyModule1);
+      moduleSystem.createModule('test-module1').creator(spyModule1);
 
       var spyModule2 = jasmine.createSpy('creator');
-      moduleSystem.createModule('testModule2').creator(spyModule2);
+      moduleSystem.createModule('test-module2').creator(spyModule2);
 
       moduleSystem.initModulePage();
 
       expect(spyModule1).toHaveBeenCalled();
-      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
+      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
 
       expect(spyModule2).toHaveBeenCalled();
-      expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
+      expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
+   });
+
+   it('should load multiple modules', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+
+      var spyModule1 = jasmine.createSpy('creator');
+      moduleSystem.createModule('test-module1').creator(spyModule1);
+
+      var spyModule2 = jasmine.createSpy('creator');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule1).toHaveBeenCalled();
+      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
+
+      expect(spyModule2).toHaveBeenCalled();
+      expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module2'));
+   });
+
+   it('should load multiple modules', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+
+      var spyModule1 = jasmine.createSpy('creator');
+      moduleSystem.createModule('test-module1').creator(spyModule1);
+
+      var spyModule2 = jasmine.createSpy('creator');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage({
+         rootNode: document.getElementById('test-module1-wrapper')
+      });
+
+      expect(spyModule1).toHaveBeenCalled();
+      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
+
+      expect(spyModule2).not.toHaveBeenCalled();
    });
 
    it('should not load a Module if not found in dom', function () {

@@ -3,6 +3,7 @@ function settings() {
    'use strict';
 
    var defaults = {
+         rootNode: document,
          defaultScope: constants.scope.multiInstance,
          settingsSelector: 'script[type="%moduleName%/settings"]',
          attribute: 'modules',
