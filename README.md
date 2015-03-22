@@ -275,20 +275,19 @@ $(function() {
     moduleSystem.initModulePage();
 });
 ```
-To do for 1.2
+To do for 1.3
 -------------
-- [x] scoped parts
-- [x] parts without constructor functions
-- [x] basic config options
-- [x] initialize every singleton part & add a lazy singleton scope
+- [x] initialize module system only on parts of the dom
+- [ ] embrace module names with '-'
+- [ ] better wrong formated settings json exception
+- [ ] module/part builder sanity checks
+- [ ] provision single dom node
+- [ ] provide a method for dynamic loading and unloading of modules
+- [ ] merge part settings with settings provided from initialization
 
 
 To do future releases
 -------------
-- [ ] initialize module system only on parts of the dom
-- [ ] provision single dom node
-- [ ] provide a method for dynamic loading and unloading of modules
-- [ ] merge part settings with settings provided from initialization
 - [ ] add plugin concept for spezialized modules and parts
 - [ ] configurable async loading of modules and part
 - [ ] debug module access with console
