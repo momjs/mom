@@ -27,6 +27,10 @@ moduleSystem.initModuleSystem({
    defaultScope : 'singleton'
 });
 ```
+#### 1.2 -> 1.3
+The 'eventBus' Part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
+
+
 
 How To Use
 ----------

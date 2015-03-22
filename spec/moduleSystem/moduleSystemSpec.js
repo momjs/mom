@@ -554,7 +554,7 @@ describe('The Module Loader', function () {
 
    it('should add every module to the event bus', function () {
       loadFixtures('moduleSystem/oneModule.html');
-      var eventBus = moduleSystem.getPart('eventBus');
+      var eventBus = moduleSystem.getPart('event-bus');
 
       eventBus.add = jasmine.createSpy('add').and.callThrough();
 
