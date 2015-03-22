@@ -28,7 +28,7 @@ moduleSystem.initModuleSystem({
 });
 ```
 #### 1.2 -> 1.3
-The 'eventBus' Part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
+The 'eventBus' part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
 
 
 
@@ -112,7 +112,7 @@ moduleSystem.createPart("adder")
 creator parts could be composed of other parts
 ```js
 moduleSystem.createPart("calculator")
-    .dependencies(["adder", "multiplier", "staticPart"])
+    .dependencies(["adder", "multiplier", "static-part"])
     .creator(function(adder, multiplier, staticPart) {
         console.log(staticPart.static);
  
@@ -190,7 +190,7 @@ every module could decide to publish a postConstruct method which gets executed 
 This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could not listening to the EventBus already and miss the event. 
 ```js
 moduleSystem.createModule("hello-world-publisher")
-    .dependencie(["event-bus"])
+    .dependencies(["event-bus"])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
         
@@ -282,7 +282,7 @@ $(function() {
 To do for 1.3
 -------------
 - [x] initialize module system only on parts of the dom
-- [ ] embrace module names with '-'
+- [x] embrace module names with '-' instead of CamelCase
 - [ ] better wrong formated settings json exception
 - [ ] module/part builder sanity checks
 - [ ] provision single dom node

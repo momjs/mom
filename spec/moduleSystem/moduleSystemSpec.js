@@ -9,17 +9,18 @@ describe('The Module Loader', function () {
       loadFixtures('moduleSystem/oneModule.html');
 
       var dependencyForFirstSpy, dependencyForSecondSpy;
-      var firstSpyPart = jasmine.createSpy('spyPart_1').and.callFake(
+      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
          function (dependencyPart) {
             dependencyForFirstSpy = dependencyPart;
          }
       );
-      var secondSpyPart = jasmine.createSpy('spyPart_2').and.callFake(
+      var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
          function (dependencyPart) {
             dependencyForSecondSpy = dependencyPart;
          }
       );
-      var referencedPart = 'partName';
+
+      var referencedPart = 'part-name';
       moduleSystem.createPart(referencedPart).creator(
          function () {
             return {
@@ -30,10 +31,10 @@ describe('The Module Loader', function () {
          }
       );
 
-      moduleSystem.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spyPart2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spyPart1');
-      moduleSystem.getPart('spyPart2');
+      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
+      moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
+      moduleSystem.getPart('spy-part-1');
+      moduleSystem.getPart('spy-part-2');
 
       expect(dependencyForFirstSpy).not.toBe(dependencyForSecondSpy);
    });
@@ -41,17 +42,17 @@ describe('The Module Loader', function () {
    it('should get same instance of part when selecting lazy singleton scope', function () {
 
       var dependencyForFirstSpy, dependencyForSecondSpy;
-      var firstSpyPart = jasmine.createSpy('spyPart_1').and.callFake(
+      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
          function (dependencyPart) {
             dependencyForFirstSpy = dependencyPart;
          }
       );
-      var secondSpyPart = jasmine.createSpy('spyPart_2').and.callFake(
+      var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
          function (dependencyPart) {
             dependencyForSecondSpy = dependencyPart;
          }
       );
-      var referencedPart = 'partName';
+      var referencedPart = 'part-name';
       moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.lazySingleton).creator(
          function () {
             return {
@@ -74,17 +75,17 @@ describe('The Module Loader', function () {
    it('should get same instance of part when selecting eager singleton scope', function () {
 
       var dependencyForFirstSpy, dependencyForSecondSpy;
-      var firstSpyPart = jasmine.createSpy('spyPart_1').and.callFake(
+      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
          function (dependencyPart) {
             dependencyForFirstSpy = dependencyPart;
          }
       );
-      var secondSpyPart = jasmine.createSpy('spyPart_2').and.callFake(
+      var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
          function (dependencyPart) {
             dependencyForSecondSpy = dependencyPart;
          }
       );
-      var referencedPart = 'partName';
+      var referencedPart = 'part-name';
       moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.eagerSingleton).creator(
          function () {
             return {
@@ -95,10 +96,10 @@ describe('The Module Loader', function () {
          }
       );
 
-      moduleSystem.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spyPart2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spyPart1');
-      moduleSystem.getPart('spyPart2');
+      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
+      moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
+      moduleSystem.getPart('spy-part-1');
+      moduleSystem.getPart('spy-part-2');
 
       expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
    });
@@ -107,12 +108,12 @@ describe('The Module Loader', function () {
       loadFixtures('moduleSystem/oneModule.html');
 
       var dependencyForFirstSpy;
-      var firstSpyPart = jasmine.createSpy('spyPart_1').and.callFake(
+      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
          function (dependencyPart) {
             dependencyForFirstSpy = dependencyPart;
          }
       );
-      var referencedPart = 'partName';
+      var referencedPart = 'part-name';
       moduleSystem.createPart(referencedPart).scope('invalid').creator(
          function () {
             return {
@@ -123,8 +124,8 @@ describe('The Module Loader', function () {
          }
       );
 
-      moduleSystem.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createModule('testModule').dependencies(['spyPart1']).creator(function () {});
+      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
+      moduleSystem.createModule('test-module').dependencies(['spy-part-1']).creator(function () {});
 
       expect(moduleSystem.initModulePage).toThrowError();
    });
@@ -134,8 +135,8 @@ describe('The Module Loader', function () {
       var spyModule = jasmine.createSpy('creator');
       var staticDependency = 'test Static';
 
-      moduleSystem.createPart('staticDependency').returns(staticDependency);
-      moduleSystem.createModule('testModule').dependencies(['staticDependency']).creator(spyModule);
+      moduleSystem.createPart('static-dependency').returns(staticDependency);
+      moduleSystem.createModule('test-module').dependencies(['static-dependency']).creator(spyModule);
 
       moduleSystem.initModulePage();
 
@@ -147,12 +148,12 @@ describe('The Module Loader', function () {
    it('should load any Module found in dom', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('testModule').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(spyModule);
 
       moduleSystem.initModulePage();
 
       expect(spyModule).toHaveBeenCalled();
-      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-testModule'));
+      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
    });
 
    it('should load any eagersingleton part', function () {
@@ -162,7 +163,7 @@ describe('The Module Loader', function () {
             postConstruct: postConstructSpy
          };
       });
-      moduleSystem.createPart('testPart').scope(moduleSystem.scope.eagerSingleton).creator(spyPart);
+      moduleSystem.createPart('test-part').scope(moduleSystem.scope.eagerSingleton).creator(spyPart);
 
       moduleSystem.initModulePage();
 
@@ -173,7 +174,7 @@ describe('The Module Loader', function () {
    it('should load module with configured selector and attribute', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('testModule').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(spyModule);
 
       moduleSystem.initModulePage({
          selector: '.js-module',
@@ -187,7 +188,7 @@ describe('The Module Loader', function () {
    it('should load module with configured attribute', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('testModule').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(spyModule);
 
       moduleSystem.initModulePage({
          attribute: 'data-mods'
@@ -254,7 +255,7 @@ describe('The Module Loader', function () {
 
    it('should not load a Module if not found in dom', function () {
       var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('testModule').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(spyModule);
 
       moduleSystem.initModulePage();
 
@@ -268,7 +269,7 @@ describe('The Module Loader', function () {
       };
 
       var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('testModule')
+      moduleSystem.createModule('test-module')
          .settings(settings)
          .creator(spyModule);
 
@@ -282,7 +283,7 @@ describe('The Module Loader', function () {
       loadFixtures('moduleSystem/oneModuleWithSettings.html');
 
       var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('testModule')
+      moduleSystem.createModule('test-module')
          .creator(spyModule);
 
       moduleSystem.initModulePage();
@@ -301,7 +302,7 @@ describe('The Module Loader', function () {
       };
 
       var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('testModule')
+      moduleSystem.createModule('test-module')
          .settings(settings)
          .creator(spyModule);
 
@@ -317,13 +318,13 @@ describe('The Module Loader', function () {
    it('should create a module for every module in dom', function () {
       loadFixtures('moduleSystem/twoIdenticalModules.html');
       var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('testModule').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(spyModule);
 
       moduleSystem.initModulePage();
 
       expect(spyModule.calls.count()).toBe(2);
-      expect(spyModule.calls.argsFor(0)[0]).toBe($('#test-testModule1').get(0));
-      expect(spyModule.calls.argsFor(1)[0]).toBe($('#test-testModule2').get(0));
+      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
+      expect(spyModule.calls.argsFor(1)[0]).toBe(document.getElementById('test-module12'));
    });
 
    it('should not throw if the same module is found multiple times in dom', function () {
@@ -332,7 +333,7 @@ describe('The Module Loader', function () {
       var spyModule = jasmine.createSpy('creator').and.callFake(function () {
          return {};
       });
-      moduleSystem.createModule('testModule').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(spyModule);
 
       expect(moduleSystem.initModulePage).not.toThrow();
    });
@@ -352,7 +353,7 @@ describe('The Module Loader', function () {
          }
       };
 
-      moduleSystem.createModule('testModule').creator(creator);
+      moduleSystem.createModule('test-module').creator(creator);
 
       moduleSystem.initModulePage();
 
@@ -374,9 +375,9 @@ describe('The Module Loader', function () {
             test: 'test'
          };
          var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
-         moduleSystem.createPart('testPart').creator(spyPart);
+         moduleSystem.createPart('test-part').creator(spyPart);
 
-         expect(moduleSystem.getPart('testPart')).toEqual(partObj);
+         expect(moduleSystem.getPart('test-part')).toEqual(partObj);
       });
 
       it('should not reinitilize part if allready initialized', function () {
@@ -384,10 +385,10 @@ describe('The Module Loader', function () {
             test: 'test'
          };
          var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
-         moduleSystem.createPart('testPart').scope(moduleSystem.scope.lazySingleton).creator(spyPart);
+         moduleSystem.createPart('test-part').scope(moduleSystem.scope.lazySingleton).creator(spyPart);
 
-         moduleSystem.getPart('testPart');
-         var partObjActual = moduleSystem.getPart('testPart');
+         moduleSystem.getPart('test-part');
+         var partObjActual = moduleSystem.getPart('test-part');
 
          expect(partObj).toEqual(partObjActual);
          expect(spyPart.calls.count()).toEqual(1);
@@ -398,7 +399,7 @@ describe('The Module Loader', function () {
          var postConstructSpy = jasmine.createSpy('post construct');
 
 
-         moduleSystem.createPart('testPart')
+         moduleSystem.createPart('test-part')
             .creator(function () {
                return {
                   postConstruct: postConstructSpy
@@ -406,8 +407,8 @@ describe('The Module Loader', function () {
             });
 
 
-         moduleSystem.getPart('testPart');
-         moduleSystem.getPart('testPart');
+         moduleSystem.getPart('test-part');
+         moduleSystem.getPart('test-part');
 
 
          expect(postConstructSpy.calls.count()).toEqual(2);
@@ -417,7 +418,7 @@ describe('The Module Loader', function () {
          var postConstructSpy = jasmine.createSpy('post construct');
 
 
-         moduleSystem.createPart('testPart')
+         moduleSystem.createPart('test-part')
             .scope(moduleSystem.scope.lazySingleton)
             .creator(function () {
                return {
@@ -426,8 +427,8 @@ describe('The Module Loader', function () {
             });
 
 
-         moduleSystem.getPart('testPart');
-         moduleSystem.getPart('testPart');
+         moduleSystem.getPart('test-part');
+         moduleSystem.getPart('test-part');
 
 
          expect(postConstructSpy.calls.count()).toEqual(1);
@@ -439,11 +440,11 @@ describe('The Module Loader', function () {
          };
 
          var spyPart = jasmine.createSpy('creator').and.returnValue({});
-         moduleSystem.createPart('testPart')
+         moduleSystem.createPart('test-part')
             .settings(settings)
             .creator(spyPart);
 
-         moduleSystem.getPart('testPart');
+         moduleSystem.getPart('test-part');
 
          expect(spyPart).toHaveBeenCalledWith(settings);
       });
@@ -453,12 +454,12 @@ describe('The Module Loader', function () {
          var publicMethodObject = {
             testProperty: 'test'
          };
-         moduleSystem.createPart('dependencyPart').creator(function () {
+         moduleSystem.createPart('dependency-part').creator(function () {
             return publicMethodObject;
          });
-         moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(testPart);
+         moduleSystem.createPart('test-part').dependencies(['dependency-part']).creator(testPart);
 
-         moduleSystem.getPart('testPart');
+         moduleSystem.getPart('test-part');
 
 
          expect(testPart).toHaveBeenCalledWith(publicMethodObject);
@@ -466,20 +467,20 @@ describe('The Module Loader', function () {
 
       it('should throw an exception if a part dependencie couldnt be resolved', function () {
          var spyPart = jasmine.createSpy();
-         moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(spyPart);
+         moduleSystem.createPart('test-part').dependencies(['dependency-part']).creator(spyPart);
 
          expect(function () {
-            moduleSystem.getPart('testPart');
+            moduleSystem.getPart('test-part');
          }).toThrow();
       });
 
       it('should throw an exception on circular dependencies', function () {
          var spyPart = jasmine.createSpy();
-         moduleSystem.createPart('testPart').dependencies(['dependencyPart']).creator(spyPart);
-         moduleSystem.createPart('dependencyPart').dependencies(['testPart']).creator(spyPart);
+         moduleSystem.createPart('test-part').dependencies(['dependency-part']).creator(spyPart);
+         moduleSystem.createPart('dependency-part').dependencies(['test-part']).creator(spyPart);
 
          expect(function () {
-            moduleSystem.getPart('testPart');
+            moduleSystem.getPart('test-part');
          }).toThrow();
       });
 
@@ -488,12 +489,12 @@ describe('The Module Loader', function () {
             loadFixtures('moduleSystem/oneModule.html');
             spyModule = jasmine.createSpy('module');
 
-            moduleSystem.createModule('testModule').dependencies(['testPart']).creator(spyModule);
+            moduleSystem.createModule('test-module').dependencies(['test-part']).creator(spyModule);
          });
 
          it('should load any needed Part', function () {
             var spyPart = jasmine.createSpy('creator');
-            moduleSystem.createPart('testPart').creator(spyPart);
+            moduleSystem.createPart('test-part').creator(spyPart);
 
             moduleSystem.initModulePage();
 
@@ -501,9 +502,9 @@ describe('The Module Loader', function () {
          });
 
          it('should not load any part which is not needed', function () {
-            moduleSystem.createPart('testPart').creator(function () {});
+            moduleSystem.createPart('test-part').creator(function () {});
             var spyPart = jasmine.createSpy('creator');
-            moduleSystem.createPart('testPart2').creator(spyPart);
+            moduleSystem.createPart('test-part2').creator(spyPart);
 
             moduleSystem.initModulePage();
 
@@ -514,7 +515,7 @@ describe('The Module Loader', function () {
             var publicMethodObject = {
                testProperty: 'test'
             };
-            moduleSystem.createPart('testPart').creator(function () {
+            moduleSystem.createPart('test-part').creator(function () {
                return publicMethodObject;
             });
 
@@ -529,13 +530,13 @@ describe('The Module Loader', function () {
             var postConstructSpy = spyPartObject.postConstruct;
 
 
-            moduleSystem.createPart('testPart')
+            moduleSystem.createPart('test-part')
                .creator(function () {
                   return spyPartObject;
                });
 
 
-            moduleSystem.getPart('testPart');
+            moduleSystem.getPart('test-part');
 
 
             expect(postConstructSpy).toHaveBeenCalled();
@@ -547,7 +548,7 @@ describe('The Module Loader', function () {
    it('should throw an exception if a module dependencie couldnt be resolved', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var spyModule = jasmine.createSpy();
-      moduleSystem.createModule('testModule').dependencies(['dependencyPart']).creator(spyModule);
+      moduleSystem.createModule('test-module').dependencies(['dependency-part']).creator(spyModule);
 
       expect(moduleSystem.initModulePage).toThrow();
    });
@@ -561,7 +562,7 @@ describe('The Module Loader', function () {
       var publicMethodObject = {
          testProperty: 'test'
       };
-      moduleSystem.createModule('testModule').creator(function () {
+      moduleSystem.createModule('test-module').creator(function () {
          return publicMethodObject;
       });
 
@@ -589,7 +590,7 @@ describe('The Module Loader', function () {
       });
 
 
-      moduleSystem.createModule('testModule').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(spyModule);
 
 
       moduleSystem.initModulePage();
