@@ -12,6 +12,11 @@ function moduleBuilder(moduleAccess) {
       };
 
       function addCreator(creator) {
+
+         if(typeof creator !== 'function') {
+            throw new Error('You have to pass the creator as a reference to a function');
+         }
+
          descriptor.creator = creator;
          save();
       }

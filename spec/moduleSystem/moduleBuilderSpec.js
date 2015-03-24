@@ -125,4 +125,77 @@ describe('Module builder', function() {
          }).not.toThrow();
       });
    });
+
+   describe('on invalid creator', function() {
+
+      it('should throw when passing creator as string', function() {
+
+         expect(function() {
+            builder.creator('invalid creator');
+         }).toThrowError('You have to pass the creator as a reference to a function');
+      });
+
+      it('should throw when passing creator as integer number', function() {
+
+         expect(function() {
+            builder.creator(123);
+         }).toThrowError('You have to pass the creator as a reference to a function');
+      });
+
+      it('should throw when passing creator as float number', function() {
+
+         expect(function() {
+            builder.creator(123.4);
+         }).toThrowError('You have to pass the creator as a reference to a function');
+      });
+
+      it('should throw when passing creator as boolean', function() {
+
+         expect(function() {
+            builder.creator(false);
+         }).toThrowError('You have to pass the creator as a reference to a function');
+      });
+
+      it('should throw when passing creator as object', function() {
+
+         expect(function() {
+            builder.creator({key:'value'});
+         }).toThrowError('You have to pass the creator as a reference to a function');
+      });
+
+      it('should throw when passing creator as undefined', function() {
+
+         expect(function() {
+            builder.creator();
+         }).toThrowError('You have to pass the creator as a reference to a function');
+      });
+   });
+
+   describe('on valid creator', function() {
+
+      it('should not throw when passing anonymous creator function', function() {
+
+         expect(function() {
+            builder.creator(function() {});
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing referenced creator function', function() {
+
+         function myCreator() {}
+
+         expect(function() {
+            builder.creator(myCreator);
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing creator function as variable', function() {
+
+         var myCreator = function() {};
+
+         expect(function() {
+            builder.creator(myCreator);
+         }).not.toThrow();
+      });
+   });
 });
