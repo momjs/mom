@@ -22,6 +22,7 @@
    "globals": {
       "jQuery": false,
       "$": false,
+      "console": false,
       "jasmine": false,
       "describe": false,
       "xdescribe": false,

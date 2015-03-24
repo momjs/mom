@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.2.0 - 2015-03-21 * @link 
+ * @version v1.3.0 - 2015-03-24 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -63,6 +63,7 @@ function contains(array, elementToSearch) {
 
    return isContaining;
 }
+
 /* jshint unused:false */
 
 /**
@@ -119,11 +120,13 @@ var constants = {
       creator: 'creator'
    }
 };
+
 /*exported settings */
 function settings() {
    'use strict';
 
    var defaults = {
+         rootNode: document,
          defaultScope: constants.scope.multiInstance,
          settingsSelector: 'script[type="%moduleName%/settings"]',
          attribute: 'modules',
@@ -145,6 +148,7 @@ function settings() {
       mergeWith: mergeWith
    };
 }
+
 /*exported createDescriptor */
 function createDescriptor(name) {
    'use strict';
@@ -170,6 +174,7 @@ function creatorDescriptor(name) {
 
    return descriptor;
 }
+
 /*exported moduleLoader */
 function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
@@ -180,7 +185,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
 
       function initModules() {
          var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
-            modulesOnPage = document.querySelectorAll(selector);
+            modulesOnPage = settings.rootNode.querySelectorAll(selector);
 
          partAccess.initEagerSingletons();
 
@@ -202,6 +207,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
       initModulePage: initModulePage
    };
 }
+
 /*exported moduleBuilder */
 function moduleBuilder(moduleAccess) {
    'use strict';
@@ -246,6 +252,7 @@ function moduleBuilder(moduleAccess) {
 
    return createModule;
 }
+
 /*exported modules */
 function modules(partAccess, eventBus, moduleSystemSettings) {
    'use strict';
@@ -353,6 +360,7 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
       addModuleDescriptor: addModuleDescriptor
    };
 }
+
 /*exported partBuilder */
 function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
@@ -450,6 +458,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
    return createPart;
 }
+
 /*exported parts */
 function parts() {
    'use strict';
@@ -611,6 +620,7 @@ function parts() {
       addPartDescriptor: addPartDescriptor
    };
 }
+
 /*exported eventBus */
 function eventBus() {
    'use strict';
@@ -667,6 +677,7 @@ function eventBus() {
       reset: reset
    };
 }
+
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
    'use strict';
 
@@ -681,26 +692,29 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
 
 
+      createPart('event-bus')
+         .returns(eventBus);
+
+      //deprecated remove in 1.4
       createPart('eventBus')
-         .scope(constants.scope.lazySingleton)
          .creator(function () {
+            console.warn('partName "eventBus" deprecated use "event-bus" instead');
             return eventBus;
          });
 
-      function settingsInterceptor(intercepted) {
-         return function (newSettings) {
-            if (newSettings !== undefined) {
-               settings.mergeWith(newSettings);
-            }
 
-            intercepted();
-         };
+      function initModulePageInterceptor(newSettings) {
+         if (newSettings !== undefined) {
+            settings.mergeWith(newSettings);
+         }
+
+         moduleLoader.initModulePage();
       }
 
       return merge({
          createPart: createPart,
          createModule: createModule,
-         initModulePage: settingsInterceptor(moduleLoader.initModulePage),
+         initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
          getPart: partAccess.provisionPart,
 
@@ -710,6 +724,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
    return newInstance();
 
 })(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus);
+
 /* jshint ignore:start */ 
 }(window, document));
 /* jshint ignore:end */
