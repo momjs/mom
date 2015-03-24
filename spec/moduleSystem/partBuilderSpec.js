@@ -273,4 +273,68 @@ describe('Part builder', function() {
          }).not.toThrow();
       });
    });
+
+   describe('on invalid returns', function() {
+
+      const EXCEPTED_ERROR_MESSAGE = 'You have to pass the returns as one of these object types: string|integer|float|boolean|object|function|Array';
+
+      it('should throw when passing creator as undefined', function() {
+
+         expect(function() {
+            builder.returns();
+         }).toThrowError(EXCEPTED_ERROR_MESSAGE);
+      });
+   });
+
+   describe('on valid returns', function() {
+
+      it('should not throw when passing returns for an empty object', function() {
+
+         expect(function() {
+            builder.returns({});
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing returns for a function', function() {
+
+         expect(function() {
+            builder.returns(function() {});
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing returns for a string', function() {
+
+         expect(function() {
+            builder.returns('valid string');
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing returns for a integer number', function() {
+
+         expect(function() {
+            builder.returns(123);
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing returns for a float number', function() {
+
+         expect(function() {
+            builder.returns(123.4);
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing returns for a boolean', function() {
+
+         expect(function() {
+            builder.returns(true);
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing returns for an empty Array', function() {
+
+         expect(function() {
+            builder.returns([]);
+         }).not.toThrow();
+      });
+   });
 });

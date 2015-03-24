@@ -394,10 +394,9 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
    function returnsDescriptor(name) {
       var descriptor = createDescriptor(name);
+
       descriptor.type = constants.type.returns;
-
       descriptor.scope = constants.scope.lazySingleton;
-
       descriptor.returns = undefined;
 
       return descriptor;
@@ -423,17 +422,32 @@ function partBuilder(partAccess, moduleSystemSettings) {
       };
 
       function addCreator(creator) {
+
+         if(typeof creator !== 'function') {
+            throw new Error('You have to pass the creator as a reference to a function');
+         }
+
          getOrInitCreatorDiscriptor().creator = creator;
          save();
       }
 
       function addReturns(returns) {
+
+         if(returns === undefined) {
+
+            throw new Error('You have to pass the returns as one of these object types: string|integer|float|boolean|object|function|Array');
+         }
+
          descriptor = returnsDescriptor(name);
          descriptor.returns = returns;
          save();
       }
 
       function addScope(scope) {
+
+         if('lazy-singleton' !== scope && 'eager-singleton' !== scope && 'multi-instance' !== scope) {
+            throw new Error('You have to pass the scope as one of these: lazy-singleton|eager-singleton|multi-instance');
+         }
 
          var descriptor = getOrInitCreatorDiscriptor();
 
@@ -450,6 +464,11 @@ function partBuilder(partAccess, moduleSystemSettings) {
       }
 
       function addSettings(settings) {
+
+         if(settings !== undefined && typeof settings !== 'object') {
+            throw new Error('You have to pass the settings as an object');
+         }
+
          getOrInitCreatorDiscriptor().settings = settings;
 
          return {
@@ -460,6 +479,11 @@ function partBuilder(partAccess, moduleSystemSettings) {
       }
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          getOrInitCreatorDiscriptor().dependencies = dependencies;
 
          return {

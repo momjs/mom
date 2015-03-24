@@ -42,6 +42,12 @@ function partBuilder(partAccess, moduleSystemSettings) {
       }
 
       function addReturns(returns) {
+
+         if(returns === undefined) {
+
+            throw new Error('You have to pass the returns as one of these object types: string|integer|float|boolean|object|function|Array');
+         }
+
          descriptor = returnsDescriptor(name);
          descriptor.returns = returns;
          save();
