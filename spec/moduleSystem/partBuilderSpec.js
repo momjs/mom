@@ -1,10 +1,10 @@
-describe('Module builder', function() {
+describe('Part builder', function() {
 
    var builder;
 
    beforeEach(function() {
 
-      builder = moduleSystem.createModule('myModule');
+      builder = moduleSystem.createPart('myPart');
    });
 
    describe('on invalid settings', function() {
@@ -67,7 +67,7 @@ describe('Module builder', function() {
    describe('on invalid dependencies', function() {
 
       const EXPECTED_ERROR_MESSAGE = 'You have to pass the dependencies as an Array';
-
+      
       it('should throw when passing dependencies as string', function() {
 
          expect(function() {
@@ -97,7 +97,7 @@ describe('Module builder', function() {
       });
 
       it('should throw when passing dependencies as object', function() {
-
+         
          expect(function() {
             builder.dependencies({});
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
@@ -131,7 +131,7 @@ describe('Module builder', function() {
    describe('on invalid creator', function() {
 
       const EXPECTED_ERROR_MESSAGE = 'You have to pass the creator as a reference to a function';
-
+      
       it('should throw when passing creator as string', function() {
 
          expect(function() {
@@ -168,7 +168,7 @@ describe('Module builder', function() {
       });
 
       it('should throw when passing creator as undefined', function() {
-
+         
          expect(function() {
             builder.creator();
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
@@ -199,6 +199,77 @@ describe('Module builder', function() {
 
          expect(function() {
             builder.creator(myCreator);
+         }).not.toThrow();
+      });
+   });
+   
+   describe('on invalid scope', function() {
+
+      const EXCEPTED_ERROR_MESSAGE = 'You have to pass the scope as one of these: lazy-singleton|eager-singleton|multi-instance';
+      
+      it('should throw when passing creator as invalid string', function() {
+
+         expect(function() {
+            builder.scope('invalid scope');
+         }).toThrowError(EXCEPTED_ERROR_MESSAGE);
+      });
+      
+      it('should throw when passing scope as integer number', function() {
+
+         expect(function() {
+            builder.scope(123);
+         }).toThrowError(EXCEPTED_ERROR_MESSAGE);
+      });
+      
+      it('should throw when passing scope as float number', function() {
+
+         expect(function() {
+            builder.scope(123.4);
+         }).toThrowError(EXCEPTED_ERROR_MESSAGE);
+      });
+      
+      it('should throw when passing scope as boolean', function() {
+
+         expect(function() {
+            builder.scope(true);
+         }).toThrowError(EXCEPTED_ERROR_MESSAGE);
+      });
+      
+      it('should throw when passing scope as undefined', function() {
+
+         expect(function() {
+            builder.scope();
+         }).toThrowError(EXCEPTED_ERROR_MESSAGE);
+      });
+      
+      it('should throw when passing scope as object', function() {
+
+         expect(function() {
+            builder.scope({});
+         }).toThrowError(EXCEPTED_ERROR_MESSAGE);
+      });
+   });
+
+   describe('on valid scope', function() {
+
+      it('should not throw when passing scope for lazy-singleton', function() {
+
+         expect(function() {
+            builder.scope('lazy-singleton');
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing scope for eager-singleton', function() {
+
+         expect(function() {
+            builder.scope('eager-singleton');
+         }).not.toThrow();
+      });
+
+      it('should not throw when passing scope for multi-instance', function() {
+
+         expect(function() {
+            builder.scope('multi-instance');
          }).not.toThrow();
       });
    });

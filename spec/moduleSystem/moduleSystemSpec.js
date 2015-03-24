@@ -1,4 +1,4 @@
-describe('The Module Loader', function () {
+describe('Module System', function () {
    'use strict';
 
    afterEach(function () {
@@ -104,32 +104,6 @@ describe('The Module Loader', function () {
       expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
    });
 
-   it('should throw error when defining an invalid scope', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-
-      var dependencyForFirstSpy;
-      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
-         function (dependencyPart) {
-            dependencyForFirstSpy = dependencyPart;
-         }
-      );
-      var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).scope('invalid').creator(
-         function () {
-            return {
-               /*
-                * returns empty part object
-                */
-            };
-         }
-      );
-
-      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createModule('test-module').dependencies(['spy-part-1']).creator(function () {});
-
-      expect(moduleSystem.initModulePage).toThrowError();
-   });
-
    it('should provide Modules with static dependencies', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var spyModule = jasmine.createSpy('creator');
@@ -141,8 +115,6 @@ describe('The Module Loader', function () {
       moduleSystem.initModulePage();
 
       expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependency);
-
-
    });
 
    it('should load any Module found in dom', function () {
