@@ -289,6 +289,7 @@ To do for 1.3
 - [ ] provide a method for dynamic loading and unloading of modules
 - [ ] merge part settings with settings provided from initialization
 - [ ] clean up tests
+- [ ] exception handling in module/part construction  
 
 To do future releases
 -------------
