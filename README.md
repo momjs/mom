@@ -288,7 +288,7 @@ To do for 1.3
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
 - [ ] merge part settings with settings provided from initialization
-
+- [ ] clean up tests
 
 To do future releases
 -------------
