@@ -19,7 +19,7 @@ function moduleBuilder(moduleAccess) {
       function addSettings(settings) {
 
          if(settings !== undefined && typeof settings !== 'object') {
-            throw new Error('You have to pass the settings as an object.');
+            throw new Error('You have to pass the settings as an object');
          }
 
          descriptor.settings = settings;
@@ -36,6 +36,11 @@ function moduleBuilder(moduleAccess) {
 
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          descriptor.dependencies = dependencies;
 
          return {

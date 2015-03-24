@@ -64,6 +64,18 @@ function contains(array, elementToSearch) {
    return isContaining;
 }
 
+/**
+ * Indicates if the passed object is an Array.
+ *
+ * @param object the object which will be checked to be an Array
+ * @returns {boolean} true if the passed object is an Array, false if not
+ */
+/*exported isArray */
+function isArray(object) {
+   'use strict';
+
+   return toString.call(object) === '[object Array]';
+}
 /* jshint unused:false */
 
 /**
@@ -229,7 +241,7 @@ function moduleBuilder(moduleAccess) {
       function addSettings(settings) {
 
          if(settings !== undefined && typeof settings !== 'object') {
-            throw new Error('You have to pass the settings as an object.');
+            throw new Error('You have to pass the settings as an object');
          }
 
          descriptor.settings = settings;
@@ -246,6 +258,11 @@ function moduleBuilder(moduleAccess) {
 
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          descriptor.dependencies = dependencies;
 
          return {
