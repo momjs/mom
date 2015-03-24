@@ -12,26 +12,29 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
 
 
+      createPart('event-bus')
+         .returns(eventBus);
+
+      //deprecated remove in 1.4
       createPart('eventBus')
-         .scope(constants.scope.lazySingleton)
          .creator(function () {
+            console.warn('partName "eventBus" deprecated use "event-bus" instead');
             return eventBus;
          });
 
-      function settingsInterceptor(intercepted) {
-         return function (newSettings) {
-            if (newSettings !== undefined) {
-               settings.mergeWith(newSettings);
-            }
 
-            intercepted();
-         };
+      function initModulePageInterceptor(newSettings) {
+         if (newSettings !== undefined) {
+            settings.mergeWith(newSettings);
+         }
+
+         moduleLoader.initModulePage();
       }
 
       return merge({
          createPart: createPart,
          createModule: createModule,
-         initModulePage: settingsInterceptor(moduleLoader.initModulePage),
+         initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
          getPart: partAccess.provisionPart,
 

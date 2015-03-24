@@ -16,7 +16,7 @@ In 1.1 parts where singletons (created once and reused).
 
 If logic relies on that behaviour, then these parts should be scoped singleton
 ```js
-moduleSystem.createPart("singletonPart")
+moduleSystem.createPart("singleton-part")
     .scope('singleton')
     .creator(function() {
         ...
@@ -27,6 +27,10 @@ moduleSystem.initModuleSystem({
    defaultScope : 'singleton'
 });
 ```
+#### 1.2 -> 1.3
+The 'eventBus' part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
+
+
 
 How To Use
 ----------
@@ -56,7 +60,7 @@ By default the module system creates a new instance each time it suplies a part.
 To change this behaviour a scope could be specified
 ######Lazy Singleton
 ```js
-moduleSystem.createPart("singletonPart")
+moduleSystem.createPart("singleton-part")
     .scope('lazy-singleton')
     .creator(function() {
         ...
@@ -72,7 +76,7 @@ A lazy singleton part gets created on the first request and is reused on followi
 
 ######Eager Singleton
 ```js
-moduleSystem.createPart("singletonPart")
+moduleSystem.createPart("singleton-part")
     .scope('eager-singleton')
     .creator(function() {
         ...
@@ -108,7 +112,7 @@ moduleSystem.createPart("adder")
 creator parts could be composed of other parts
 ```js
 moduleSystem.createPart("calculator")
-    .dependencies(["adder", "multiplier", "staticPart"])
+    .dependencies(["adder", "multiplier", "static-part"])
     .creator(function(adder, multiplier, staticPart) {
         console.log(staticPart.static);
  
@@ -121,7 +125,7 @@ moduleSystem.createPart("calculator")
 ####Returns Parts
 If a part don't need a constructor function to be called (e.g. has no dependencies, settings, etc), a returns part could be used
 ```js
-moduleSystem.createPart("staticPart")
+moduleSystem.createPart("static-part")
     .returns({
          static : "static"
     });
@@ -130,36 +134,36 @@ moduleSystem.createPart("staticPart")
 ###Module
 ####Creation and registration
 ```js
-moduleSystem.createModule("helloWorld")
+moduleSystem.createModule("hello-world")
     .creator(function(moduleObj) {
         alert("Hello " + moduleObj.innerHTML;
     });
 ```
 this module gets loaded when a DOM-element with attribute modules="helloWorld" is found. The found DOM-Node is then given to the Module as the first parameter
 ```html
-<div modules="helloWorld">World</div> // alerts Hello World
+<div modules="hello-world">World</div> // alerts Hello World
 ```
 Incase more than one DOM-Node with the same module is found more than one module-object are initialized
 ```html
-<div modules="helloWorld">World1</div> //alerts Hello World1
-<div modules="helloWorld">World2</div> //alerts Hello World2
+<div modules="hello-world">World1</div> //alerts Hello World1
+<div modules="hello-world">World2</div> //alerts Hello World2
 ```
 ####Configure
 like parts modules could be provisioned with settings
 ```js
-moduleSystem.createModule("staticHelloWorld")
+moduleSystem.createModule("static-hello-world")
     .settings({staticText : "World"})
     .creator(function(moduleObj, settings) {
         alert("Hello " + settings.staticText;
     });
 ```
 ```html
-<div modules="staticHelloWorld" /> //alerts Hello World
+<div modules="static-hello-world" /> //alerts Hello World
 ```
 #####Override from DOM
 an additional setting which overrides the default settings object could be provided via DOM
 ```html
-<div modules="staticHelloWorld"> //alerts Hello Module
+<div modules="static-hello-world"> //alerts Hello Module
   <script type="staticHelloWorld/settings"> 
     {
       "staticText" : "Module"
@@ -171,7 +175,7 @@ an additional setting which overrides the default settings object could be provi
 modules could be composed out of parts.
 It's a design decision to not allow modules to be injected in other modules. Use the EventBus for communication between modules.
 ```js
-moduleSystem.createModule("staticHelloWorldWithDependencies")
+moduleSystem.createModule("static-hello-world-with-dependencies")
     .settings({staticText : "World"})
     .dependencies(["adder"])
     .creator(function(moduleObj, settings, adder) {
@@ -179,14 +183,14 @@ moduleSystem.createModule("staticHelloWorldWithDependencies")
     });
 ```
 ```html
-<div modules="staticHelloWorldWithDependencies" /> //alerts Hello World 3
+<div modules="static-hello-world-with-dependencies" /> //alerts Hello World 3
 ```
 ####PostConstruct Hook
 every module could decide to publish a postConstruct method which gets executed after every module is properly initialized.
 This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could not listening to the EventBus already and miss the event. 
 ```js
-moduleSystem.createModule("helloWorldPublisher")
-    .dependencie(["eventBus"])
+moduleSystem.createModule("hello-world-publisher")
+    .dependencies(["event-bus"])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
         
@@ -204,14 +208,14 @@ moduleSystem.createModule("helloWorldPublisher")
     });
 ```
 ```html
-<div modules="helloWorldPublisher" /> //publish hello world changed
+<div modules="hello-world-publisher" /> //publish hello world changed
 ```
 ####Communication between modules
 modules should communicate over the EventBus to prevent tight coupling. 
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 ```js
-moduleSystem.createModule("helloWorldPublisher")
-    .dependencie(["eventBus"])
+moduleSystem.createModule("hello-world-publisher")
+    .dependencie(["event-bus"])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
         
@@ -234,7 +238,7 @@ moduleSystem.createModule("helloWorldPublisher")
         }
     });
 
-moduleSystem.createModule("helloWorldListener")
+moduleSystem.createModule("hello-world-listener")
     .creator(function(moduleObj) {
         function onHelloWorldChanged(event) {
             alert("Hello " + event.text);
@@ -245,7 +249,7 @@ moduleSystem.createModule("helloWorldListener")
         }
     });
     
-moduleSystem.createModule("unnamedEventListener")
+moduleSystem.createModule("unnamed-event-listener")
     .creator(function(moduleObj) {
         function onEvent(event) {
             if(name === 'HelloWorldChanged') {
@@ -261,12 +265,12 @@ moduleSystem.createModule("unnamedEventListener")
     });
 ```
 ```html
-<div modules="helloWorldListener" /> // alerts Hello World if helloWorldPublisher is in place
+<div modules="hello-world-listener" /> // alerts Hello World if helloWorldPublisher is in place
 ```
 ####More than one Module per DOM-Element
 sometimes it is useful to handle a dom element with more than one js-module. For this it is possible to load more than one module with a comma separated list
 ```html
-<div modules="moduleToLoad1,otherModuleToLoad" /> // loads two modules with the same moduleObj
+<div modules="module-to-load1,other-module-to-load" /> // loads two modules with the same moduleObj
 ```
 ###Start Provisioning
 when every module is registered in the module system initModulePage() should be called. This would typically be done on DOM ready
@@ -275,20 +279,19 @@ $(function() {
     moduleSystem.initModulePage();
 });
 ```
-To do for 1.2
+To do for 1.3
 -------------
-- [x] scoped parts
-- [x] parts without constructor functions
-- [x] basic config options
-- [x] initialize every singleton part & add a lazy singleton scope
+- [x] initialize module system only on parts of the dom
+- [x] embrace module names with '-' instead of CamelCase
+- [ ] better wrong formated settings json exception
+- [ ] module/part builder sanity checks
+- [ ] provision single dom node
+- [ ] provide a method for dynamic loading and unloading of modules
+- [ ] merge part settings with settings provided from initialization
 
 
 To do future releases
 -------------
-- [ ] initialize module system only on parts of the dom
-- [ ] provision single dom node
-- [ ] provide a method for dynamic loading and unloading of modules
-- [ ] merge part settings with settings provided from initialization
 - [ ] add plugin concept for spezialized modules and parts
 - [ ] configurable async loading of modules and part
 - [ ] debug module access with console
