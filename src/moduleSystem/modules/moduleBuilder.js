@@ -17,6 +17,11 @@ function moduleBuilder(moduleAccess) {
       }
 
       function addSettings(settings) {
+
+         if(settings !== undefined && typeof settings !== 'object') {
+            throw new Error('You have to pass the settings as an object.');
+         }
+
          descriptor.settings = settings;
 
          return {
