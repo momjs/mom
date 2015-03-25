@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.2.0 - 2015-03-21 * @link 
+ * @version v1.3.0 - 2015-03-24 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -63,6 +63,19 @@ function contains(array, elementToSearch) {
 
    return isContaining;
 }
+
+/**
+ * Indicates if the passed object is an Array.
+ *
+ * @param object the object which will be checked to be an Array
+ * @returns {boolean} true if the passed object is an Array, false if not
+ */
+/*exported isArray */
+function isArray(object) {
+   'use strict';
+
+   return toString.call(object) === '[object Array]';
+}
 /* jshint unused:false */
 
 /**
@@ -119,11 +132,13 @@ var constants = {
       creator: 'creator'
    }
 };
+
 /*exported settings */
 function settings() {
    'use strict';
 
    var defaults = {
+         rootNode: document,
          defaultScope: constants.scope.multiInstance,
          settingsSelector: 'script[type="%moduleName%/settings"]',
          attribute: 'modules',
@@ -145,6 +160,7 @@ function settings() {
       mergeWith: mergeWith
    };
 }
+
 /*exported createDescriptor */
 function createDescriptor(name) {
    'use strict';
@@ -170,6 +186,7 @@ function creatorDescriptor(name) {
 
    return descriptor;
 }
+
 /*exported moduleLoader */
 function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
@@ -180,7 +197,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
 
       function initModules() {
          var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
-            modulesOnPage = document.querySelectorAll(selector);
+            modulesOnPage = settings.rootNode.querySelectorAll(selector);
 
          partAccess.initEagerSingletons();
 
@@ -202,6 +219,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
       initModulePage: initModulePage
    };
 }
+
 /*exported moduleBuilder */
 function moduleBuilder(moduleAccess) {
    'use strict';
@@ -216,11 +234,21 @@ function moduleBuilder(moduleAccess) {
       };
 
       function addCreator(creator) {
+
+         if(typeof creator !== 'function') {
+            throw new Error('You have to pass the creator as a reference to a function');
+         }
+
          descriptor.creator = creator;
          save();
       }
 
       function addSettings(settings) {
+
+         if(settings !== undefined && typeof settings !== 'object') {
+            throw new Error('You have to pass the settings as an object');
+         }
+
          descriptor.settings = settings;
 
          return {
@@ -235,6 +263,11 @@ function moduleBuilder(moduleAccess) {
 
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          descriptor.dependencies = dependencies;
 
          return {
@@ -246,6 +279,7 @@ function moduleBuilder(moduleAccess) {
 
    return createModule;
 }
+
 /*exported modules */
 function modules(partAccess, eventBus, moduleSystemSettings) {
    'use strict';
@@ -353,16 +387,16 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
       addModuleDescriptor: addModuleDescriptor
    };
 }
+
 /*exported partBuilder */
 function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 
    function returnsDescriptor(name) {
       var descriptor = createDescriptor(name);
+
       descriptor.type = constants.type.returns;
-
       descriptor.scope = constants.scope.lazySingleton;
-
       descriptor.returns = undefined;
 
       return descriptor;
@@ -388,17 +422,32 @@ function partBuilder(partAccess, moduleSystemSettings) {
       };
 
       function addCreator(creator) {
+
+         if(typeof creator !== 'function') {
+            throw new Error('You have to pass the creator as a reference to a function');
+         }
+
          getOrInitCreatorDiscriptor().creator = creator;
          save();
       }
 
       function addReturns(returns) {
+
+         if(returns === undefined) {
+
+            throw new Error('You have to pass the returns as one of these object types: string|integer|float|boolean|object|function|Array');
+         }
+
          descriptor = returnsDescriptor(name);
          descriptor.returns = returns;
          save();
       }
 
       function addScope(scope) {
+
+         if('lazy-singleton' !== scope && 'eager-singleton' !== scope && 'multi-instance' !== scope) {
+            throw new Error('You have to pass the scope as one of these: lazy-singleton|eager-singleton|multi-instance');
+         }
 
          var descriptor = getOrInitCreatorDiscriptor();
 
@@ -415,6 +464,11 @@ function partBuilder(partAccess, moduleSystemSettings) {
       }
 
       function addSettings(settings) {
+
+         if(settings !== undefined && typeof settings !== 'object') {
+            throw new Error('You have to pass the settings as an object');
+         }
+
          getOrInitCreatorDiscriptor().settings = settings;
 
          return {
@@ -425,6 +479,11 @@ function partBuilder(partAccess, moduleSystemSettings) {
       }
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          getOrInitCreatorDiscriptor().dependencies = dependencies;
 
          return {
@@ -450,6 +509,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
    return createPart;
 }
+
 /*exported parts */
 function parts() {
    'use strict';
@@ -611,6 +671,7 @@ function parts() {
       addPartDescriptor: addPartDescriptor
    };
 }
+
 /*exported eventBus */
 function eventBus() {
    'use strict';
@@ -667,6 +728,7 @@ function eventBus() {
       reset: reset
    };
 }
+
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
    'use strict';
 
@@ -681,26 +743,29 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
 
 
+      createPart('event-bus')
+         .returns(eventBus);
+
+      //deprecated remove in 1.4
       createPart('eventBus')
-         .scope(constants.scope.lazySingleton)
          .creator(function () {
+            console.warn('partName "eventBus" deprecated use "event-bus" instead');
             return eventBus;
          });
 
-      function settingsInterceptor(intercepted) {
-         return function (newSettings) {
-            if (newSettings !== undefined) {
-               settings.mergeWith(newSettings);
-            }
 
-            intercepted();
-         };
+      function initModulePageInterceptor(newSettings) {
+         if (newSettings !== undefined) {
+            settings.mergeWith(newSettings);
+         }
+
+         moduleLoader.initModulePage();
       }
 
       return merge({
          createPart: createPart,
          createModule: createModule,
-         initModulePage: settingsInterceptor(moduleLoader.initModulePage),
+         initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
          getPart: partAccess.provisionPart,
 
@@ -710,6 +775,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
    return newInstance();
 
 })(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus);
+
 /* jshint ignore:start */ 
 }(window, document));
 /* jshint ignore:end */

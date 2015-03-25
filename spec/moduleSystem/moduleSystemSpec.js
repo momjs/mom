@@ -1,4 +1,4 @@
-describe('The Module Loader', function () {
+describe('Module System', function () {
    'use strict';
 
    afterEach(function () {
@@ -115,8 +115,6 @@ describe('The Module Loader', function () {
       moduleSystem.initModulePage();
 
       expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependency);
-
-
    });
 
    it('should load any Module found in dom', function () {

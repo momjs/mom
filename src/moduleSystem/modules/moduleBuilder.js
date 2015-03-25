@@ -12,11 +12,21 @@ function moduleBuilder(moduleAccess) {
       };
 
       function addCreator(creator) {
+
+         if(typeof creator !== 'function') {
+            throw new Error('You have to pass the creator as a reference to a function');
+         }
+
          descriptor.creator = creator;
          save();
       }
 
       function addSettings(settings) {
+
+         if(settings !== undefined && typeof settings !== 'object') {
+            throw new Error('You have to pass the settings as an object');
+         }
+
          descriptor.settings = settings;
 
          return {
@@ -31,6 +41,11 @@ function moduleBuilder(moduleAccess) {
 
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          descriptor.dependencies = dependencies;
 
          return {
