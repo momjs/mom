@@ -4,7 +4,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
    function newInstance() {
       var settings = settingsCreator(),
          actualSettings = settings.get(),
-         partAccess = partsCreator(),
+         partAccess = partsCreator(actualSettings),
          eventBus = eventBusCreator(),
          moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
          createPart = partBuilderCreator(partAccess, actualSettings),

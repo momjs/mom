@@ -1,5 +1,5 @@
 /*exported parts */
-function parts() {
+function parts(moduleSystemSettings) {
    'use strict';
 
    var loadedSingletonParts = {},
@@ -19,14 +19,24 @@ function parts() {
          }
       });
 
-      getOrInitializeParts(eagerSingletonPartNames);
+      getOrInitializeParts(eagerSingletonPartNames, true);
    }
 
-   function getOrInitializeParts(partNames) {
+
+   function getOrInitializeParts(partNames, suppressErrors) {
       var parts = [];
 
       each(partNames, function (index, partName) {
-         parts.push(getOrInitializePart(partName));
+         try {
+            var part = getOrInitializePart(partName);
+            parts.push(part);
+         } catch (e) {
+            if (suppressErrors) {
+               moduleSystemSettings.logger(e);
+            } else {
+               throw e;
+            }
+         }
       });
 
       return parts;
@@ -146,7 +156,11 @@ function parts() {
 
    function callPostConstruct(part) {
       if (typeof part.postConstruct === 'function') {
-         part.postConstruct();
+         try {
+            part.postConstruct();
+         } catch (e) {
+            moduleSystemSettings.logger('Exception while calling postConstruct', e);
+         }
 
          //delete post constructor so it can definetly not be called again
          //e.g. a singleton part is requested via provisionPart
@@ -162,7 +176,9 @@ function parts() {
    }
 
    function PartCreationException(descriptor, cause) {
-      //     Error.captureStackTrace(this);
+      if (Error.captureStackTrace) {
+         Error.captureStackTrace(this);
+      }
       this.name = 'PartCreationException';
       this.cause = cause;
       this.descriptor = descriptor;
@@ -171,7 +187,9 @@ function parts() {
    PartCreationException.prototype = Error.prototype;
 
    function CircularDependencyException() {
-      //   Error.captureStackTrace(this);
+      if (Error.captureStackTrace) {
+         Error.captureStackTrace(this);
+      }
       this.name = 'CircularDependencyException';
       this.message = 'circular dependency detected check parts';
 

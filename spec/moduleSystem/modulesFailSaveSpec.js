@@ -14,6 +14,68 @@ describe('Module System', function () {
       });
    }
 
+   describe('with eager singletons', function () {
+      var throwingPart;
+      var workingPart;
+
+      beforeEach(function () {
+         throwingPart = jasmine.createSpy('throwing-part').and.throwError();
+         moduleSystem.createPart('throwing-part').scope(moduleSystem.scope.eagerSingleton).creator(throwingPart);
+
+         workingPart = jasmine.createSpy('working-part');
+         moduleSystem.createPart('working-part').scope(moduleSystem.scope.eagerSingleton).creator(workingPart);
+
+         initModulePage();
+      });
+
+      it('should call the throwing part', function () {
+         expect(throwingPart).toHaveBeenCalled();
+      });
+
+      it('should call the working part', function () {
+         expect(workingPart).toHaveBeenCalled();
+      });
+
+      it('should log something', function () {
+         expect(loggerSpy).toHaveBeenCalled();
+      });
+   });
+
+   describe('with post constructs', function () {
+      var throwingPostConstruct;
+      var workingPostconstruct;
+
+      beforeEach(function () {
+         throwingPostConstruct = jasmine.createSpy('throwing-part').and.throwError();
+         moduleSystem.createPart('throwing-part').scope(moduleSystem.scope.eagerSingleton).creator(function () {
+            return {
+               postConstruct: throwingPostConstruct
+            };
+         });
+
+         workingPostconstruct = jasmine.createSpy('working-part');
+         moduleSystem.createPart('working-part').scope(moduleSystem.scope.eagerSingleton).creator(function () {
+            return {
+               postConstruct: workingPostconstruct
+            };
+         });
+
+         initModulePage();
+      });
+
+      it('should call the throwing part', function () {
+         expect(throwingPostConstruct).toHaveBeenCalled();
+      });
+
+      it('should call the working part', function () {
+         expect(workingPostconstruct).toHaveBeenCalled();
+      });
+
+      it('should log something', function () {
+         expect(loggerSpy).toHaveBeenCalled();
+      });
+   });
+
    describe('with two modules', function () {
       beforeEach(function () {
          loadFixtures('moduleSystem/twoModules.html');

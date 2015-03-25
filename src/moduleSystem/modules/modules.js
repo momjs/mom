@@ -134,7 +134,9 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
    }
 
    function SettingsParseException(message) {
-      //      Error.captureStackTrace(this, SettingsParseException);
+      if (Error.captureStackTrace) {
+         Error.captureStackTrace(this);
+      }
       this.name = 'SettingsParseException';
       this.message = message;
 
