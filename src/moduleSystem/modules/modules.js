@@ -32,18 +32,18 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
             buildModule(element, moduleDescriptor, foundDependencies);
          } else {
-            console.error('Module', moduleName, 'not registered but found in dom');
+            moduleSystemSettings.logger('Module', moduleName, 'not registered but found in dom');
          }
       } catch (e) {
          switch (e.name) {
          case 'SettingsParseException':
-            console.error('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
+            moduleSystemSettings.logger('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
             break;
          case 'PartCreationException':
             doTrace(e);
             break;
          default:
-            console.error('Error during provision of module', moduleDescriptor, e.stack);
+            moduleSystemSettings.logger('Error during provision of module', moduleDescriptor, e.stack);
          }
 
       }
@@ -56,14 +56,14 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
             console.group();
          }
 
-         console.error(e.message, 'while loading module', moduleDescriptor);
+         moduleSystemSettings.logger(e.message, 'while loading module', moduleDescriptor);
 
          do {
-            console.error('... while loading part', currentException.descriptor);
+            moduleSystemSettings.logger('... while loading part', currentException.descriptor);
             currentException = currentException.cause;
          } while (currentException.cause !== undefined);
 
-         console.error('caused by:', currentException.stack);
+         moduleSystemSettings.logger('caused by:', currentException.stack);
 
          if (console.groupEnd) {
             console.groupEnd();
@@ -114,10 +114,7 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
          try {
             settings = JSON.parse(settingsAsHtml);
          } catch (e) {
-            throw {
-               name: 'SettingsParseException',
-               message: e.message
-            };
+            throw new SettingsParseException(e.message);
          }
       }
 
@@ -135,6 +132,14 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
          }
       });
    }
+
+   function SettingsParseException(message) {
+      //      Error.captureStackTrace(this, SettingsParseException);
+      this.name = 'SettingsParseException';
+      this.message = message;
+
+   }
+   SettingsParseException.prototype = Error.prototype;
 
 
 

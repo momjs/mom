@@ -7,7 +7,8 @@ function settings() {
          defaultScope: constants.scope.multiInstance,
          settingsSelector: 'script[type="%moduleName%/settings"]',
          attribute: 'modules',
-         selector: '[%attribute%]'
+         selector: '[%attribute%]',
+         logger: console.error.bind(console)
       },
       actualSettings = defaults;
 

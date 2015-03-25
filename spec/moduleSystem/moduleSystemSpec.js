@@ -5,6 +5,15 @@ describe('Module System', function () {
       moduleSystem = moduleSystem.newInstance();
    });
 
+   it('should not load a Module if not found in dom', function () {
+      var spyModule = jasmine.createSpy('creator');
+      moduleSystem.createModule('test-module').creator(spyModule);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule).not.toHaveBeenCalled();
+   });
+
    it('should get new instance of part when selecting default scope', function () {
       loadFixtures('moduleSystem/oneModule.html');
 
@@ -206,113 +215,7 @@ describe('Module System', function () {
       expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module2'));
    });
 
-   it('should load second module if first throws error during creation', function () {
-      loadFixtures('moduleSystem/twoModules.html');
-
-      var spyModule1 = jasmine.createSpy('creator1').and.throwError('creator error');
-      moduleSystem.createModule('test-module1').creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator2');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule1).toHaveBeenCalled();
-
-      expect(spyModule2).toHaveBeenCalled();
-   });
-
-   it('should load second module if first module dependency could not be resolved', function () {
-      loadFixtures('moduleSystem/twoModules.html');
-
-      var spyModule1 = jasmine.createSpy('creator1');
-      moduleSystem.createModule('test-module1').dependencies(['not-registred']).creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator2');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule1).not.toHaveBeenCalled();
-
-      expect(spyModule2).toHaveBeenCalled();
-   });
-
-   it('should load second module if first module dependency throws error', function () {
-      loadFixtures('moduleSystem/twoModules.html');
-
-      var spyPart = jasmine.createSpy('error-part').and.throwError('part creator error');
-      moduleSystem.createPart('error-dependency').creator(spyPart);
-
-      var spyModule1 = jasmine.createSpy('creator1');
-      moduleSystem.createModule('test-module1').dependencies(['error-dependency']).creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator2');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(spyPart).toHaveBeenCalled();
-
-      expect(spyModule1).not.toHaveBeenCalled();
-
-      expect(spyModule2).toHaveBeenCalled();
-   });
-
-   it('we need to go deeper', function () {
-      loadFixtures('moduleSystem/twoModules.html');
-
-      var errorPart = jasmine.createSpy('error-part').and.throwError('part creator error');
-      moduleSystem.createPart('error-part').creator(errorPart);
-
-      var workingPart = jasmine.createSpy('working-part');
-      moduleSystem.createPart('working-part').dependencies(['error-part']).creator(workingPart);
-
-      var spyModule1 = jasmine.createSpy('creator1');
-      moduleSystem.createModule('test-module1').dependencies(['working-part']).creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator2');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(errorPart).toHaveBeenCalled();
-
-      expect(workingPart).not.toHaveBeenCalled();
-
-      expect(spyModule1).not.toHaveBeenCalled();
-
-      expect(spyModule2).toHaveBeenCalled();
-   });
-
-   it('should load second module if first Module in the dom is not registered', function () {
-      loadFixtures('moduleSystem/twoModules.html');
-
-      var spyModule2 = jasmine.createSpy('creator2');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule2).toHaveBeenCalled();
-   });
-
-   it('should load second module if first throws parse exception', function () {
-      loadFixtures('moduleSystem/twoModuleOneWithWrongFormattetSettings.html');
-
-      var spyModule1 = jasmine.createSpy('creator1');
-      moduleSystem.createModule('test-module1').creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator2');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule1).not.toHaveBeenCalled();
-
-      expect(spyModule2).toHaveBeenCalled();
-   });
-
-   it('should load multiple modules', function () {
+   it('should have configuratble rootNode', function () {
       loadFixtures('moduleSystem/twoModules.html');
 
       var spyModule1 = jasmine.createSpy('creator');
@@ -329,15 +232,6 @@ describe('Module System', function () {
       expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
 
       expect(spyModule2).not.toHaveBeenCalled();
-   });
-
-   it('should not load a Module if not found in dom', function () {
-      var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module').creator(spyModule);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule).not.toHaveBeenCalled();
    });
 
    it('should provide a settings object to the module if specified', function () {
@@ -556,6 +450,7 @@ describe('Module System', function () {
          expect(function () {
             moduleSystem.getPart('test-part');
          }).toThrow();
+
       });
 
       describe('with dependencie from module', function () {

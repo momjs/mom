@@ -125,12 +125,14 @@ function parts() {
 
          return createdPart;
       } catch (e) {
-         throw {
-            name: 'PartCreationException',
-            cause: e,
-            message: 'Exception during part creation',
-            descriptor: partDescriptor
-         };
+         switch (e.name) {
+         case 'CircularDependencyException':
+            throw e;
+         case 'RangeError':
+            throw e;
+         default:
+            throw new PartCreationException(partDescriptor, e);
+         }
       }
 
    }
@@ -158,6 +160,23 @@ function parts() {
 
       return part;
    }
+
+   function PartCreationException(descriptor, cause) {
+      //     Error.captureStackTrace(this);
+      this.name = 'PartCreationException';
+      this.cause = cause;
+      this.descriptor = descriptor;
+
+   }
+   PartCreationException.prototype = Error.prototype;
+
+   function CircularDependencyException() {
+      //   Error.captureStackTrace(this);
+      this.name = 'CircularDependencyException';
+      this.message = 'circular dependency detected check parts';
+
+   }
+   CircularDependencyException.prototype = Error.prototype;
 
 
    return {
