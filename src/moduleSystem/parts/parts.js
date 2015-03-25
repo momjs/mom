@@ -105,25 +105,34 @@ function parts() {
          foundDependencies,
          args,
          createdPart;
+      try {
+         dependencies = partDescriptor.dependencies;
+         foundDependencies = getOrInitializeParts(dependencies);
 
-      dependencies = partDescriptor.dependencies;
-      foundDependencies = getOrInitializeParts(dependencies);
+         //initialize Parts here
+         args = foundDependencies;
+         // add settings from descriptor
+         if (partDescriptor.settings !== undefined) {
+            args.unshift(partDescriptor.settings);
+         }
 
-      //initialize Parts here
-      args = foundDependencies;
-      // add settings from descriptor
-      if (partDescriptor.settings !== undefined) {
-         args.unshift(partDescriptor.settings);
+         // create part
+         createdPart = partDescriptor.creator.apply(partDescriptor, args);
+
+         if (createdPart === undefined) {
+            createdPart = {};
+         }
+
+         return createdPart;
+      } catch (e) {
+         throw {
+            name: 'PartCreationException',
+            cause: e,
+            message: 'Exception during part creation',
+            descriptor: partDescriptor
+         };
       }
 
-      // create part
-      createdPart = partDescriptor.creator.apply(partDescriptor, args);
-
-      if (createdPart === undefined) {
-         createdPart = {};
-      }
-
-      return createdPart;
    }
 
 

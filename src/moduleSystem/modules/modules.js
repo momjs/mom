@@ -24,23 +24,54 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
          foundDependencies;
 
       //check if module to be loaded is registered
-      if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
-         moduleDescriptor = availableModuleDescriptors[moduleName];
+      try {
+         if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
+            moduleDescriptor = availableModuleDescriptors[moduleName];
 
-         foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
-         // check if all needed dependencies are found
-         if (foundDependencies.length === moduleDescriptor.dependencies.length) {
+            foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
+
             buildModule(element, moduleDescriptor, foundDependencies);
          } else {
-            throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
+            console.error('Module', moduleName, 'not registered but found in dom');
          }
-      } else {
-         throw new Error('Module ' + moduleName + ' not registered but found in dom');
+      } catch (e) {
+         switch (e.name) {
+         case 'SettingsParseException':
+            console.error('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
+            break;
+         case 'PartCreationException':
+            doTrace(e);
+            break;
+         default:
+            console.error('Error during provision of module', moduleDescriptor, e.stack);
+         }
+
+      }
+
+
+      function doTrace(e) {
+         var currentException = e;
+
+         if (console.group) {
+            console.group();
+         }
+
+         console.error(e.message, 'while loading module', moduleDescriptor);
+
+         do {
+            console.error('... while loading part', currentException.descriptor);
+            currentException = currentException.cause;
+         } while (currentException.cause !== undefined);
+
+         console.error('caused by:', currentException.stack);
+
+         if (console.groupEnd) {
+            console.groupEnd();
+         }
       }
    }
 
    function buildModule(element, moduleDescriptor, foundDependencies) {
-      //build arguments
       var args = foundDependencies,
          domSettings = getDOMSettings(element, moduleDescriptor.name),
          mergedSettings,
@@ -67,6 +98,8 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
       //add module to eventBus
       eventBus.add(createdModule);
+
+
    }
 
    function getDOMSettings(element, moduleName) {
@@ -78,7 +111,14 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
       if (settingsScript !== null) {
          settingsAsHtml = settingsScript.innerHTML;
-         settings = JSON.parse(settingsAsHtml);
+         try {
+            settings = JSON.parse(settingsAsHtml);
+         } catch (e) {
+            throw {
+               name: 'SettingsParseException',
+               message: e.message
+            };
+         }
       }
 
       return settings;

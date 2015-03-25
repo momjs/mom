@@ -104,32 +104,6 @@ describe('The Module Loader', function () {
       expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
    });
 
-   it('should throw error when defining an invalid scope', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-
-      var dependencyForFirstSpy;
-      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
-         function (dependencyPart) {
-            dependencyForFirstSpy = dependencyPart;
-         }
-      );
-      var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).scope('invalid').creator(
-         function () {
-            return {
-               /*
-                * returns empty part object
-                */
-            };
-         }
-      );
-
-      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createModule('test-module').dependencies(['spy-part-1']).creator(function () {});
-
-      expect(moduleSystem.initModulePage).toThrowError();
-   });
-
    it('should provide Modules with static dependencies', function () {
       loadFixtures('moduleSystem/oneModule.html');
       var spyModule = jasmine.createSpy('creator');
@@ -232,6 +206,112 @@ describe('The Module Loader', function () {
 
       expect(spyModule2).toHaveBeenCalled();
       expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module2'));
+   });
+
+   it('should load second module if first throws error during creation', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+
+      var spyModule1 = jasmine.createSpy('creator1').and.throwError('creator error');
+      moduleSystem.createModule('test-module1').creator(spyModule1);
+
+      var spyModule2 = jasmine.createSpy('creator2');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule1).toHaveBeenCalled();
+
+      expect(spyModule2).toHaveBeenCalled();
+   });
+
+   it('should load second module if first module dependency could not be resolved', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+
+      var spyModule1 = jasmine.createSpy('creator1');
+      moduleSystem.createModule('test-module1').dependencies(['not-registred']).creator(spyModule1);
+
+      var spyModule2 = jasmine.createSpy('creator2');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule1).not.toHaveBeenCalled();
+
+      expect(spyModule2).toHaveBeenCalled();
+   });
+
+   it('should load second module if first module dependency throws error', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+
+      var spyPart = jasmine.createSpy('error-part').and.throwError('part creator error');
+      moduleSystem.createPart('error-dependency').creator(spyPart);
+
+      var spyModule1 = jasmine.createSpy('creator1');
+      moduleSystem.createModule('test-module1').dependencies(['error-dependency']).creator(spyModule1);
+
+      var spyModule2 = jasmine.createSpy('creator2');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(spyPart).toHaveBeenCalled();
+
+      expect(spyModule1).not.toHaveBeenCalled();
+
+      expect(spyModule2).toHaveBeenCalled();
+   });
+
+   it('we need to go deeper', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+
+      var errorPart = jasmine.createSpy('error-part').and.throwError('part creator error');
+      moduleSystem.createPart('error-part').creator(errorPart);
+
+      var workingPart = jasmine.createSpy('working-part');
+      moduleSystem.createPart('working-part').dependencies(['error-part']).creator(workingPart);
+
+      var spyModule1 = jasmine.createSpy('creator1');
+      moduleSystem.createModule('test-module1').dependencies(['working-part']).creator(spyModule1);
+
+      var spyModule2 = jasmine.createSpy('creator2');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(errorPart).toHaveBeenCalled();
+
+      expect(workingPart).not.toHaveBeenCalled();
+
+      expect(spyModule1).not.toHaveBeenCalled();
+
+      expect(spyModule2).toHaveBeenCalled();
+   });
+
+   it('should load second module if first Module in the dom is not registered', function () {
+      loadFixtures('moduleSystem/twoModules.html');
+
+      var spyModule2 = jasmine.createSpy('creator2');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule2).toHaveBeenCalled();
+   });
+
+   it('should load second module if first throws parse exception', function () {
+      loadFixtures('moduleSystem/twoModuleOneWithWrongFormattetSettings.html');
+
+      var spyModule1 = jasmine.createSpy('creator1');
+      moduleSystem.createModule('test-module1').creator(spyModule1);
+
+      var spyModule2 = jasmine.createSpy('creator2');
+      moduleSystem.createModule('test-module2').creator(spyModule2);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule1).not.toHaveBeenCalled();
+
+      expect(spyModule2).toHaveBeenCalled();
    });
 
    it('should load multiple modules', function () {
@@ -361,11 +441,7 @@ describe('The Module Loader', function () {
       expect(spyModule2.postConstruct).toHaveBeenCalled();
    });
 
-   it('should Throw if a Module in the dom is not registered', function () {
-      loadFixtures('moduleSystem/oneModule.html');
 
-      expect(moduleSystem.initModulePage).toThrow();
-   });
 
    describe('with parts', function () {
       var spyModule;
@@ -545,13 +621,6 @@ describe('The Module Loader', function () {
       });
    });
 
-   it('should throw an exception if a module dependencie couldnt be resolved', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var spyModule = jasmine.createSpy();
-      moduleSystem.createModule('test-module').dependencies(['dependency-part']).creator(spyModule);
-
-      expect(moduleSystem.initModulePage).toThrow();
-   });
 
    it('should add every module to the event bus', function () {
       loadFixtures('moduleSystem/oneModule.html');
