@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.3.0 - 2015-03-25 * @link 
+ * @version v1.3.0 - 2015-03-26 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -438,11 +438,16 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 
+   var scopes = constants.scope,
+      SCOPE_LAZY_SINGLETON = scopes.lazySingleton,
+      SCOPE_EAGER_SINGLETON = scopes.eagerSingleton,
+      SCOPE_MULTI_INSTANCE = scopes.multiInstance;
+
    function returnsDescriptor(name) {
       var descriptor = createDescriptor(name);
 
       descriptor.type = constants.type.returns;
-      descriptor.scope = constants.scope.lazySingleton;
+      descriptor.scope = SCOPE_LAZY_SINGLETON;
       descriptor.returns = undefined;
 
       return descriptor;
@@ -491,7 +496,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
       function addScope(scope) {
 
-         if('lazy-singleton' !== scope && 'eager-singleton' !== scope && 'multi-instance' !== scope) {
+         if(SCOPE_LAZY_SINGLETON !== scope && SCOPE_EAGER_SINGLETON !== scope && SCOPE_MULTI_INSTANCE !== scope) {
             throw new Error('You have to pass the scope as one of these: lazy-singleton|eager-singleton|multi-instance');
          }
 
