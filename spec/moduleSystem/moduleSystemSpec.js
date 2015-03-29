@@ -14,241 +14,197 @@ describe('Module System', function () {
       expect(spyModule).not.toHaveBeenCalled();
    });
 
-   it('should get new instance of part when selecting default scope', function () {
-      loadFixtures('moduleSystem/oneModule.html');
+   describe('on loading parts', function() {
 
-      var dependencyForFirstSpy, dependencyForSecondSpy;
-      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
-         function (dependencyPart) {
-            dependencyForFirstSpy = dependencyPart;
-         }
-      );
-      var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
-         function (dependencyPart) {
-            dependencyForSecondSpy = dependencyPart;
-         }
-      );
+      it('should get new instance of part when selecting default scope', function () {
 
-      var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).creator(
-         function () {
+         var dependencyForFirstSpy, dependencyForSecondSpy;
+         var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
+            function (dependencyPart) {
+               dependencyForFirstSpy = dependencyPart;
+            }
+         );
+         var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
+            function (dependencyPart) {
+               dependencyForSecondSpy = dependencyPart;
+            }
+         );
+
+         var referencedPart = 'part-name';
+         moduleSystem.createPart(referencedPart).creator(
+            function () {
+               return {
+                  /*
+                   * returns empty part object
+                   */
+               };
+            }
+         );
+
+         moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
+         moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
+         moduleSystem.getPart('spy-part-1');
+         moduleSystem.getPart('spy-part-2');
+
+         expect(dependencyForFirstSpy).not.toBe(dependencyForSecondSpy);
+      });
+
+      it('should get same instance of part when selecting lazy singleton scope', function () {
+
+         var dependencyForFirstSpy, dependencyForSecondSpy;
+         var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
+            function (dependencyPart) {
+               dependencyForFirstSpy = dependencyPart;
+            }
+         );
+         var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
+            function (dependencyPart) {
+               dependencyForSecondSpy = dependencyPart;
+            }
+         );
+         var referencedPart = 'part-name';
+         moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.lazySingleton).creator(
+            function () {
+               return {
+                  /*
+                   * returns empty part object
+                   */
+               };
+            }
+         );
+
+         moduleSystem.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
+         moduleSystem.createPart('spyPart2').dependencies([referencedPart]).creator(secondSpyPart);
+         moduleSystem.getPart('spyPart1');
+         moduleSystem.getPart('spyPart2');
+
+         expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
+      });
+
+      it('should get same instance of part when selecting eager singleton scope', function () {
+
+         var dependencyForFirstSpy, dependencyForSecondSpy;
+         var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
+            function (dependencyPart) {
+               dependencyForFirstSpy = dependencyPart;
+            }
+         );
+         var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
+            function (dependencyPart) {
+               dependencyForSecondSpy = dependencyPart;
+            }
+         );
+         var referencedPart = 'part-name';
+         moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.eagerSingleton).creator(
+            function () {
+               return {
+                  /*
+                   * returns empty part object
+                   */
+               };
+            }
+         );
+
+         moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
+         moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
+         moduleSystem.getPart('spy-part-1');
+         moduleSystem.getPart('spy-part-2');
+
+         expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
+      });
+
+
+      it('should load any eagersingleton part', function () {
+         var postConstructSpy = jasmine.createSpy('post construct');
+         var spyPart = jasmine.createSpy('creator').and.callFake(function () {
             return {
-               /*
-                * returns empty part object
-                */
+               postConstruct: postConstructSpy
             };
-         }
-      );
+         });
+         moduleSystem.createPart('test-part').scope(moduleSystem.scope.eagerSingleton).creator(spyPart);
 
-      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spy-part-1');
-      moduleSystem.getPart('spy-part-2');
+         moduleSystem.initModulePage();
 
-      expect(dependencyForFirstSpy).not.toBe(dependencyForSecondSpy);
+         expect(spyPart).toHaveBeenCalled();
+         expect(postConstructSpy).toHaveBeenCalled();
+      });
    });
 
-   it('should get same instance of part when selecting lazy singleton scope', function () {
+   describe('when loading one module', function() {
 
-      var dependencyForFirstSpy, dependencyForSecondSpy;
-      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
-         function (dependencyPart) {
-            dependencyForFirstSpy = dependencyPart;
-         }
-      );
-      var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
-         function (dependencyPart) {
-            dependencyForSecondSpy = dependencyPart;
-         }
-      );
-      var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.lazySingleton).creator(
-         function () {
-            return {
-               /*
-                * returns empty part object
-                */
-            };
-         }
-      );
+      var spyModule;
 
-      moduleSystem.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spyPart2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spyPart1');
-      moduleSystem.getPart('spyPart2');
+      beforeEach(function() {
+         loadFixtures('moduleSystem/oneModule.html');
 
-      expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
-   });
+         spyModule = jasmine.createSpy('creator');
+      });
+
+      it('should provide Modules with static dependencies', function () {
+         var staticDependency = 'test Static';
+
+         moduleSystem.createPart('static-dependency').returns(staticDependency);
+         moduleSystem.createModule('test-module').dependencies(['static-dependency']).creator(spyModule);
+
+         moduleSystem.initModulePage();
+
+         expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependency);
+      });
+
+      describe('when loading simple module', function() {
+
+         beforeEach(function() {
+
+            moduleSystem.createModule('test-module').creator(spyModule);
+         });
+
+         it('should load any Module found in dom', function () {
+
+            moduleSystem.initModulePage();
+
+            expect(spyModule).toHaveBeenCalled();
+            expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
+         });
 
 
-   it('should get same instance of part when selecting eager singleton scope', function () {
+         it('should load module with configured selector and attribute', function () {
 
-      var dependencyForFirstSpy, dependencyForSecondSpy;
-      var firstSpyPart = jasmine.createSpy('spy-part-1').and.callFake(
-         function (dependencyPart) {
-            dependencyForFirstSpy = dependencyPart;
-         }
-      );
-      var secondSpyPart = jasmine.createSpy('spy-part-2').and.callFake(
-         function (dependencyPart) {
-            dependencyForSecondSpy = dependencyPart;
-         }
-      );
-      var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.eagerSingleton).creator(
-         function () {
-            return {
-               /*
-                * returns empty part object
-                */
-            };
-         }
-      );
+            moduleSystem.initModulePage({
+               selector: '.js-module',
+               attribute: 'data-modules'
+            });
 
-      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spy-part-1');
-      moduleSystem.getPart('spy-part-2');
+            expect(spyModule).toHaveBeenCalled();
+            expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-selectorAndAttributeModule'));
+         });
 
-      expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
-   });
+         it('should load module with configured attribute', function () {
 
-   it('should provide Modules with static dependencies', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var spyModule = jasmine.createSpy('creator');
-      var staticDependency = 'test Static';
+            moduleSystem.initModulePage({
+               attribute: 'data-mods'
+            });
 
-      moduleSystem.createPart('static-dependency').returns(staticDependency);
-      moduleSystem.createModule('test-module').dependencies(['static-dependency']).creator(spyModule);
+            expect(spyModule).toHaveBeenCalled();
+            expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-attributeModule'));
+         });
+      });
 
-      moduleSystem.initModulePage();
+      it('should provide a settings object to the module if specified', function () {
 
-      expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependency);
-   });
-
-   it('should load any Module found in dom', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module').creator(spyModule);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule).toHaveBeenCalled();
-      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
-   });
-
-   it('should load any eagersingleton part', function () {
-      var postConstructSpy = jasmine.createSpy('post construct');
-      var spyPart = jasmine.createSpy('creator').and.callFake(function () {
-         return {
-            postConstruct: postConstructSpy
+         var settings = {
+            testSetting: 'test'
          };
+
+         var spyModule = jasmine.createSpy('creator').and.returnValue({});
+         moduleSystem.createModule('test-module')
+            .settings(settings)
+            .creator(spyModule);
+
+         moduleSystem.initModulePage();
+
+         expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), settings);
+
       });
-      moduleSystem.createPart('test-part').scope(moduleSystem.scope.eagerSingleton).creator(spyPart);
-
-      moduleSystem.initModulePage();
-
-      expect(spyPart).toHaveBeenCalled();
-      expect(postConstructSpy).toHaveBeenCalled();
-   });
-
-   it('should load module with configured selector and attribute', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module').creator(spyModule);
-
-      moduleSystem.initModulePage({
-         selector: '.js-module',
-         attribute: 'data-modules'
-      });
-
-      expect(spyModule).toHaveBeenCalled();
-      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-selectorAndAttributeModule'));
-   });
-
-   it('should load module with configured attribute', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module').creator(spyModule);
-
-      moduleSystem.initModulePage({
-         attribute: 'data-mods'
-      });
-
-      expect(spyModule).toHaveBeenCalled();
-      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-attributeModule'));
-   });
-
-
-   it('should load a comma seperated list of Modules found in dom', function () {
-      loadFixtures('moduleSystem/twoModulesSameNode.html');
-      var spyModule1 = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module1').creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule1).toHaveBeenCalled();
-      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
-
-      expect(spyModule2).toHaveBeenCalled();
-      expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
-   });
-
-   it('should load multiple modules', function () {
-      loadFixtures('moduleSystem/twoModules.html');
-
-      var spyModule1 = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module1').creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule1).toHaveBeenCalled();
-      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
-
-      expect(spyModule2).toHaveBeenCalled();
-      expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module2'));
-   });
-
-   it('should have configuratble rootNode', function () {
-      loadFixtures('moduleSystem/twoModules.html');
-
-      var spyModule1 = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module1').creator(spyModule1);
-
-      var spyModule2 = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module2').creator(spyModule2);
-
-      moduleSystem.initModulePage({
-         rootNode: document.getElementById('test-module1-wrapper')
-      });
-
-      expect(spyModule1).toHaveBeenCalled();
-      expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
-
-      expect(spyModule2).not.toHaveBeenCalled();
-   });
-
-   it('should provide a settings object to the module if specified', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var settings = {
-         testSetting: 'test'
-      };
-
-      var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('test-module')
-         .settings(settings)
-         .creator(spyModule);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), settings);
-
    });
 
    it('should provide a settings object to the module if settings found in DOM', function () {
@@ -287,53 +243,127 @@ describe('Module System', function () {
 
    });
 
-   it('should create a module for every module in dom', function () {
-      loadFixtures('moduleSystem/twoIdenticalModules.html');
-      var spyModule = jasmine.createSpy('creator');
-      moduleSystem.createModule('test-module').creator(spyModule);
+   describe('when loading more than one module', function() {
 
-      moduleSystem.initModulePage();
+      var spyModule1;
+      var spyModule2;
 
-      expect(spyModule.calls.count()).toBe(2);
-      expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
-      expect(spyModule.calls.argsFor(1)[0]).toBe(document.getElementById('test-module12'));
-   });
+      beforeEach(function() {
 
-   it('should not throw if the same module is found multiple times in dom', function () {
-      loadFixtures('moduleSystem/twoIdenticalModules.html');
-
-      var spyModule = jasmine.createSpy('creator').and.callFake(function () {
-         return {};
+         spyModule1 = jasmine.createSpy('creator');
+         spyModule2 = jasmine.createSpy('creator');
       });
-      moduleSystem.createModule('test-module').creator(spyModule);
 
-      expect(moduleSystem.initModulePage).not.toThrow();
+      describe('when loading simple modules', function() {
+
+         beforeEach(function() {
+
+            moduleSystem.createModule('test-module1').creator(spyModule1);
+            moduleSystem.createModule('test-module2').creator(spyModule2);
+         });
+
+         describe('on parallel dom nodes', function() {
+
+            beforeEach(function() {
+
+               loadFixtures('moduleSystem/twoModules.html');
+            });
+
+            it('should load multiple modules', function () {
+
+               moduleSystem.initModulePage();
+
+               expect(spyModule1).toHaveBeenCalled();
+               expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
+
+               expect(spyModule2).toHaveBeenCalled();
+               expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module2'));
+            });
+
+            it('should have configuratble rootNode', function () {
+
+               moduleSystem.initModulePage({
+                  rootNode: document.getElementById('test-module1-wrapper')
+               });
+
+               expect(spyModule1).toHaveBeenCalled();
+               expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
+
+               expect(spyModule2).not.toHaveBeenCalled();
+            });
+         });
+
+         describe('on same dom node', function() {
+
+            beforeEach(function() {
+
+               loadFixtures('moduleSystem/twoModulesSameNode.html');
+            });
+
+            it('should load a comma seperated list of Modules found in dom', function () {
+
+               moduleSystem.initModulePage();
+
+               expect(spyModule1).toHaveBeenCalled();
+               expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
+
+               expect(spyModule2).toHaveBeenCalled();
+               expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
+            });
+         });
+
+         describe('on two parallel identical dom nodes', function() {
+
+            beforeEach(function() {
+
+               loadFixtures('moduleSystem/twoIdenticalModules.html');
+            });
+
+            it('should create a module for every module in dom', function () {
+               var spyModule = jasmine.createSpy('creator');
+               moduleSystem.createModule('test-module').creator(spyModule);
+
+               moduleSystem.initModulePage();
+
+               expect(spyModule.calls.count()).toBe(2);
+               expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
+               expect(spyModule.calls.argsFor(1)[0]).toBe(document.getElementById('test-module12'));
+            });
+
+            it('should not throw if the same module is found multiple times in dom', function () {
+
+               var spyModule = jasmine.createSpy('creator').and.callFake(function () {
+                  return {};
+               });
+               moduleSystem.createModule('test-module').creator(spyModule);
+
+               expect(moduleSystem.initModulePage).not.toThrow();
+            });
+
+            it('should call post construct from multiple times', function () {
+
+               var spyModule1 = jasmine.createSpyObj('spyModule1', ['postConstruct']);
+               var spyModule2 = jasmine.createSpyObj('spyModule2', ['postConstruct']);
+               var first = true;
+               var creator = function () {
+                  if (first) {
+                     first = false;
+                     return spyModule1;
+                  } else {
+                     return spyModule2;
+                  }
+               };
+
+               moduleSystem.createModule('test-module').creator(creator);
+
+               moduleSystem.initModulePage();
+
+               expect(spyModule1.postConstruct).toHaveBeenCalled();
+               expect(spyModule2.postConstruct).toHaveBeenCalled();
+            });
+         });
+      });
    });
-
-   it('should call post construct from multiple times', function () {
-      loadFixtures('moduleSystem/twoIdenticalModules.html');
-
-      var spyModule1 = jasmine.createSpyObj('spyModule1', ['postConstruct']);
-      var spyModule2 = jasmine.createSpyObj('spyModule2', ['postConstruct']);
-      var first = true;
-      var creator = function () {
-         if (first) {
-            first = false;
-            return spyModule1;
-         } else {
-            return spyModule2;
-         }
-      };
-
-      moduleSystem.createModule('test-module').creator(creator);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule1.postConstruct).toHaveBeenCalled();
-      expect(spyModule2.postConstruct).toHaveBeenCalled();
-   });
-
-
 
    describe('with parts', function () {
       var spyModule;
@@ -560,7 +590,4 @@ describe('Module System', function () {
 
       expect(spyModuleObject.postConstruct).toHaveBeenCalled();
    });
-
-
-
 });
