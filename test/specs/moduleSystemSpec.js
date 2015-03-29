@@ -130,83 +130,6 @@ describe('Module System', function () {
       });
    });
 
-   describe('when loading one module', function() {
-
-      var spyModule;
-
-      beforeEach(function() {
-         loadFixtures('moduleSystem/oneModule.html');
-
-         spyModule = jasmine.createSpy('creator');
-      });
-
-      it('should provide Modules with static dependencies', function () {
-         var staticDependency = 'test Static';
-
-         moduleSystem.createPart('static-dependency').returns(staticDependency);
-         moduleSystem.createModule('test-module').dependencies(['static-dependency']).creator(spyModule);
-
-         moduleSystem.initModulePage();
-
-         expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependency);
-      });
-
-      describe('when loading simple module', function() {
-
-         beforeEach(function() {
-
-            moduleSystem.createModule('test-module').creator(spyModule);
-         });
-
-         it('should load any Module found in dom', function () {
-
-            moduleSystem.initModulePage();
-
-            expect(spyModule).toHaveBeenCalled();
-            expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
-         });
-
-
-         it('should load module with configured selector and attribute', function () {
-
-            moduleSystem.initModulePage({
-               selector: '.js-module',
-               attribute: 'data-modules'
-            });
-
-            expect(spyModule).toHaveBeenCalled();
-            expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-selectorAndAttributeModule'));
-         });
-
-         it('should load module with configured attribute', function () {
-
-            moduleSystem.initModulePage({
-               attribute: 'data-mods'
-            });
-
-            expect(spyModule).toHaveBeenCalled();
-            expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-attributeModule'));
-         });
-      });
-
-      it('should provide a settings object to the module if specified', function () {
-
-         var settings = {
-            testSetting: 'test'
-         };
-
-         var spyModule = jasmine.createSpy('creator').and.returnValue({});
-         moduleSystem.createModule('test-module')
-            .settings(settings)
-            .creator(spyModule);
-
-         moduleSystem.initModulePage();
-
-         expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), settings);
-
-      });
-   });
-
    it('should provide a settings object to the module if settings found in DOM', function () {
       loadFixtures('moduleSystem/oneModuleWithSettings.html');
 
@@ -290,25 +213,6 @@ describe('Module System', function () {
                expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
 
                expect(spyModule2).not.toHaveBeenCalled();
-            });
-         });
-
-         describe('on same dom node', function() {
-
-            beforeEach(function() {
-
-               loadFixtures('moduleSystem/twoModulesSameNode.html');
-            });
-
-            it('should load a comma seperated list of Modules found in dom', function () {
-
-               moduleSystem.initModulePage();
-
-               expect(spyModule1).toHaveBeenCalled();
-               expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
-
-               expect(spyModule2).toHaveBeenCalled();
-               expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
             });
          });
 
