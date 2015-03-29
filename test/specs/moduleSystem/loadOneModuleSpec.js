@@ -1,4 +1,4 @@
-describe('Module system when loading single node page', function() {
+describe('Module system loads one module', function() {
 
    var spyModule;
 
@@ -19,6 +19,67 @@ describe('Module system when loading single node page', function() {
       moduleSystem.initModulePage();
 
       expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependency);
+   });
+
+   it('should provide a settings object to the module if specified', function () {
+
+      var settings = {
+         testSetting: 'test'
+      };
+
+      var spyModule = jasmine.createSpy('creator').and.returnValue({});
+      moduleSystem.createModule('test-module')
+         .settings(settings)
+         .creator(spyModule);
+
+      moduleSystem.initModulePage();
+
+      expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), settings);
+
+   });
+
+   it('should add every module to the event bus', function () {
+      var eventBus = moduleSystem.getPart('event-bus');
+
+      eventBus.add = jasmine.createSpy('add').and.callThrough();
+
+      var publicMethodObject = {
+         testProperty: 'test'
+      };
+      moduleSystem.createModule('test-module').creator(function () {
+         return publicMethodObject;
+      });
+
+
+      moduleSystem.initModulePage();
+
+
+      expect(eventBus.add).toHaveBeenCalledWith({
+         testProperty: 'test'
+      });
+   });
+
+   it('should call postConstruct when provision is finished', function () {
+      var spyModuleObject = jasmine.createSpyObj('module object', ['postConstruct']);
+      var initWasCalled = false;
+
+      spyModuleObject.postConstruct.and.callFake(function () {
+         expect(initWasCalled).toEqual(true);
+      });
+
+      var spyModule = jasmine.createSpy('spyModule').and.callFake(function () {
+         initWasCalled = true;
+         return spyModuleObject;
+      });
+
+
+      moduleSystem.createModule('test-module').creator(spyModule);
+
+
+      moduleSystem.initModulePage();
+
+
+      expect(spyModuleObject.postConstruct).toHaveBeenCalled();
    });
 
    describe('when loading simple module', function() {
@@ -58,20 +119,4 @@ describe('Module system when loading single node page', function() {
       });
    });
 
-   it('should provide a settings object to the module if specified', function () {
-
-      var settings = {
-         testSetting: 'test'
-      };
-
-      var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('test-module')
-         .settings(settings)
-         .creator(spyModule);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), settings);
-
-   });
 });

@@ -311,49 +311,5 @@ describe('Module System', function () {
    });
 
 
-   it('should add every module to the event bus', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var eventBus = moduleSystem.getPart('event-bus');
 
-      eventBus.add = jasmine.createSpy('add').and.callThrough();
-
-      var publicMethodObject = {
-         testProperty: 'test'
-      };
-      moduleSystem.createModule('test-module').creator(function () {
-         return publicMethodObject;
-      });
-
-
-      moduleSystem.initModulePage();
-
-
-      expect(eventBus.add).toHaveBeenCalledWith({
-         testProperty: 'test'
-      });
-   });
-
-   it('should call postConstruct when provision is finished', function () {
-      loadFixtures('moduleSystem/oneModule.html');
-      var spyModuleObject = jasmine.createSpyObj('module object', ['postConstruct']);
-      var initWasCalled = false;
-
-      spyModuleObject.postConstruct.and.callFake(function () {
-         expect(initWasCalled).toEqual(true);
-      });
-
-      var spyModule = jasmine.createSpy('spyModule').and.callFake(function () {
-         initWasCalled = true;
-         return spyModuleObject;
-      });
-
-
-      moduleSystem.createModule('test-module').creator(spyModule);
-
-
-      moduleSystem.initModulePage();
-
-
-      expect(spyModuleObject.postConstruct).toHaveBeenCalled();
-   });
 });
