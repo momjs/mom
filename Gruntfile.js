@@ -80,6 +80,7 @@ module.exports = function (grunt) {
                '<%= dirs.dep %>/dist/jquery.js',
                '<%= dirs.dep %>/lib/jasmine-jquery.js'
             ],
+            helpers: ['<%= dirs.test %>/helpers/**/*.js'],
             specs: [
                '<%= dirs.test %>/**/*Spec.js'
             ]
