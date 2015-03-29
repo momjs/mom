@@ -21,7 +21,7 @@ module.exports = function (grunt) {
          dest: 'dist',
          dep: '<%= dirs.dest %>/dependencies',
          source: 'src',
-         test: 'spec'
+         test: 'test'
       },
       files: {
          src: [
@@ -82,7 +82,7 @@ module.exports = function (grunt) {
             ],
             helpers: ['<%= dirs.test %>/helpers/**/*.js'],
             specs: [
-               '<%= dirs.test %>/**/*Spec.js'
+               '<%= dirs.test %>/specs/**/*Spec.js'
             ]
          },
          test: {
