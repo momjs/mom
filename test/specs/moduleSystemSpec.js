@@ -151,37 +151,6 @@ describe('Module System', function () {
             moduleSystem.createModule('test-module2').creator(spyModule2);
          });
 
-         describe('on parallel dom nodes', function() {
-
-            beforeEach(function() {
-
-               loadFixtures('moduleSystem/twoModules.html');
-            });
-
-            it('should load multiple modules', function () {
-
-               moduleSystem.initModulePage();
-
-               expect(spyModule1).toHaveBeenCalled();
-               expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
-
-               expect(spyModule2).toHaveBeenCalled();
-               expect(spyModule2.calls.argsFor(0)[0]).toBe(document.getElementById('test-module2'));
-            });
-
-            it('should have configuratble rootNode', function () {
-
-               moduleSystem.initModulePage({
-                  rootNode: document.getElementById('test-module1-wrapper')
-               });
-
-               expect(spyModule1).toHaveBeenCalled();
-               expect(spyModule1.calls.argsFor(0)[0]).toBe(document.getElementById('test-module1'));
-
-               expect(spyModule2).not.toHaveBeenCalled();
-            });
-         });
-
          describe('on two parallel identical dom nodes', function() {
 
             beforeEach(function() {
