@@ -130,41 +130,7 @@ describe('Module System', function () {
       });
    });
 
-   it('should provide a settings object to the module if settings found in DOM', function () {
-      loadFixtures('moduleSystem/oneModuleWithSettings.html');
 
-      var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('test-module')
-         .creator(spyModule);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), {
-         testOverrideSetting: 12
-      });
-
-   });
-
-   it('should override the specified settings with the settings found in DOM', function () {
-      loadFixtures('moduleSystem/oneModuleWithSettings.html');
-      var settings = {
-         testOverrideSetting: 'test',
-         otherSetting: 'setting'
-      };
-
-      var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('test-module')
-         .settings(settings)
-         .creator(spyModule);
-
-      moduleSystem.initModulePage();
-
-      expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), {
-         testOverrideSetting: 12,
-         otherSetting: settings.otherSetting
-      });
-
-   });
 
    describe('when loading more than one module', function() {
 
