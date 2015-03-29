@@ -249,7 +249,7 @@ describe('Module System', function () {
 
       });
 
-      describe('with dependencie from module', function () {
+      describe('with dependency from module', function () {
          beforeEach(function () {
             loadFixtures('moduleSystem/oneModule.html');
             spyModule = jasmine.createSpy('module');
@@ -306,10 +306,6 @@ describe('Module System', function () {
 
             expect(postConstructSpy).toHaveBeenCalled();
          });
-
       });
    });
-
-
-
 });
