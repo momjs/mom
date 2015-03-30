@@ -7,7 +7,7 @@ describe('Module system loads one module', function() {
 
       loadFixtures('moduleSystem/oneModule.html');
 
-      spyModule = jasmine.createSpy('creator');
+      spyModule = jasmine.createSpy('spyModule');
    });
 
    it('should provide Modules with static dependencies', function () {
@@ -119,4 +119,61 @@ describe('Module system loads one module', function() {
       });
    });
 
+   describe('with dependency from module', function () {
+
+      beforeEach(function () {
+
+         moduleSystem.createModule('test-module').dependencies(['test-part']).creator(spyModule);
+      });
+
+      it('should load any needed Part', function () {
+         var spyPart = jasmine.createSpy('creator');
+         moduleSystem.createPart('test-part').creator(spyPart);
+
+         moduleSystem.initModulePage();
+
+         expect(spyPart).toHaveBeenCalled();
+      });
+
+      it('should not load any part which is not needed', function () {
+         moduleSystem.createPart('test-part').creator(function () {});
+         var spyPart = jasmine.createSpy('creator');
+         moduleSystem.createPart('test-part2').creator(spyPart);
+
+         moduleSystem.initModulePage();
+
+         expect(spyPart).not.toHaveBeenCalled();
+      });
+
+      it('should add missing parts to the module', function () {
+         var publicMethodObject = {
+            testProperty: 'test'
+         };
+         moduleSystem.createPart('test-part').creator(function () {
+            return publicMethodObject;
+         });
+
+         moduleSystem.initModulePage();
+
+
+         expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), publicMethodObject);
+      });
+
+      it('should call postConstruct when get part is called', function () {
+         var spyPartObject = jasmine.createSpyObj('part object', ['postConstruct']);
+         var postConstructSpy = spyPartObject.postConstruct;
+
+
+         moduleSystem.createPart('test-part')
+            .creator(function () {
+               return spyPartObject;
+            });
+
+
+         moduleSystem.getPart('test-part');
+
+
+         expect(postConstructSpy).toHaveBeenCalled();
+      });
+   });
 });
