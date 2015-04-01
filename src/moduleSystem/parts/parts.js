@@ -1,5 +1,5 @@
 /*exported parts */
-function parts(moduleSystemSettings) {
+function parts(settings) {
    'use strict';
 
    var loadedSingletonParts = {},
@@ -32,7 +32,7 @@ function parts(moduleSystemSettings) {
             parts.push(part);
          } catch (e) {
             if (suppressErrors) {
-               moduleSystemSettings.logger(e);
+               settings.logger(e);
             } else {
                throw e;
             }
@@ -159,7 +159,7 @@ function parts(moduleSystemSettings) {
          try {
             part.postConstruct();
          } catch (e) {
-            moduleSystemSettings.logger('Exception while calling postConstruct', e);
+            settings.logger('Exception while calling postConstruct', e);
          }
 
          //delete post constructor so it can definetly not be called again
