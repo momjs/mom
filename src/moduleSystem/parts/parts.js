@@ -136,8 +136,6 @@ function parts(settings) {
          return createdPart;
       } catch (e) {
          switch (e.name) {
-         case 'CircularDependencyException':
-            throw e;
          case 'RangeError':
             throw e;
          default:
@@ -185,16 +183,6 @@ function parts(settings) {
 
    }
    PartCreationException.prototype = Error.prototype;
-
-   function CircularDependencyException() {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'CircularDependencyException';
-      this.message = 'circular dependency detected check parts';
-
-   }
-   CircularDependencyException.prototype = Error.prototype;
 
 
    return {
