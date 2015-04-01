@@ -22,6 +22,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
    }
 
    return {
-      initModulePage: initModules
+      initModulePage: initModules,
+      initModule : initModule
    };
 }

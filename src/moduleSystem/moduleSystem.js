@@ -1,4 +1,4 @@
-moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
+moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator, domEventListenerCreator) {
    'use strict';
 
    function newInstance() {
@@ -9,7 +9,8 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
          createPart = partBuilderCreator(partAccess, actualSettings),
          createModule = moduleBuilderCreator(moduleAccess),
-         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
+         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings),
+         domEventListener = domEventListenerCreator(actualSettings, moduleLoader);
 
 
       createPart('event-bus')
@@ -22,13 +23,13 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
             return eventBus;
          });
 
-
       function initModulePageInterceptor(newSettings) {
          if (newSettings !== undefined) {
             settings.mergeWith(newSettings);
          }
 
          moduleLoader.initModulePage();
+         domEventListener.registerToEvents();
       }
 
       return merge({
@@ -36,11 +37,11 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          createModule: createModule,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
-         getPart: partAccess.provisionPart,
+         getPart: partAccess.provisionPart
 
       }, constants);
    }
 
    return newInstance();
 
-})(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus);
+})(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus, domEventListener);

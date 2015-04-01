@@ -33,6 +33,7 @@ module.exports = function (grunt) {
                '<%= dirs.source %>/moduleSystem/modules/moduleLoader.js',
                '<%= dirs.source %>/moduleSystem/modules/moduleBuilder.js',
                '<%= dirs.source %>/moduleSystem/modules/modules.js',
+               '<%= dirs.source %>/moduleSystem/modules/domEventListener.js',
                '<%= dirs.source %>/moduleSystem/parts/partBuilder.js',
                '<%= dirs.source %>/moduleSystem/parts/parts.js',
                '<%= dirs.source %>/eventBus/eventBus.js',

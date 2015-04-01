@@ -44,6 +44,7 @@
       "moduleBuilder": false,
       "partBuilder": false,
       "moduleLoader": false,
+      "domEventListener" : false,
       "parts": false,
       "modules": false,
       "merge": false,
