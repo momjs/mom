@@ -2,31 +2,26 @@
 function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
 
-   function initModulePage() {
+   function initModules() {
+      var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
+         modulesOnPage = settings.rootNode.querySelectorAll(selector);
 
-      initModules();
+      partAccess.initEagerSingletons();
 
-      function initModules() {
-         var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
-            modulesOnPage = settings.rootNode.querySelectorAll(selector);
-
-         partAccess.initEagerSingletons();
-
-         each(modulesOnPage, function (index, element) {
-            initModule(element);
-         });
+      each(modulesOnPage, function (index, element) {
+         initModule(element);
+      });
 
 
-         partAccess.provisionFinished();
-         moduleAccess.provisionFinished();
-      }
+      partAccess.provisionFinished();
+      moduleAccess.provisionFinished();
+   }
 
-      function initModule(element) {
-         moduleAccess.provisionModule(element);
-      }
+   function initModule(element) {
+      moduleAccess.provisionModule(element);
    }
 
    return {
-      initModulePage: initModulePage
+      initModulePage: initModules
    };
 }
