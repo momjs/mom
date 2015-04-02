@@ -21,7 +21,7 @@ module.exports = function (grunt) {
          dest: 'dist',
          dep: '<%= dirs.dest %>/dependencies',
          source: 'src',
-         test: 'spec'
+         test: 'test'
       },
       files: {
          src: [
@@ -80,8 +80,9 @@ module.exports = function (grunt) {
                '<%= dirs.dep %>/dist/jquery.js',
                '<%= dirs.dep %>/lib/jasmine-jquery.js'
             ],
+            helpers: ['<%= dirs.test %>/helpers/**/*.js'],
             specs: [
-               '<%= dirs.test %>/**/*Spec.js'
+               '<%= dirs.test %>/specs/**/*Spec.js'
             ]
          },
          test: {

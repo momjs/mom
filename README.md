@@ -284,12 +284,12 @@ To do for 1.3
 - [x] initialize module system only on parts of the dom
 - [x] embrace module names with '-' instead of CamelCase
 - [x] better wrong formated settings json exception
-- [ ] module/part builder sanity checks
+- [x] module/part builder sanity checks
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
 - [ ] merge part settings with settings provided from initialization
 - [ ] clean up tests
-- [ ] exception handling in module/part construction  
+- [x] exception handling in module/part construction  
 
 To do future releases
 -------------
