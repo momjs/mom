@@ -48,25 +48,32 @@ function getDOMSettings(element, selector) {
  *      - if the callback function returns true the iteration breaks up immediately
  */
 /*exported each */
-function each(array, callback) {
+var each = (function () {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      breakLoop;
+   function native(array, callback) {
+      Array.prototype.forEach.call(array, callback);
+   }
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
+   function polyfill(array, callback) {
+      var index,
+         length = array.length,
+         element,
+         breakLoop;
 
-      breakLoop = callback(index, element);
+      for (index = 0; index < length; index++) {
+         element = array[index];
 
-      if (breakLoop) {
-         break;
+         breakLoop = callback(element, index);
+
+         if (breakLoop) {
+            break;
+         }
       }
    }
-}
 
+   return (Array.prototype.forEach) ? native : polyfill;
+})();
 /**
  * Indicates if the specified element looking for is containing in the specified array.
  * @param array the array to lookup
@@ -77,19 +84,14 @@ function each(array, callback) {
 function contains(array, elementToSearch) {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      isContaining = false;
+   var isContaining = false;
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
-
+   each(array, function (element) {
       if (element === elementToSearch) {
          isContaining = true;
-         break;
+         return true;
       }
-   }
+   });
 
    return isContaining;
 }
@@ -138,7 +140,7 @@ function merge() {
 
    var mergeInto = arguments[0];
 
-   each(arguments, function (index, argument) {
+   each(arguments, function (argument, index) {
       if (index > 0) {
 
          eachProperty(argument, function (key, value) {
@@ -150,10 +152,19 @@ function merge() {
    return mergeInto;
 }
 /* exported trim */
-function trim(string) {
+var trim = (function () {
    'use strict';
-   return string.replace(/^\s+|\s+$/g, '');
-}
+
+   function polyfill(string) {
+      return string.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+   }
+
+   function native(string) {
+      return String.prototype.trim.call(string);
+   }
+
+   return (String.prototype.trim) ? native : polyfill;
+})();
 /*exported constants */
 var constants = {
    scope: {
@@ -178,7 +189,11 @@ function settings() {
          partSettingsSelector: 'head script[type="%partName%/settings"]',
          attribute: 'modules',
          selector: '[%attribute%]',
-         logger: console.error.bind(console)
+         logger: function () {
+            if (console.error && console.error.apply) {
+               console.error.apply(console, arguments);
+            }
+         }
       },
       actualSettings = defaults;
 
@@ -236,7 +251,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
 
          partAccess.initEagerSingletons();
 
-         each(modulesOnPage, function (index, element) {
+         each(modulesOnPage, function (element) {
             initModule(element);
          });
 
@@ -330,7 +345,7 @@ function modules(partAccess, eventBus, settings) {
       var moduleNames = element.getAttribute(settings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
-      each(moduleNamesArray, function (index, moduleName) {
+      each(moduleNamesArray, function (moduleName) {
          moduleName = trim(moduleName);
          initializeModule(element, moduleName);
       });
@@ -422,7 +437,7 @@ function modules(partAccess, eventBus, settings) {
 
    function callPostConstructs() {
 
-      each(loadedModules, function (index, module) {
+      each(loadedModules, function (module) {
          if (typeof module.postConstruct === 'function') {
             try {
                module.postConstruct();
@@ -599,7 +614,7 @@ function parts(settings) {
    function getOrInitializeParts(partNames, suppressErrors) {
       var parts = [];
 
-      each(partNames, function (index, partName) {
+      each(partNames, function (partName) {
          try {
             var part = getOrInitializePart(partName);
             parts.push(part);
@@ -785,7 +800,7 @@ function eventBus() {
 
       var callbackFunctionName = 'on' + event.name;
 
-      each(components, function (index, component) {
+      each(components, function (component) {
 
          if (event.name !== undefined) {
             tryToCallComponent(component, callbackFunctionName, event);
@@ -826,7 +841,6 @@ function eventBus() {
       reset: reset
    };
 }
-
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
    'use strict';
 
