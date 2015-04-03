@@ -65,3 +65,16 @@ function isArray(object) {
 
    return toString.call(object) === '[object Array]';
 }
+
+function remove(array, element) {
+   'use strict';
+
+   var index = array.indexOf(element);
+
+   if (index > -1) {
+      array.splice(index, 1);
+      return true;
+   }
+
+   return false;
+}

@@ -44,6 +44,18 @@ function eventBus() {
       listeners.push(listener);
    }
 
+   function removeListener(listener) {
+      if(listener === undefined) {
+         throw new Error('Listener to be removed is undefined');
+      }
+
+      var hasBeenRemoved = remove(listeners, listener);
+
+      if(!hasBeenRemoved) {
+         throw new Error('Listener to be removed is not registered');
+      }
+   }
+
    function reset() {
       listeners = [];
    }
@@ -51,6 +63,7 @@ function eventBus() {
    return {
       publish: publishEvent,
       add: addListener,
+      remove: removeListener,
       reset: reset
    };
 }

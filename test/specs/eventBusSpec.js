@@ -23,6 +23,19 @@ describe('EventBus', function () {
       eventbus.reset();
    });
 
+
+   it('should throw when passed adding listener is undefined', function() {
+      expect(function() {
+         eventbus.add(undefined);
+      }).toThrowError('Listener to be registered is undefined');
+   });
+
+   it('should throw when passed removing listener is undefined', function() {
+      expect(function() {
+         eventbus.remove(undefined);
+      }).toThrowError('Listener to be removed is undefined');
+   });
+
    describe('when one listener is registered', function () {
 
       beforeEach(function () {
@@ -30,7 +43,7 @@ describe('EventBus', function () {
          eventbus.add(testListener);
       });
 
-      it('should call onEventName from registered Modules, when a Event is published', function () {
+      it('should call onEventName of registered listener, when a Event is published', function () {
 
          eventbus.publish(event);
 
@@ -51,7 +64,7 @@ describe('EventBus', function () {
          expect(thisArg).toBe(testListener);
       });
 
-      it('should throw if a module with the same name is already registered', function () {
+      it('should throw if a listener with is already registered', function () {
 
          expect(function () {
             eventbus.add(testListener);
@@ -81,6 +94,35 @@ describe('EventBus', function () {
          expect(function () {
             eventbus.publish()
          }).toThrowError('Published event cannot be undefined');
+      });
+
+      describe('when listener is removed', function() {
+
+         beforeEach(function() {
+            eventbus.remove(testListener);
+         });
+
+         it('should not call onEventName of unregistered listener, when a Event is published', function () {
+
+            eventbus.publish(event);
+
+            expect(testListener.onTestChanged).not.toHaveBeenCalled();
+         });
+
+         it('should not send event every to onEvent', function () {
+
+            eventbus.publish(event);
+
+            expect(testListener.onEvent).not.toHaveBeenCalled();
+         });
+
+         it('should throw if a listener is already removed', function () {
+
+            expect(function () {
+               eventbus.remove(testListener);
+            }).toThrow();
+         });
+
       });
 
       describe('when second listener is registered', function () {
