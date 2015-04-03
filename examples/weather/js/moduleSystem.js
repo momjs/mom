@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.2.0 - 2015-03-21 * @link
+ * @version v1.3.0 - 2015-04-03 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -9,6 +9,36 @@
 (function (window, document, undefined) {   
 /* jshint ignore:end */
 
+function SettingsParseException(message) {
+   'use strict';
+   if (Error.captureStackTrace) {
+      Error.captureStackTrace(this);
+   }
+   this.name = 'SettingsParseException';
+   this.message = message;
+
+}
+SettingsParseException.prototype = Error.prototype;
+
+/*exported getDOMSettings */
+function getDOMSettings(element, selector) {
+   'use strict';
+
+   var settingsScript = element.querySelector(selector),
+      settingsAsHtml,
+      domSettings;
+
+   if (settingsScript !== null) {
+      settingsAsHtml = settingsScript.innerHTML;
+      try {
+         domSettings = JSON.parse(settingsAsHtml);
+      } catch (e) {
+         throw new SettingsParseException(e.message);
+      }
+   }
+
+   return domSettings;
+}
 /**
  * Iterates the array and callback function for each element.
  *
@@ -63,36 +93,49 @@ function contains(array, elementToSearch) {
 
    return isContaining;
 }
-/* jshint unused:false */
 
+/**
+ * Indicates if the passed object is an Array.
+ *
+ * @param object the object which will be checked to be an Array
+ * @returns {boolean} true if the passed object is an Array, false if not
+ */
+/*exported isArray */
+function isArray(object) {
+   'use strict';
+
+   return toString.call(object) === '[object Array]';
+}
 /**
  * Iterates over all own properties of the specified object.
  * @param object
  * @param callback the callback function which will be called for each property key and value
  */
+/*exported eachProperty */
 function eachProperty(object, callback) {
-    'use strict';
+   'use strict';
 
-    var propertyKey,
-        propertyValue,
-        breakup;
+   var propertyKey,
+      propertyValue,
+      breakup;
 
-    for(propertyKey in object) {
-        if(object.hasOwnProperty(propertyKey)) {
+   for (propertyKey in object) {
+      if (object.hasOwnProperty(propertyKey)) {
 
-            propertyValue = object[propertyKey];
-            breakup = callback(propertyKey, propertyValue);
+         propertyValue = object[propertyKey];
+         breakup = callback(propertyKey, propertyValue);
 
-            if(breakup) {
-                break;
-            }
-        }
-    }
+         if (breakup) {
+            break;
+         }
+      }
+   }
 }
 
+/*exported merge */
 function merge() {
    'use strict';
-   
+
    var mergeInto = arguments[0];
 
    each(arguments, function (index, argument) {
@@ -106,7 +149,11 @@ function merge() {
 
    return mergeInto;
 }
-
+/* exported trim */
+function trim(string) {
+   'use strict';
+   return string.replace(/^\s+|\s+$/g, '');
+}
 /*exported constants */
 var constants = {
    scope: {
@@ -119,15 +166,19 @@ var constants = {
       creator: 'creator'
    }
 };
+
 /*exported settings */
 function settings() {
    'use strict';
 
    var defaults = {
+         rootNode: document,
          defaultScope: constants.scope.multiInstance,
-         settingsSelector: 'script[type="%moduleName%/settings"]',
+         moduleSettingsSelector: 'script[type="%moduleName%/settings"]',
+         partSettingsSelector: 'head script[type="%partName%/settings"]',
          attribute: 'modules',
-         selector: '[%attribute%]'
+         selector: '[%attribute%]',
+         logger: console.error.bind(console)
       },
       actualSettings = defaults;
 
@@ -170,6 +221,7 @@ function creatorDescriptor(name) {
 
    return descriptor;
 }
+
 /*exported moduleLoader */
 function moduleLoader(moduleAccess, partAccess, settings) {
    'use strict';
@@ -180,7 +232,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
 
       function initModules() {
          var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
-            modulesOnPage = document.querySelectorAll(selector);
+            modulesOnPage = settings.rootNode.querySelectorAll(selector);
 
          partAccess.initEagerSingletons();
 
@@ -202,6 +254,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
       initModulePage: initModulePage
    };
 }
+
 /*exported moduleBuilder */
 function moduleBuilder(moduleAccess) {
    'use strict';
@@ -216,11 +269,21 @@ function moduleBuilder(moduleAccess) {
       };
 
       function addCreator(creator) {
+
+         if(typeof creator !== 'function') {
+            throw new Error('You have to pass the creator as a reference to a function');
+         }
+
          descriptor.creator = creator;
          save();
       }
 
       function addSettings(settings) {
+
+         if(settings !== undefined && typeof settings !== 'object') {
+            throw new Error('You have to pass the settings as an object');
+         }
+
          descriptor.settings = settings;
 
          return {
@@ -235,6 +298,11 @@ function moduleBuilder(moduleAccess) {
 
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          descriptor.dependencies = dependencies;
 
          return {
@@ -246,8 +314,9 @@ function moduleBuilder(moduleAccess) {
 
    return createModule;
 }
+
 /*exported modules */
-function modules(partAccess, eventBus, moduleSystemSettings) {
+function modules(partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = [],
@@ -258,11 +327,11 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
    }
 
    function initializeModules(element) {
-      var moduleNames = element.getAttribute(moduleSystemSettings.attribute),
+      var moduleNames = element.getAttribute(settings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
       each(moduleNamesArray, function (index, moduleName) {
-         moduleName = moduleName.trim();
+         moduleName = trim(moduleName);
          initializeModule(element, moduleName);
       });
    }
@@ -272,31 +341,62 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
          foundDependencies;
 
       //check if module to be loaded is registered
-      if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
-         moduleDescriptor = availableModuleDescriptors[moduleName];
+      try {
+         if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
+            moduleDescriptor = availableModuleDescriptors[moduleName];
 
-         foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
-         // check if all needed dependencies are found
-         if (foundDependencies.length === moduleDescriptor.dependencies.length) {
+            foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
+
             buildModule(element, moduleDescriptor, foundDependencies);
          } else {
-            throw new Error('Required Parts Missing from ' + moduleName + ' dependencies: ' + JSON.stringify(moduleDescriptor.dependencies));
+            settings.logger('Module', moduleName, 'not registered but found in dom');
          }
-      } else {
-         throw new Error('Module ' + moduleName + ' not registered but found in dom');
+      } catch (e) {
+         switch (e.name) {
+         case 'SettingsParseException':
+            settings.logger('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
+            break;
+         case 'PartCreationException':
+            doTrace(e);
+            break;
+         default:
+            settings.logger('Error during provision of module', moduleDescriptor, e.stack);
+         }
+
+      }
+
+
+      function doTrace(e) {
+         var currentException = e;
+
+         if (console.group) {
+            console.group();
+         }
+
+         settings.logger(e.message, 'while loading module', moduleDescriptor);
+
+         do {
+            settings.logger('... while loading part', currentException.descriptor);
+            currentException = currentException.cause;
+         } while (currentException.cause !== undefined);
+
+         settings.logger('caused by:', currentException.stack);
+
+         if (console.groupEnd) {
+            console.groupEnd();
+         }
       }
    }
 
    function buildModule(element, moduleDescriptor, foundDependencies) {
-      //build arguments
       var args = foundDependencies,
-         domSettings = getDOMSettings(element, moduleDescriptor.name),
-         mergedSettings,
+         domSettings = getDOMSettings(element, settings.moduleSettingsSelector.replace(/%moduleName%/g, moduleDescriptor.name)),
+         mergedSettings = {},
          createdModule;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
-         mergedSettings = merge({}, moduleDescriptor.settings, domSettings);
+         merge(mergedSettings, moduleDescriptor.settings, domSettings);
 
          args.unshift(mergedSettings);
       }
@@ -315,34 +415,25 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
       //add module to eventBus
       eventBus.add(createdModule);
+
+
    }
 
-   function getDOMSettings(element, moduleName) {
-
-      var selector = moduleSystemSettings.settingsSelector.replace(/%moduleName%/g, moduleName),
-         settingsScript = element.querySelector(selector),
-         settingsAsHtml,
-         settings;
-
-      if (settingsScript !== null) {
-         settingsAsHtml = settingsScript.innerHTML;
-         settings = JSON.parse(settingsAsHtml);
-      }
-
-      return settings;
-   }
 
    function callPostConstructs() {
 
-      each(loadedModules, function (index, element) {
-         var postConstruct = element.postConstruct;
-
-         if (typeof postConstruct === 'function') {
-
-            postConstruct.call(element);
+      each(loadedModules, function (index, module) {
+         if (typeof module.postConstruct === 'function') {
+            try {
+               module.postConstruct();
+            } catch (e) {
+               settings.logger('Exception while calling postConstruct', e);
+            }
          }
       });
    }
+
+
 
 
 
@@ -357,12 +448,16 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 function partBuilder(partAccess, moduleSystemSettings) {
    'use strict';
 
+   var scopes = constants.scope,
+      SCOPE_LAZY_SINGLETON = scopes.lazySingleton,
+      SCOPE_EAGER_SINGLETON = scopes.eagerSingleton,
+      SCOPE_MULTI_INSTANCE = scopes.multiInstance;
+
    function returnsDescriptor(name) {
       var descriptor = createDescriptor(name);
+
       descriptor.type = constants.type.returns;
-
-      descriptor.scope = constants.scope.lazySingleton;
-
+      descriptor.scope = SCOPE_LAZY_SINGLETON;
       descriptor.returns = undefined;
 
       return descriptor;
@@ -388,17 +483,32 @@ function partBuilder(partAccess, moduleSystemSettings) {
       };
 
       function addCreator(creator) {
+
+         if(typeof creator !== 'function') {
+            throw new Error('You have to pass the creator as a reference to a function');
+         }
+
          getOrInitCreatorDiscriptor().creator = creator;
          save();
       }
 
       function addReturns(returns) {
+
+         if(returns === undefined) {
+
+            throw new Error('You have to pass the returns as one of these object types: string|integer|float|boolean|object|function|Array');
+         }
+
          descriptor = returnsDescriptor(name);
          descriptor.returns = returns;
          save();
       }
 
       function addScope(scope) {
+
+         if(SCOPE_LAZY_SINGLETON !== scope && SCOPE_EAGER_SINGLETON !== scope && SCOPE_MULTI_INSTANCE !== scope) {
+            throw new Error('You have to pass the scope as one of these: lazy-singleton|eager-singleton|multi-instance');
+         }
 
          var descriptor = getOrInitCreatorDiscriptor();
 
@@ -415,6 +525,11 @@ function partBuilder(partAccess, moduleSystemSettings) {
       }
 
       function addSettings(settings) {
+
+         if(settings !== undefined && typeof settings !== 'object') {
+            throw new Error('You have to pass the settings as an object');
+         }
+
          getOrInitCreatorDiscriptor().settings = settings;
 
          return {
@@ -425,6 +540,11 @@ function partBuilder(partAccess, moduleSystemSettings) {
       }
 
       function addDependencies(dependencies) {
+
+         if(dependencies !== undefined && !isArray(dependencies) ) {
+            throw new Error('You have to pass the dependencies as an Array');
+         }
+
          getOrInitCreatorDiscriptor().dependencies = dependencies;
 
          return {
@@ -450,8 +570,9 @@ function partBuilder(partAccess, moduleSystemSettings) {
 
    return createPart;
 }
+
 /*exported parts */
-function parts() {
+function parts(settings) {
    'use strict';
 
    var loadedSingletonParts = {},
@@ -471,14 +592,24 @@ function parts() {
          }
       });
 
-      getOrInitializeParts(eagerSingletonPartNames);
+      getOrInitializeParts(eagerSingletonPartNames, true);
    }
 
-   function getOrInitializeParts(partNames) {
+
+   function getOrInitializeParts(partNames, suppressErrors) {
       var parts = [];
 
       each(partNames, function (index, partName) {
-         parts.push(getOrInitializePart(partName));
+         try {
+            var part = getOrInitializePart(partName);
+            parts.push(part);
+         } catch (e) {
+            if (suppressErrors) {
+               settings.logger(e);
+            } else {
+               throw e;
+            }
+         }
       });
 
       return parts;
@@ -553,30 +684,43 @@ function parts() {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var dependencies,
+      var domSettings = getDOMSettings(document, settings.partSettingsSelector.replace(/%partName%/g, partDescriptor.name)),
+         mergedSettings = {},
+         dependencies,
          foundDependencies,
          args,
          createdPart;
+      try {
+         dependencies = partDescriptor.dependencies;
+         foundDependencies = getOrInitializeParts(dependencies);
 
-      dependencies = partDescriptor.dependencies;
-      foundDependencies = getOrInitializeParts(dependencies);
+         //initialize Parts here
+         args = foundDependencies;
+         // add settings from descriptor
+         if (partDescriptor.settings !== undefined || domSettings !== undefined) {
+            merge(mergedSettings, partDescriptor.settings, domSettings);
+            args.unshift(mergedSettings);
+         }
 
-      //initialize Parts here
-      args = foundDependencies;
-      // add settings from descriptor
-      if (partDescriptor.settings !== undefined) {
-         args.unshift(partDescriptor.settings);
+         // create part
+         createdPart = partDescriptor.creator.apply(partDescriptor, args);
+
+         if (createdPart === undefined) {
+            createdPart = {};
+         }
+
+         return createdPart;
+      } catch (e) {
+         switch (e.name) {
+         case 'RangeError':
+            throw e;
+         default:
+            throw new PartCreationException(partDescriptor, e);
+         }
       }
 
-      // create part
-      createdPart = partDescriptor.creator.apply(partDescriptor, args);
-
-      if (createdPart === undefined) {
-         createdPart = {};
-      }
-
-      return createdPart;
    }
+
 
 
    function callPostConstructs() {
@@ -587,7 +731,11 @@ function parts() {
 
    function callPostConstruct(part) {
       if (typeof part.postConstruct === 'function') {
-         part.postConstruct();
+         try {
+            part.postConstruct();
+         } catch (e) {
+            settings.logger('Exception while calling postConstruct', e);
+         }
 
          //delete post constructor so it can definetly not be called again
          //e.g. a singleton part is requested via provisionPart
@@ -601,6 +749,17 @@ function parts() {
 
       return part;
    }
+
+   function PartCreationException(descriptor, cause) {
+      if (Error.captureStackTrace) {
+         Error.captureStackTrace(this);
+      }
+      this.name = 'PartCreationException';
+      this.cause = cause;
+      this.descriptor = descriptor;
+
+   }
+   PartCreationException.prototype = Error.prototype;
 
 
    return {
@@ -667,13 +826,14 @@ function eventBus() {
       reset: reset
    };
 }
+
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
    'use strict';
 
    function newInstance() {
       var settings = settingsCreator(),
          actualSettings = settings.get(),
-         partAccess = partsCreator(),
+         partAccess = partsCreator(actualSettings),
          eventBus = eventBusCreator(),
          moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
          createPart = partBuilderCreator(partAccess, actualSettings),
@@ -681,26 +841,29 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
 
 
+      createPart('event-bus')
+         .returns(eventBus);
+
+      //deprecated remove in 1.4
       createPart('eventBus')
-         .scope(constants.scope.lazySingleton)
          .creator(function () {
+            console.warn('partName "eventBus" deprecated use "event-bus" instead');
             return eventBus;
          });
 
-      function settingsInterceptor(intercepted) {
-         return function (newSettings) {
-            if (newSettings !== undefined) {
-               settings.mergeWith(newSettings);
-            }
 
-            intercepted();
-         };
+      function initModulePageInterceptor(newSettings) {
+         if (newSettings !== undefined) {
+            settings.mergeWith(newSettings);
+         }
+
+         moduleLoader.initModulePage();
       }
 
       return merge({
          createPart: createPart,
          createModule: createModule,
-         initModulePage: settingsInterceptor(moduleLoader.initModulePage),
+         initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
          getPart: partAccess.provisionPart,
 
