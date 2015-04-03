@@ -51,6 +51,7 @@
       "creatorDescriptor": false,
       "eachProperty": false,
       "settings": false,
+      "getDOMSettings": false,
       "constants": true
    }
 }

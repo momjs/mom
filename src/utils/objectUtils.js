@@ -1,33 +1,33 @@
-/* jshint unused:false */
-
 /**
  * Iterates over all own properties of the specified object.
  * @param object
  * @param callback the callback function which will be called for each property key and value
  */
+/*exported eachProperty */
 function eachProperty(object, callback) {
-    'use strict';
+   'use strict';
 
-    var propertyKey,
-        propertyValue,
-        breakup;
+   var propertyKey,
+      propertyValue,
+      breakup;
 
-    for(propertyKey in object) {
-        if(object.hasOwnProperty(propertyKey)) {
+   for (propertyKey in object) {
+      if (object.hasOwnProperty(propertyKey)) {
 
-            propertyValue = object[propertyKey];
-            breakup = callback(propertyKey, propertyValue);
+         propertyValue = object[propertyKey];
+         breakup = callback(propertyKey, propertyValue);
 
-            if(breakup) {
-                break;
-            }
-        }
-    }
+         if (breakup) {
+            break;
+         }
+      }
+   }
 }
 
+/*exported merge */
 function merge() {
    'use strict';
-   
+
    var mergeInto = arguments[0];
 
    each(arguments, function (index, argument) {

@@ -25,6 +25,7 @@ module.exports = function (grunt) {
       },
       files: {
          src: [
+               '<%= dirs.source %>/utils/settingsUtils.js',
                '<%= dirs.source %>/utils/arrayUtils.js',
                '<%= dirs.source %>/utils/objectUtils.js',
                '<%= dirs.source %>/moduleSystem/constants.js',

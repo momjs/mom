@@ -73,13 +73,13 @@ function modules(partAccess, eventBus, settings) {
 
    function buildModule(element, moduleDescriptor, foundDependencies) {
       var args = foundDependencies,
-         domSettings = getDOMSettings(element, moduleDescriptor.name),
-         mergedSettings,
+         domSettings = getDOMSettings(element, settings.moduleSettingsSelector.replace(/%moduleName%/g, moduleDescriptor.name)),
+         mergedSettings = {},
          createdModule;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
-         mergedSettings = merge({}, moduleDescriptor.settings, domSettings);
+         merge(mergedSettings, moduleDescriptor.settings, domSettings);
 
          args.unshift(mergedSettings);
       }
@@ -102,24 +102,6 @@ function modules(partAccess, eventBus, settings) {
 
    }
 
-   function getDOMSettings(element, moduleName) {
-
-      var selector = settings.settingsSelector.replace(/%moduleName%/g, moduleName),
-         settingsScript = element.querySelector(selector),
-         settingsAsHtml,
-         domSettings;
-
-      if (settingsScript !== null) {
-         settingsAsHtml = settingsScript.innerHTML;
-         try {
-            domSettings = JSON.parse(settingsAsHtml);
-         } catch (e) {
-            throw new SettingsParseException(e.message);
-         }
-      }
-
-      return domSettings;
-   }
 
    function callPostConstructs() {
 
@@ -133,15 +115,7 @@ function modules(partAccess, eventBus, settings) {
       });
    }
 
-   function SettingsParseException(message) {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'SettingsParseException';
-      this.message = message;
 
-   }
-   SettingsParseException.prototype = Error.prototype;
 
 
 

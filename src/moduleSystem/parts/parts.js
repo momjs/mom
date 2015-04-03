@@ -111,7 +111,9 @@ function parts(settings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var dependencies,
+      var domSettings = getDOMSettings(document, settings.partSettingsSelector.replace(/%partName%/g, partDescriptor.name)),
+         mergedSettings = {},
+         dependencies,
          foundDependencies,
          args,
          createdPart;
@@ -122,8 +124,9 @@ function parts(settings) {
          //initialize Parts here
          args = foundDependencies;
          // add settings from descriptor
-         if (partDescriptor.settings !== undefined) {
-            args.unshift(partDescriptor.settings);
+         if (partDescriptor.settings !== undefined || domSettings !== undefined) {
+            merge(mergedSettings, partDescriptor.settings, domSettings);
+            args.unshift(mergedSettings);
          }
 
          // create part
@@ -144,6 +147,7 @@ function parts(settings) {
       }
 
    }
+
 
 
    function callPostConstructs() {
