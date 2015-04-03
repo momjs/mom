@@ -23,7 +23,7 @@ var each = (function () {
       for (index = 0; index < length; index++) {
          element = array[index];
 
-         breakLoop = callback(element, index);
+         breakLoop = callback(element, index, array);
 
          if (breakLoop) {
             break;
