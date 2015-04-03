@@ -7,25 +7,32 @@
  *      - if the callback function returns true the iteration breaks up immediately
  */
 /*exported each */
-function each(array, callback) {
+var each = (function () {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      breakLoop;
+   function native(array, callback) {
+      Array.prototype.forEach.call(array, callback);
+   }
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
+   function polyfill(array, callback) {
+      var index,
+         length = array.length,
+         element,
+         breakLoop;
 
-      breakLoop = callback(element, index);
+      for (index = 0; index < length; index++) {
+         element = array[index];
 
-      if (breakLoop) {
-         break;
+         breakLoop = callback(element, index);
+
+         if (breakLoop) {
+            break;
+         }
       }
    }
-}
 
+   return (Array.prototype.forEach) ? native : polyfill;
+})();
 /**
  * Indicates if the specified element looking for is containing in the specified array.
  * @param array the array to lookup

@@ -25,7 +25,7 @@
       "console": false,
       "toString": false,
       "contains": false,
-      "each": false,
+      "each": true,
       "isArray": false,
       "jasmine": false,
       "describe": false,
@@ -53,6 +53,6 @@
       "settings": false,
       "getDOMSettings": false,
       "constants": true,
-      "trim": false
+      "trim": true
    }
 }
