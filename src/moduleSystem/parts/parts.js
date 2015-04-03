@@ -1,5 +1,5 @@
 /*exported parts */
-function parts(moduleSystemSettings) {
+function parts(settings) {
    'use strict';
 
    var loadedSingletonParts = {},
@@ -26,13 +26,13 @@ function parts(moduleSystemSettings) {
    function getOrInitializeParts(partNames, suppressErrors) {
       var parts = [];
 
-      each(partNames, function (index, partName) {
+      each(partNames, function (partName) {
          try {
             var part = getOrInitializePart(partName);
             parts.push(part);
          } catch (e) {
             if (suppressErrors) {
-               moduleSystemSettings.logger(e);
+               settings.logger(e);
             } else {
                throw e;
             }
@@ -111,7 +111,9 @@ function parts(moduleSystemSettings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var dependencies,
+      var domSettings = getDOMSettings(document, settings.partSettingsSelector.replace(/%partName%/g, partDescriptor.name)),
+         mergedSettings = {},
+         dependencies,
          foundDependencies,
          args,
          createdPart;
@@ -122,8 +124,9 @@ function parts(moduleSystemSettings) {
          //initialize Parts here
          args = foundDependencies;
          // add settings from descriptor
-         if (partDescriptor.settings !== undefined) {
-            args.unshift(partDescriptor.settings);
+         if (partDescriptor.settings !== undefined || domSettings !== undefined) {
+            merge(mergedSettings, partDescriptor.settings, domSettings);
+            args.unshift(mergedSettings);
          }
 
          // create part
@@ -136,8 +139,6 @@ function parts(moduleSystemSettings) {
          return createdPart;
       } catch (e) {
          switch (e.name) {
-         case 'CircularDependencyException':
-            throw e;
          case 'RangeError':
             throw e;
          default:
@@ -146,6 +147,7 @@ function parts(moduleSystemSettings) {
       }
 
    }
+
 
 
    function callPostConstructs() {
@@ -159,7 +161,7 @@ function parts(moduleSystemSettings) {
          try {
             part.postConstruct();
          } catch (e) {
-            moduleSystemSettings.logger('Exception while calling postConstruct', e);
+            settings.logger('Exception while calling postConstruct', e);
          }
 
          //delete post constructor so it can definetly not be called again
@@ -185,16 +187,6 @@ function parts(moduleSystemSettings) {
 
    }
    PartCreationException.prototype = Error.prototype;
-
-   function CircularDependencyException() {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'CircularDependencyException';
-      this.message = 'circular dependency detected check parts';
-
-   }
-   CircularDependencyException.prototype = Error.prototype;
 
 
    return {

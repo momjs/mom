@@ -13,7 +13,7 @@ function eventBus() {
 
       var callbackFunctionName = 'on' + event.name;
 
-      each(listeners, function (index, listener) {
+      each(listeners, function (listener) {
 
          if (event.name !== undefined) {
             tryToCallListener(listener, callbackFunctionName, event);

@@ -6,26 +6,33 @@
  *      - first parameter delivers the current index, second the current element
  *      - if the callback function returns true the iteration breaks up immediately
  */
-/* exported each */
-function each(array, callback) {
+/*exported each */
+var each = (function () {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      breakLoop;
+   function native(array, callback) {
+      Array.prototype.forEach.call(array, callback);
+   }
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
+   function polyfill(array, callback) {
+      var index,
+         length = array.length,
+         element,
+         breakLoop;
 
-      breakLoop = callback(index, element);
+      for (index = 0; index < length; index++) {
+         element = array[index];
 
-      if (breakLoop) {
-         break;
+         breakLoop = callback(element, index);
+
+         if (breakLoop) {
+            break;
+         }
       }
    }
-}
 
+   return (Array.prototype.forEach) ? native : polyfill;
+})();
 /**
  * Indicates if the specified element looking for is containing in the specified array.
  * @param array the array to lookup
@@ -36,19 +43,14 @@ function each(array, callback) {
 function contains(array, elementToSearch) {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      isContaining = false;
+   var isContaining = false;
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
-
+   each(array, function (element) {
       if (element === elementToSearch) {
          isContaining = true;
-         break;
+         return true;
       }
-   }
+   });
 
    return isContaining;
 }
@@ -63,7 +65,7 @@ function contains(array, elementToSearch) {
 function isArray(object) {
    'use strict';
 
-   return toString.call(object) === '[object Array]';
+   return Object.prototype.toString.call(object) === '[object Array]';
 }
 
 /**

@@ -1,5 +1,5 @@
 /*exported modules */
-function modules(partAccess, eventBus, moduleSystemSettings) {
+function modules(partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = [],
@@ -10,11 +10,11 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
    }
 
    function initializeModules(element) {
-      var moduleNames = element.getAttribute(moduleSystemSettings.attribute),
+      var moduleNames = element.getAttribute(settings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
-      each(moduleNamesArray, function (index, moduleName) {
-         moduleName = moduleName.trim();
+      each(moduleNamesArray, function (moduleName) {
+         moduleName = trim(moduleName);
          initializeModule(element, moduleName);
       });
    }
@@ -32,18 +32,18 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
             buildModule(element, moduleDescriptor, foundDependencies);
          } else {
-            moduleSystemSettings.logger('Module', moduleName, 'not registered but found in dom');
+            settings.logger('Module', moduleName, 'not registered but found in dom');
          }
       } catch (e) {
          switch (e.name) {
          case 'SettingsParseException':
-            moduleSystemSettings.logger('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
+            settings.logger('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
             break;
          case 'PartCreationException':
             doTrace(e);
             break;
          default:
-            moduleSystemSettings.logger('Error during provision of module', moduleDescriptor, e.stack);
+            settings.logger('Error during provision of module', moduleDescriptor, e.stack);
          }
 
       }
@@ -56,14 +56,14 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
             console.group();
          }
 
-         moduleSystemSettings.logger(e.message, 'while loading module', moduleDescriptor);
+         settings.logger(e.message, 'while loading module', moduleDescriptor);
 
          do {
-            moduleSystemSettings.logger('... while loading part', currentException.descriptor);
+            settings.logger('... while loading part', currentException.descriptor);
             currentException = currentException.cause;
          } while (currentException.cause !== undefined);
 
-         moduleSystemSettings.logger('caused by:', currentException.stack);
+         settings.logger('caused by:', currentException.stack);
 
          if (console.groupEnd) {
             console.groupEnd();
@@ -73,13 +73,13 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
    function buildModule(element, moduleDescriptor, foundDependencies) {
       var args = foundDependencies,
-         domSettings = getDOMSettings(element, moduleDescriptor.name),
-         mergedSettings,
+         domSettings = getDOMSettings(element, settings.moduleSettingsSelector.replace(/%moduleName%/g, moduleDescriptor.name)),
+         mergedSettings = {},
          createdModule;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
-         mergedSettings = merge({}, moduleDescriptor.settings, domSettings);
+         merge(mergedSettings, moduleDescriptor.settings, domSettings);
 
          args.unshift(mergedSettings);
       }
@@ -102,46 +102,21 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
    }
 
-   function getDOMSettings(element, moduleName) {
-
-      var selector = moduleSystemSettings.settingsSelector.replace(/%moduleName%/g, moduleName),
-         settingsScript = element.querySelector(selector),
-         settingsAsHtml,
-         settings;
-
-      if (settingsScript !== null) {
-         settingsAsHtml = settingsScript.innerHTML;
-         try {
-            settings = JSON.parse(settingsAsHtml);
-         } catch (e) {
-            throw new SettingsParseException(e.message);
-         }
-      }
-
-      return settings;
-   }
 
    function callPostConstructs() {
 
-      each(loadedModules, function (index, element) {
-         var postConstruct = element.postConstruct;
-
-         if (typeof postConstruct === 'function') {
-
-            postConstruct.call(element);
+      each(loadedModules, function (module) {
+         if (typeof module.postConstruct === 'function') {
+            try {
+               module.postConstruct();
+            } catch (e) {
+               settings.logger('Exception while calling postConstruct', e);
+            }
          }
       });
    }
 
-   function SettingsParseException(message) {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'SettingsParseException';
-      this.message = message;
 
-   }
-   SettingsParseException.prototype = Error.prototype;
 
 
 

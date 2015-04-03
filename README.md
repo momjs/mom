@@ -108,6 +108,22 @@ moduleSystem.createPart("adder")
         };
     });
 ```
+
+####Override from DOM
+an additional setting which merges/overrides with the default settings object could be provided via DOM.
+The configuration has to be put in the html head
+```html
+<html>
+<head>
+   <script type="adder/settings">
+   {
+      isDebug: fales
+   }
+   </script>
+</head>
+</html>
+```
+
 #####Dependency Injection
 creator parts could be composed of other parts
 ```js
@@ -161,7 +177,7 @@ moduleSystem.createModule("static-hello-world")
 <div modules="static-hello-world" /> //alerts Hello World
 ```
 #####Override from DOM
-an additional setting which overrides the default settings object could be provided via DOM
+an additional setting which merges/overrides the default settings object could be provided via DOM
 ```html
 <div modules="static-hello-world"> //alerts Hello Module
   <script type="staticHelloWorld/settings"> 
@@ -287,9 +303,9 @@ To do for 1.3
 - [x] module/part builder sanity checks
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
-- [ ] merge part settings with settings provided from initialization
+- [x] merge part settings with settings provided from initialization
 - [ ] clean up tests
-- [ ] exception handling in module/part construction  
+- [x] exception handling in module/part construction  
 
 To do future releases
 -------------

@@ -109,6 +109,41 @@ describe('Module System', function () {
          });
       });
 
+      describe('when one module postConstruct throws exception', function () {
+         var throwingPostConstruct;
+         var workingPostconstruct;
+
+         beforeEach(function () {
+            throwingPostConstruct = jasmine.createSpy('throwing-module').and.throwError();
+            moduleSystem.createModule('test-module1').creator(function () {
+               return {
+                  postConstruct: throwingPostConstruct
+               };
+            });
+
+            workingPostconstruct = jasmine.createSpy('working-module');
+            moduleSystem.createModule('test-module2').creator(function () {
+               return {
+                  postConstruct: workingPostconstruct
+               };
+            });
+
+            initModulePage();
+         });
+
+         it('should call the throwing part', function () {
+            expect(throwingPostConstruct).toHaveBeenCalled();
+         });
+
+         it('should call the working part', function () {
+            expect(workingPostconstruct).toHaveBeenCalled();
+         });
+
+         it('should log something', function () {
+            expect(loggerSpy).toHaveBeenCalled();
+         });
+      });
+
       describe('when one module throws exception', function () {
          var errorModule;
          var workingModule;

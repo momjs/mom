@@ -21,7 +21,7 @@ function domEventListener(settings, moduleLoader) {
          initModule(target);
       }
 
-      each(addedModules, function(index, addedModule) {
+      each(addedModules, function(addedModule) {
          initModule(addedModule);
       });
    }

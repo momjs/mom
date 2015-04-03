@@ -8,11 +8,10 @@ function moduleLoader(moduleAccess, partAccess, settings) {
 
       partAccess.initEagerSingletons();
 
-      each(modulesOnPage, function (index, element) {
+      each(modulesOnPage, function (element) {
          initModule(element);
       });
-
-
+      
       partAccess.provisionFinished();
       moduleAccess.provisionFinished();
    }

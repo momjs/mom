@@ -1,6 +1,6 @@
-describe('Module system when loading parts', function() {
+describe('Module system when loading parts', function () {
 
-   beforeEach(function() {
+   beforeEach(function () {
 
       moduleSystem = moduleSystem.newInstance();
    });
@@ -82,6 +82,52 @@ describe('Module system when loading parts', function() {
       moduleSystem.getPart('test-part');
 
       expect(spyPart).toHaveBeenCalledWith(settings);
+   });
+
+   it('should merge settings with settings found in head of dom', function () {
+      loadFixtures('moduleSystem/partSettings.html');
+      $('#test-merging').appendTo('head'); //loads into head not possible with jasmine-jquery
+
+      var settings = {
+         default: 'default',
+         override: 'should be overridden'
+      };
+
+
+      var spyPart = jasmine.createSpy('creator').and.returnValue({});
+      moduleSystem.createPart('test-part')
+         .settings(settings)
+         .creator(spyPart);
+
+      moduleSystem.getPart('test-part');
+
+      expect(spyPart).toHaveBeenCalledWith({
+         default: 'default',
+         override: 'override',
+         domSetting: 'domSetting'
+      });
+
+      $('head #test-merging').remove(); //remove the custom element in head
+
+   });
+
+   it('should not merge settings with settings found not in head of dom', function () {
+      loadFixtures('moduleSystem/partSettings.html');
+      var settings = {
+         default: 'default',
+         override: 'should not be overridden'
+      };
+
+
+      var spyPart = jasmine.createSpy('creator').and.returnValue({});
+      moduleSystem.createPart('test-not-merging')
+         .settings(settings)
+         .creator(spyPart);
+
+      moduleSystem.getPart('test-not-merging');
+
+      expect(spyPart).toHaveBeenCalledWith(settings);
+
    });
 
    it('should add missing Parts to Parts', function () {
