@@ -43,19 +43,14 @@ var each = (function () {
 function contains(array, elementToSearch) {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      isContaining = false;
+   var isContaining = false;
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
-
+   each(array, function (element) {
       if (element === elementToSearch) {
          isContaining = true;
-         break;
+         return true;
       }
-   }
+   });
 
    return isContaining;
 }
