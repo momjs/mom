@@ -114,15 +114,15 @@ describe('Module System', function () {
          var workingPostconstruct;
 
          beforeEach(function () {
-            throwingPostConstruct = jasmine.createSpy('throwing-part').and.throwError();
+            throwingPostConstruct = jasmine.createSpy('throwing-module').and.throwError();
             moduleSystem.createModule('test-module1').creator(function () {
                return {
                   postConstruct: throwingPostConstruct
                };
             });
 
-            workingPostconstruct = jasmine.createSpy('working-part');
-            moduleSystem.createPart('test-module2').creator(function () {
+            workingPostconstruct = jasmine.createSpy('working-module');
+            moduleSystem.createModule('test-module2').creator(function () {
                return {
                   postConstruct: workingPostconstruct
                };

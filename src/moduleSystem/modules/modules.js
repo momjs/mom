@@ -105,12 +105,13 @@ function modules(partAccess, eventBus, settings) {
 
    function callPostConstructs() {
 
-      each(loadedModules, function (index, element) {
-         var postConstruct = element.postConstruct;
-
-         if (typeof postConstruct === 'function') {
-
-            postConstruct.call(element);
+      each(loadedModules, function (index, module) {
+         if (typeof module.postConstruct === 'function') {
+            try {
+               module.postConstruct();
+            } catch (e) {
+               settings.logger('Exception while calling postConstruct', e);
+            }
          }
       });
    }
