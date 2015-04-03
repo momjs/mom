@@ -106,7 +106,7 @@ function contains(array, elementToSearch) {
 function isArray(object) {
    'use strict';
 
-   return toString.call(object) === '[object Array]';
+   return Object.prototype.toString.call(object) === '[object Array]';
 }
 /**
  * Iterates over all own properties of the specified object.
