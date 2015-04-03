@@ -14,7 +14,7 @@ function modules(partAccess, eventBus, settings) {
          moduleNamesArray = moduleNames.split(',');
 
       each(moduleNamesArray, function (index, moduleName) {
-         moduleName = moduleName.trim();
+         moduleName = trim(moduleName);
          initializeModule(element, moduleName);
       });
    }

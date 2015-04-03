@@ -52,6 +52,7 @@
       "eachProperty": false,
       "settings": false,
       "getDOMSettings": false,
-      "constants": true
+      "constants": true,
+      "trim": false
    }
 }
