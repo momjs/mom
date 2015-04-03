@@ -6,7 +6,7 @@
  *      - first parameter delivers the current index, second the current element
  *      - if the callback function returns true the iteration breaks up immediately
  */
-/*exported each */
+/* exported each */
 function each(array, callback) {
    'use strict';
 
@@ -32,7 +32,7 @@ function each(array, callback) {
  * @param elementToSearch the element to lookup
  * @returns {boolean} true if the array contains the element, false if not
  */
-/*exported contains */
+/* exported contains */
 function contains(array, elementToSearch) {
    'use strict';
 
@@ -59,13 +59,20 @@ function contains(array, elementToSearch) {
  * @param object the object which will be checked to be an Array
  * @returns {boolean} true if the passed object is an Array, false if not
  */
-/*exported isArray */
+/* exported isArray */
 function isArray(object) {
    'use strict';
 
    return toString.call(object) === '[object Array]';
 }
 
+/**
+ * Remove the passed element from the passed array
+ * @param array the array to remove the passed element
+ * @param element the element which will be removed from the passed array
+ * @returns {boolean} returns true if the element has been removed, returns false otherwise
+ */
+/* exported remove */
 function remove(array, element) {
    'use strict';
 
