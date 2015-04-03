@@ -13,7 +13,7 @@ function eventBus() {
 
       var callbackFunctionName = 'on' + event.name;
 
-      each(components, function (index, component) {
+      each(components, function (component) {
 
          if (event.name !== undefined) {
             tryToCallComponent(component, callbackFunctionName, event);

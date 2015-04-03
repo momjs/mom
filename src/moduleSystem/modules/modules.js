@@ -13,7 +13,7 @@ function modules(partAccess, eventBus, settings) {
       var moduleNames = element.getAttribute(settings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
-      each(moduleNamesArray, function (index, moduleName) {
+      each(moduleNamesArray, function (moduleName) {
          moduleName = trim(moduleName);
          initializeModule(element, moduleName);
       });
@@ -105,7 +105,7 @@ function modules(partAccess, eventBus, settings) {
 
    function callPostConstructs() {
 
-      each(loadedModules, function (index, module) {
+      each(loadedModules, function (module) {
          if (typeof module.postConstruct === 'function') {
             try {
                module.postConstruct();

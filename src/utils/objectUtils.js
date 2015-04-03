@@ -30,7 +30,7 @@ function merge() {
 
    var mergeInto = arguments[0];
 
-   each(arguments, function (index, argument) {
+   each(arguments, function (argument, index) {
       if (index > 0) {
 
          eachProperty(argument, function (key, value) {

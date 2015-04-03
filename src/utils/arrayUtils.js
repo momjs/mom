@@ -18,7 +18,7 @@ function each(array, callback) {
    for (index = 0; index < length; index++) {
       element = array[index];
 
-      breakLoop = callback(index, element);
+      breakLoop = callback(element, index);
 
       if (breakLoop) {
          break;

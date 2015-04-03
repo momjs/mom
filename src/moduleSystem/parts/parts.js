@@ -26,7 +26,7 @@ function parts(settings) {
    function getOrInitializeParts(partNames, suppressErrors) {
       var parts = [];
 
-      each(partNames, function (index, partName) {
+      each(partNames, function (partName) {
          try {
             var part = getOrInitializePart(partName);
             parts.push(part);
