@@ -304,6 +304,7 @@ To do for 1.3
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
 - [ ] cleanup jshint globals
+- [ ] sauce laps travis-ci browser tests
 - [x] merge part settings with settings provided from initialization
 - [x] clean up tests
 - [x] exception handling in module/part construction
