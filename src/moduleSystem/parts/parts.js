@@ -13,9 +13,9 @@ function parts(settings) {
    function initEagerSingletons() {
       var eagerSingletonPartNames = [];
 
-      eachProperty(availablePartDescriptors, function (partName, partDescriptor) {
+      eachProperty(availablePartDescriptors, function (partDescriptor, partName) {
          if (partDescriptor.scope === constants.scope.eagerSingleton) {
-            eagerSingletonPartNames.push(partDescriptor.name);
+            eagerSingletonPartNames.push(partName);
          }
       });
 
@@ -151,7 +151,7 @@ function parts(settings) {
 
 
    function callPostConstructs() {
-      eachProperty(loadedParts, function (i, part) {
+      eachProperty(loadedParts, function (part) {
          callPostConstruct(part);
       });
    }

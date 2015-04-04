@@ -89,7 +89,7 @@ describe('Module system when loading parts', function () {
       $('#test-merging').appendTo('head'); //loads into head not possible with jasmine-jquery
 
       var settings = {
-         default: 'default',
+         def: 'default',
          override: 'should be overridden'
       };
 
@@ -102,7 +102,7 @@ describe('Module system when loading parts', function () {
       moduleSystem.getPart('test-part');
 
       expect(spyPart).toHaveBeenCalledWith({
-         default: 'default',
+         def: 'default',
          override: 'override',
          domSetting: 'domSetting'
       });
@@ -114,7 +114,7 @@ describe('Module system when loading parts', function () {
    it('should not merge settings with settings found not in head of dom', function () {
       loadFixtures('moduleSystem/partSettings.html');
       var settings = {
-         default: 'default',
+         def: 'default',
          override: 'should not be overridden'
       };
 

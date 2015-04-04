@@ -9,8 +9,11 @@
    },
    "dependencies": {},
    "devDependencies": {
-      "jquery": ">=2",
-      "jasmine-jquery": ">=2"
+      "jquery": "~1.11",
+      "jasmine-jquery": ">=2.0"
+   },
+   "resolutions": {
+      "jquery": "~1.11"
    },
    "ignore": [
         "node_modules",

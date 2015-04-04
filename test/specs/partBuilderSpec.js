@@ -1,338 +1,342 @@
-describe('Part builder', function() {
+describe('Part builder', function () {
 
    var builder;
 
-   beforeEach(function() {
+   beforeEach(function () {
 
       builder = moduleSystem.createPart('myPart');
    });
 
-   describe('on invalid settings', function() {
+   describe('on invalid settings', function () {
 
-      const EXPECTED_ERROR_MESSAGE = 'You have to pass the settings as an object';
+      var EXPECTED_ERROR_MESSAGE = 'You have to pass the settings as an object';
 
-      it('should throw when passing settings as string', function() {
+      it('should throw when passing settings as string', function () {
 
-         expect(function() {
+         expect(function () {
             builder.settings('invalid settings');
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing settings as integer number', function() {
+      it('should throw when passing settings as integer number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.settings(123);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing settings as floating number', function() {
+      it('should throw when passing settings as floating number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.settings(123.4);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing settings as boolean', function() {
+      it('should throw when passing settings as boolean', function () {
 
-         expect(function() {
+         expect(function () {
             builder.settings(true);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
    });
 
-   describe('on valid settings', function() {
+   describe('on valid settings', function () {
 
-      it('should not throw when passing undefined settings', function() {
+      it('should not throw when passing undefined settings', function () {
 
-         expect(function() {
+         expect(function () {
             builder.settings();
          }).not.toThrow();
       });
 
-      it('should not throw when passing empty settings', function() {
+      it('should not throw when passing empty settings', function () {
 
-         expect(function() {
+         expect(function () {
             builder.settings({});
          }).not.toThrow();
       });
 
-      it('should not throw when passing non-empty settings', function() {
+      it('should not throw when passing non-empty settings', function () {
 
-         expect(function() {
-            builder.settings({key:'value'});
+         expect(function () {
+            builder.settings({
+               key: 'value'
+            });
          }).not.toThrow();
       });
    });
 
-   describe('on invalid dependencies', function() {
+   describe('on invalid dependencies', function () {
 
-      const EXPECTED_ERROR_MESSAGE = 'You have to pass the dependencies as an Array';
-      
-      it('should throw when passing dependencies as string', function() {
+      var EXPECTED_ERROR_MESSAGE = 'You have to pass the dependencies as an Array';
 
-         expect(function() {
+      it('should throw when passing dependencies as string', function () {
+
+         expect(function () {
             builder.dependencies('invalid dependencies');
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing dependencies as integer number', function() {
+      it('should throw when passing dependencies as integer number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.dependencies(123);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing dependencies as float number', function() {
+      it('should throw when passing dependencies as float number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.dependencies(123.4);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing dependencies as boolean', function() {
+      it('should throw when passing dependencies as boolean', function () {
 
-         expect(function() {
+         expect(function () {
             builder.dependencies(false);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing dependencies as object', function() {
-         
-         expect(function() {
+      it('should throw when passing dependencies as object', function () {
+
+         expect(function () {
             builder.dependencies({});
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
    });
 
-   describe('on valid dependencies', function() {
+   describe('on valid dependencies', function () {
 
-      it('should not throw when passing undefined dependencies', function() {
+      it('should not throw when passing undefined dependencies', function () {
 
-         expect(function() {
+         expect(function () {
             builder.dependencies();
          }).not.toThrow();
       });
 
-      it('should not throw when passing dependencies as empty array', function() {
+      it('should not throw when passing dependencies as empty array', function () {
 
-         expect(function() {
+         expect(function () {
             builder.dependencies([]);
          }).not.toThrow();
       });
 
-      it('should not throw when passing dependencies as filled array', function() {
+      it('should not throw when passing dependencies as filled array', function () {
 
-         expect(function() {
+         expect(function () {
             builder.dependencies(['dependencies']);
          }).not.toThrow();
       });
    });
 
-   describe('on invalid creator', function() {
+   describe('on invalid creator', function () {
 
-      const EXPECTED_ERROR_MESSAGE = 'You have to pass the creator as a reference to a function';
-      
-      it('should throw when passing creator as string', function() {
+      var EXPECTED_ERROR_MESSAGE = 'You have to pass the creator as a reference to a function';
 
-         expect(function() {
+      it('should throw when passing creator as string', function () {
+
+         expect(function () {
             builder.creator('invalid creator');
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing creator as integer number', function() {
+      it('should throw when passing creator as integer number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.creator(123);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing creator as float number', function() {
+      it('should throw when passing creator as float number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.creator(123.4);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing creator as boolean', function() {
+      it('should throw when passing creator as boolean', function () {
 
-         expect(function() {
+         expect(function () {
             builder.creator(false);
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing creator as object', function() {
+      it('should throw when passing creator as object', function () {
 
-         expect(function() {
-            builder.creator({key:'value'});
+         expect(function () {
+            builder.creator({
+               key: 'value'
+            });
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
 
-      it('should throw when passing creator as undefined', function() {
-         
-         expect(function() {
+      it('should throw when passing creator as undefined', function () {
+
+         expect(function () {
             builder.creator();
          }).toThrowError(EXPECTED_ERROR_MESSAGE);
       });
    });
 
-   describe('on valid creator', function() {
+   describe('on valid creator', function () {
 
-      it('should not throw when passing anonymous creator function', function() {
+      it('should not throw when passing anonymous creator function', function () {
 
-         expect(function() {
-            builder.creator(function() {});
+         expect(function () {
+            builder.creator(function () {});
          }).not.toThrow();
       });
 
-      it('should not throw when passing referenced creator function', function() {
+      it('should not throw when passing referenced creator function', function () {
 
          function myCreator() {}
 
-         expect(function() {
+         expect(function () {
             builder.creator(myCreator);
          }).not.toThrow();
       });
 
-      it('should not throw when passing creator function as variable', function() {
+      it('should not throw when passing creator function as variable', function () {
 
-         var myCreator = function() {};
+         var myCreator = function () {};
 
-         expect(function() {
+         expect(function () {
             builder.creator(myCreator);
          }).not.toThrow();
       });
    });
-   
-   describe('on invalid scope', function() {
 
-      const EXCEPTED_ERROR_MESSAGE = 'You have to pass the scope as one of these: lazy-singleton|eager-singleton|multi-instance';
-      
-      it('should throw when passing creator as invalid string', function() {
+   describe('on invalid scope', function () {
 
-         expect(function() {
+      var EXCEPTED_ERROR_MESSAGE = 'You have to pass the scope as one of these: lazy-singleton|eager-singleton|multi-instance';
+
+      it('should throw when passing creator as invalid string', function () {
+
+         expect(function () {
             builder.scope('invalid scope');
          }).toThrowError(EXCEPTED_ERROR_MESSAGE);
       });
-      
-      it('should throw when passing scope as integer number', function() {
 
-         expect(function() {
+      it('should throw when passing scope as integer number', function () {
+
+         expect(function () {
             builder.scope(123);
          }).toThrowError(EXCEPTED_ERROR_MESSAGE);
       });
-      
-      it('should throw when passing scope as float number', function() {
 
-         expect(function() {
+      it('should throw when passing scope as float number', function () {
+
+         expect(function () {
             builder.scope(123.4);
          }).toThrowError(EXCEPTED_ERROR_MESSAGE);
       });
-      
-      it('should throw when passing scope as boolean', function() {
 
-         expect(function() {
+      it('should throw when passing scope as boolean', function () {
+
+         expect(function () {
             builder.scope(true);
          }).toThrowError(EXCEPTED_ERROR_MESSAGE);
       });
-      
-      it('should throw when passing scope as undefined', function() {
 
-         expect(function() {
+      it('should throw when passing scope as undefined', function () {
+
+         expect(function () {
             builder.scope();
          }).toThrowError(EXCEPTED_ERROR_MESSAGE);
       });
-      
-      it('should throw when passing scope as object', function() {
 
-         expect(function() {
+      it('should throw when passing scope as object', function () {
+
+         expect(function () {
             builder.scope({});
          }).toThrowError(EXCEPTED_ERROR_MESSAGE);
       });
    });
 
-   describe('on valid scope', function() {
+   describe('on valid scope', function () {
 
-      it('should not throw when passing scope for lazy-singleton', function() {
+      it('should not throw when passing scope for lazy-singleton', function () {
 
-         expect(function() {
+         expect(function () {
             builder.scope('lazy-singleton');
          }).not.toThrow();
       });
 
-      it('should not throw when passing scope for eager-singleton', function() {
+      it('should not throw when passing scope for eager-singleton', function () {
 
-         expect(function() {
+         expect(function () {
             builder.scope('eager-singleton');
          }).not.toThrow();
       });
 
-      it('should not throw when passing scope for multi-instance', function() {
+      it('should not throw when passing scope for multi-instance', function () {
 
-         expect(function() {
+         expect(function () {
             builder.scope('multi-instance');
          }).not.toThrow();
       });
    });
 
-   describe('on invalid returns', function() {
+   describe('on invalid returns', function () {
 
-      const EXCEPTED_ERROR_MESSAGE = 'You have to pass the returns as one of these object types: string|integer|float|boolean|object|function|Array';
+      var EXCEPTED_ERROR_MESSAGE = 'You have to pass the returns as one of these object types: string|integer|float|boolean|object|function|Array';
 
-      it('should throw when passing creator as undefined', function() {
+      it('should throw when passing creator as undefined', function () {
 
-         expect(function() {
+         expect(function () {
             builder.returns();
          }).toThrowError(EXCEPTED_ERROR_MESSAGE);
       });
    });
 
-   describe('on valid returns', function() {
+   describe('on valid returns', function () {
 
-      it('should not throw when passing returns for an empty object', function() {
+      it('should not throw when passing returns for an empty object', function () {
 
-         expect(function() {
+         expect(function () {
             builder.returns({});
          }).not.toThrow();
       });
 
-      it('should not throw when passing returns for a function', function() {
+      it('should not throw when passing returns for a function', function () {
 
-         expect(function() {
-            builder.returns(function() {});
+         expect(function () {
+            builder.returns(function () {});
          }).not.toThrow();
       });
 
-      it('should not throw when passing returns for a string', function() {
+      it('should not throw when passing returns for a string', function () {
 
-         expect(function() {
+         expect(function () {
             builder.returns('valid string');
          }).not.toThrow();
       });
 
-      it('should not throw when passing returns for a integer number', function() {
+      it('should not throw when passing returns for a integer number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.returns(123);
          }).not.toThrow();
       });
 
-      it('should not throw when passing returns for a float number', function() {
+      it('should not throw when passing returns for a float number', function () {
 
-         expect(function() {
+         expect(function () {
             builder.returns(123.4);
          }).not.toThrow();
       });
 
-      it('should not throw when passing returns for a boolean', function() {
+      it('should not throw when passing returns for a boolean', function () {
 
-         expect(function() {
+         expect(function () {
             builder.returns(true);
          }).not.toThrow();
       });
 
-      it('should not throw when passing returns for an empty Array', function() {
+      it('should not throw when passing returns for an empty Array', function () {
 
-         expect(function() {
+         expect(function () {
             builder.returns([]);
          }).not.toThrow();
       });

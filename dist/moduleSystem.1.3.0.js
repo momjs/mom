@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.3.0 - 2015-03-26 * @link 
+ * @version v1.3.0 - 2015-04-04 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -9,6 +9,36 @@
 (function (window, document, undefined) {   
 /* jshint ignore:end */
 
+function SettingsParseException(message) {
+   'use strict';
+   if (Error.captureStackTrace) {
+      Error.captureStackTrace(this);
+   }
+   this.name = 'SettingsParseException';
+   this.message = message;
+
+}
+SettingsParseException.prototype = Error.prototype;
+
+/*exported getDOMSettings */
+function getDOMSettings(element, selector) {
+   'use strict';
+
+   var settingsScript = element.querySelector(selector),
+      settingsAsHtml,
+      domSettings;
+
+   if (settingsScript !== null) {
+      settingsAsHtml = settingsScript.innerHTML;
+      try {
+         domSettings = JSON.parse(settingsAsHtml);
+      } catch (e) {
+         throw new SettingsParseException(e.message);
+      }
+   }
+
+   return domSettings;
+}
 /**
  * Iterates the array and callback function for each element.
  *
@@ -18,25 +48,32 @@
  *      - if the callback function returns true the iteration breaks up immediately
  */
 /*exported each */
-function each(array, callback) {
+var each = (function () {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      breakLoop;
+   function native(array, callback) {
+      Array.prototype.forEach.call(array, callback);
+   }
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
+   function polyfill(array, callback) {
+      var index,
+         length = array.length,
+         element,
+         breakLoop;
 
-      breakLoop = callback(index, element);
+      for (index = 0; index < length; index++) {
+         element = array[index];
 
-      if (breakLoop) {
-         break;
+         breakLoop = callback(element, index, array);
+
+         if (breakLoop) {
+            break;
+         }
       }
    }
-}
 
+   return (Array.prototype.forEach) ? native : polyfill;
+})();
 /**
  * Indicates if the specified element looking for is containing in the specified array.
  * @param array the array to lookup
@@ -47,19 +84,14 @@ function each(array, callback) {
 function contains(array, elementToSearch) {
    'use strict';
 
-   var index,
-      length = array.length,
-      element,
-      isContaining = false;
+   var isContaining = false;
 
-   for (index = 0; index < length; index++) {
-      element = array[index];
-
+   each(array, function (element) {
       if (element === elementToSearch) {
          isContaining = true;
-         break;
+         return true;
       }
-   }
+   });
 
    return isContaining;
 }
@@ -74,41 +106,41 @@ function contains(array, elementToSearch) {
 function isArray(object) {
    'use strict';
 
-   return toString.call(object) === '[object Array]';
+   return Object.prototype.toString.call(object) === '[object Array]';
 }
-/* jshint unused:false */
-
 /**
  * Iterates over all own properties of the specified object.
  * @param object
  * @param callback the callback function which will be called for each property key and value
  */
+/*exported eachProperty */
 function eachProperty(object, callback) {
-    'use strict';
+   'use strict';
 
-    var propertyKey,
-        propertyValue,
-        breakup;
+   var propertyKey,
+      propertyValue,
+      breakup;
 
-    for(propertyKey in object) {
-        if(object.hasOwnProperty(propertyKey)) {
+   for (propertyKey in object) {
+      if (object.hasOwnProperty(propertyKey)) {
 
-            propertyValue = object[propertyKey];
-            breakup = callback(propertyKey, propertyValue);
+         propertyValue = object[propertyKey];
+         breakup = callback(propertyKey, propertyValue);
 
-            if(breakup) {
-                break;
-            }
-        }
-    }
+         if (breakup) {
+            break;
+         }
+      }
+   }
 }
 
+/*exported merge */
 function merge() {
    'use strict';
-   
+
    var mergeInto = arguments[0];
 
-   each(arguments, function (index, argument) {
+   each(arguments, function (argument, index) {
       if (index > 0) {
 
          eachProperty(argument, function (key, value) {
@@ -119,7 +151,20 @@ function merge() {
 
    return mergeInto;
 }
+/* exported trim */
+var trim = (function () {
+   'use strict';
 
+   function polyfill(string) {
+      return string.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+   }
+
+   function native(string) {
+      return String.prototype.trim.call(string);
+   }
+
+   return (String.prototype.trim) ? native : polyfill;
+})();
 /*exported constants */
 var constants = {
    scope: {
@@ -140,10 +185,15 @@ function settings() {
    var defaults = {
          rootNode: document,
          defaultScope: constants.scope.multiInstance,
-         settingsSelector: 'script[type="%moduleName%/settings"]',
+         moduleSettingsSelector: 'script[type="%moduleName%/settings"]',
+         partSettingsSelector: 'head script[type="%partName%/settings"]',
          attribute: 'modules',
          selector: '[%attribute%]',
-         logger: console.error.bind(console)
+         logger: function () {
+            if (console.error && console.error.apply) {
+               console.error.apply(console, arguments);
+            }
+         }
       },
       actualSettings = defaults;
 
@@ -201,7 +251,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
 
          partAccess.initEagerSingletons();
 
-         each(modulesOnPage, function (index, element) {
+         each(modulesOnPage, function (element) {
             initModule(element);
          });
 
@@ -281,7 +331,7 @@ function moduleBuilder(moduleAccess) {
 }
 
 /*exported modules */
-function modules(partAccess, eventBus, moduleSystemSettings) {
+function modules(partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = [],
@@ -292,11 +342,11 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
    }
 
    function initializeModules(element) {
-      var moduleNames = element.getAttribute(moduleSystemSettings.attribute),
+      var moduleNames = element.getAttribute(settings.attribute),
          moduleNamesArray = moduleNames.split(',');
 
-      each(moduleNamesArray, function (index, moduleName) {
-         moduleName = moduleName.trim();
+      each(moduleNamesArray, function (moduleName) {
+         moduleName = trim(moduleName);
          initializeModule(element, moduleName);
       });
    }
@@ -314,18 +364,18 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
             buildModule(element, moduleDescriptor, foundDependencies);
          } else {
-            moduleSystemSettings.logger('Module', moduleName, 'not registered but found in dom');
+            settings.logger('Module', moduleName, 'not registered but found in dom');
          }
       } catch (e) {
          switch (e.name) {
          case 'SettingsParseException':
-            moduleSystemSettings.logger('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
+            settings.logger('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
             break;
          case 'PartCreationException':
             doTrace(e);
             break;
          default:
-            moduleSystemSettings.logger('Error during provision of module', moduleDescriptor, e.stack);
+            settings.logger('Error during provision of module', moduleDescriptor, e.stack);
          }
 
       }
@@ -338,14 +388,14 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
             console.group();
          }
 
-         moduleSystemSettings.logger(e.message, 'while loading module', moduleDescriptor);
+         settings.logger(e.message, 'while loading module', moduleDescriptor);
 
          do {
-            moduleSystemSettings.logger('... while loading part', currentException.descriptor);
+            settings.logger('... while loading part', currentException.descriptor);
             currentException = currentException.cause;
          } while (currentException.cause !== undefined);
 
-         moduleSystemSettings.logger('caused by:', currentException.stack);
+         settings.logger('caused by:', currentException.stack);
 
          if (console.groupEnd) {
             console.groupEnd();
@@ -355,13 +405,13 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
    function buildModule(element, moduleDescriptor, foundDependencies) {
       var args = foundDependencies,
-         domSettings = getDOMSettings(element, moduleDescriptor.name),
-         mergedSettings,
+         domSettings = getDOMSettings(element, settings.moduleSettingsSelector.replace(/%moduleName%/g, moduleDescriptor.name)),
+         mergedSettings = {},
          createdModule;
 
       if (moduleDescriptor.settings !== undefined || domSettings !== undefined) {
          //override module settings with found dom settings into new object
-         mergedSettings = merge({}, moduleDescriptor.settings, domSettings);
+         merge(mergedSettings, moduleDescriptor.settings, domSettings);
 
          args.unshift(mergedSettings);
       }
@@ -384,46 +434,21 @@ function modules(partAccess, eventBus, moduleSystemSettings) {
 
    }
 
-   function getDOMSettings(element, moduleName) {
-
-      var selector = moduleSystemSettings.settingsSelector.replace(/%moduleName%/g, moduleName),
-         settingsScript = element.querySelector(selector),
-         settingsAsHtml,
-         settings;
-
-      if (settingsScript !== null) {
-         settingsAsHtml = settingsScript.innerHTML;
-         try {
-            settings = JSON.parse(settingsAsHtml);
-         } catch (e) {
-            throw new SettingsParseException(e.message);
-         }
-      }
-
-      return settings;
-   }
 
    function callPostConstructs() {
 
-      each(loadedModules, function (index, element) {
-         var postConstruct = element.postConstruct;
-
-         if (typeof postConstruct === 'function') {
-
-            postConstruct.call(element);
+      each(loadedModules, function (module) {
+         if (typeof module.postConstruct === 'function') {
+            try {
+               module.postConstruct();
+            } catch (e) {
+               settings.logger('Exception while calling postConstruct', e);
+            }
          }
       });
    }
 
-   function SettingsParseException(message) {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'SettingsParseException';
-      this.message = message;
 
-   }
-   SettingsParseException.prototype = Error.prototype;
 
 
 
@@ -562,7 +587,7 @@ function partBuilder(partAccess, moduleSystemSettings) {
 }
 
 /*exported parts */
-function parts(moduleSystemSettings) {
+function parts(settings) {
    'use strict';
 
    var loadedSingletonParts = {},
@@ -589,13 +614,13 @@ function parts(moduleSystemSettings) {
    function getOrInitializeParts(partNames, suppressErrors) {
       var parts = [];
 
-      each(partNames, function (index, partName) {
+      each(partNames, function (partName) {
          try {
             var part = getOrInitializePart(partName);
             parts.push(part);
          } catch (e) {
             if (suppressErrors) {
-               moduleSystemSettings.logger(e);
+               settings.logger(e);
             } else {
                throw e;
             }
@@ -674,7 +699,9 @@ function parts(moduleSystemSettings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var dependencies,
+      var domSettings = getDOMSettings(document, settings.partSettingsSelector.replace(/%partName%/g, partDescriptor.name)),
+         mergedSettings = {},
+         dependencies,
          foundDependencies,
          args,
          createdPart;
@@ -685,8 +712,9 @@ function parts(moduleSystemSettings) {
          //initialize Parts here
          args = foundDependencies;
          // add settings from descriptor
-         if (partDescriptor.settings !== undefined) {
-            args.unshift(partDescriptor.settings);
+         if (partDescriptor.settings !== undefined || domSettings !== undefined) {
+            merge(mergedSettings, partDescriptor.settings, domSettings);
+            args.unshift(mergedSettings);
          }
 
          // create part
@@ -699,8 +727,6 @@ function parts(moduleSystemSettings) {
          return createdPart;
       } catch (e) {
          switch (e.name) {
-         case 'CircularDependencyException':
-            throw e;
          case 'RangeError':
             throw e;
          default:
@@ -709,6 +735,7 @@ function parts(moduleSystemSettings) {
       }
 
    }
+
 
 
    function callPostConstructs() {
@@ -722,7 +749,7 @@ function parts(moduleSystemSettings) {
          try {
             part.postConstruct();
          } catch (e) {
-            moduleSystemSettings.logger('Exception while calling postConstruct', e);
+            settings.logger('Exception while calling postConstruct', e);
          }
 
          //delete post constructor so it can definetly not be called again
@@ -749,16 +776,6 @@ function parts(moduleSystemSettings) {
    }
    PartCreationException.prototype = Error.prototype;
 
-   function CircularDependencyException() {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'CircularDependencyException';
-      this.message = 'circular dependency detected check parts';
-
-   }
-   CircularDependencyException.prototype = Error.prototype;
-
 
    return {
       initEagerSingletons: initEagerSingletons,
@@ -783,7 +800,7 @@ function eventBus() {
 
       var callbackFunctionName = 'on' + event.name;
 
-      each(components, function (index, component) {
+      each(components, function (component) {
 
          if (event.name !== undefined) {
             tryToCallComponent(component, callbackFunctionName, event);
@@ -824,7 +841,6 @@ function eventBus() {
       reset: reset
    };
 }
-
 moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
    'use strict';
 
