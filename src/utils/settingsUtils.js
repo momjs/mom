@@ -1,3 +1,4 @@
+/* exported getDOMSettings */
 function SettingsParseException(message) {
    'use strict';
    if (Error.captureStackTrace) {
@@ -9,7 +10,14 @@ function SettingsParseException(message) {
 }
 SettingsParseException.prototype = Error.prototype;
 
-/*exported getDOMSettings */
+/**
+ * Searches in the given element for the given selector and parses it's content as JSON
+ * 
+ * @param   {element} element  the element to search in
+ * @param   {string} selector the selector to search for
+ * @returns {object} JSON paresed content of element
+ * @throws {SettingsParseException} if the content of the element is not valid json
+ */
 function getDOMSettings(element, selector) {
    'use strict';
 

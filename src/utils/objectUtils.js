@@ -1,21 +1,23 @@
+/*exported eachProperty*/
+/*exported merge */
 /**
  * Iterates over all own properties of the specified object.
- * @param object
- * @param callback the callback function which will be called for each property key and value
+ *
+ * @param {object} object - to iterate over
+ * @param {eachPropertyCallback} callback - function which will be called for each property key and value
  */
-/*exported eachProperty */
 function eachProperty(object, callback) {
    'use strict';
 
-   var propertyKey,
-      propertyValue,
+   var key,
+      value,
       breakup;
 
-   for (propertyKey in object) {
-      if (object.hasOwnProperty(propertyKey)) {
+   for (key in object) {
+      if (object.hasOwnProperty(key)) {
 
-         propertyValue = object[propertyKey];
-         breakup = callback(propertyKey, propertyValue);
+         value = object[key];
+         breakup = callback(value, key);
 
          if (breakup) {
             break;
@@ -23,17 +25,29 @@ function eachProperty(object, callback) {
       }
    }
 }
+/**
+ * @callback eachPropertyCallback
+ * @param value - the value of the property
+ * @param {string} key - the key of the property
+ * @returns {undefined | boolean} if returns true the iteration breaks up immediately
+ */
 
-/*exported merge */
-function merge() {
+
+/**
+ * Merges a variable list of inputs into the given mergeInto object.
+ * Objects from later arguments overrides properties from earlier Objects
+ *
+ * @param {object} mergeInto - the object to merge into
+ * @param {...object} objects - the objects to merge
+ * @returns {object} the merged object
+ */
+function merge(mergeInto) {
    'use strict';
-
-   var mergeInto = arguments[0];
 
    each(arguments, function (argument, index) {
       if (index > 0) {
 
-         eachProperty(argument, function (key, value) {
+         eachProperty(argument, function (value, key) {
             mergeInto[key] = value;
          });
       }
