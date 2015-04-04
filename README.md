@@ -303,9 +303,11 @@ To do for 1.3
 - [x] module/part builder sanity checks
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
+- [ ] cleanup jshint globals
 - [x] merge part settings with settings provided from initialization
-- [ ] clean up tests
-- [x] exception handling in module/part construction  
+- [x] clean up tests
+- [x] exception handling in module/part construction
+- [x] ie8 compatibility
 
 To do future releases
 -------------
