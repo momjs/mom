@@ -10,7 +10,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          createPart = partBuilderCreator(partAccess, actualSettings),
          createModule = moduleBuilderCreator(moduleAccess),
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings),
-         domEventListener = domEventListenerCreator(actualSettings, moduleLoader);
+         domEventListener = domEventListenerCreator(actualSettings, moduleLoader, moduleAccess);
 
 
       createPart('event-bus')
@@ -32,11 +32,16 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          domEventListener.registerToEvents();
       }
 
+      function dispose() {
+         domEventListener.unregisterToEvents();
+      }
+
       return merge({
          createPart: createPart,
          createModule: createModule,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
+         dispose: dispose,
          getPart: partAccess.provisionPart
 
       }, constants);

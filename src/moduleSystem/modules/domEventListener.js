@@ -1,5 +1,5 @@
 /* exported domEventListener */
-function domEventListener(settings, moduleLoader) {
+function domEventListener(settings, moduleLoader, modules) {
    'use strict';
 
    var rootNode = settings.rootNode,
@@ -8,9 +8,15 @@ function domEventListener(settings, moduleLoader) {
 
    function registerToEvents() {
       rootNode.addEventListener('DOMNodeInserted', onElementAdded, false);
+      rootNode.addEventListener('DOMNodeRemoved', onElementRemoved, false);
 
       // FIXME this line is copied from moduleLoader
       actualSelector = settings.selector.replace(/%attribute%/g, settings.attribute);
+   }
+
+   function unregisterToEvents() {
+      rootNode.removeEventListener('DOMNodeInserted', onElementAdded);
+      rootNode.removeEventListener('DOMNodeRemoved', onElementRemoved, false);
    }
 
    function onElementAdded(event) {
@@ -26,11 +32,28 @@ function domEventListener(settings, moduleLoader) {
       });
    }
 
+   function onElementRemoved(event) {
+      var target = event.target,
+         addedModuleElements;
+
+      if(target.hasAttribute(attributeName)) {
+         addedModuleElements = target.querySelectorAll(actualSelector);
+
+         each(addedModuleElements, function(moduleElement) {
+            modules.unloadModules(moduleElement);
+         });
+
+         modules.unloadModules(target);
+      }
+
+   }
+
    function initModule(moduleElement) {
       moduleLoader.initModule(moduleElement);
    }
 
    return {
-      registerToEvents : registerToEvents
+      registerToEvents : registerToEvents,
+      unregisterToEvents : unregisterToEvents
    };
 }
