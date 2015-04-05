@@ -7,11 +7,14 @@ function domEventListener(settings, moduleLoader, modules) {
       actualSelector;
 
    function registerToEvents() {
-      rootNode.addEventListener('DOMNodeInserted', onElementAdded, false);
-      rootNode.addEventListener('DOMNodeRemoved', onElementRemoved, false);
+      if(settings.domMutationSupport === true) {
 
-      // FIXME this line is copied from moduleLoader
-      actualSelector = settings.selector.replace(/%attribute%/g, settings.attribute);
+         rootNode.addEventListener('DOMNodeInserted', onElementAdded, false);
+         rootNode.addEventListener('DOMNodeRemoved', onElementRemoved, false);
+
+         // FIXME this line is copied from moduleLoader
+         actualSelector = settings.selector.replace(/%attribute%/g, settings.attribute);
+      }
    }
 
    function unregisterToEvents() {

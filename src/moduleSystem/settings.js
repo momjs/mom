@@ -9,6 +9,7 @@ function settings() {
          partSettingsSelector: 'head script[type="%partName%/settings"]',
          attribute: 'modules',
          selector: '[%attribute%]',
+         domMutationSupport: false,
          logger: function () {
             if (console.error && console.error.apply) {
                console.error.apply(console, arguments);

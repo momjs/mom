@@ -34,6 +34,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
       function dispose() {
          domEventListener.unregisterToEvents();
+         eventBus.reset();
       }
 
       return merge({

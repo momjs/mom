@@ -35,299 +35,344 @@ describe('Module system when dom node added', function() {
       moduleSystem.createModule('test-module1').creator(firstSpyModule);
       moduleSystem.createModule('test-module2').creator(secondSpyModule);
 
-      moduleSystem.initModulePage();
-
-      eventBus = moduleSystem.getPart('event-bus');
    });
 
    afterEach(function() {
       moduleSystem.dispose();
-      eventBus.reset();
    });
 
-   describe('on adding a dom node with one module', function() {
+   describe('when dom mutation support is enabled', function() {
+
+      beforeEach(function() {
+         var settings = {
+            domMutationSupport: true
+         };
+
+         moduleSystem.initModulePage(settings);
+
+         eventBus = moduleSystem.getPart('event-bus');
+      });
+
+      describe('on adding a dom node with one module', function() {
+
+         const ADDED_DIV_ID = 'test-addedDiv';
+
+         beforeEach(function() {
+
+            var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
+
+            $(elementToAddAsTest).
+               appendTo($parentDiv);
+         });
+
+         it('should call the existing module creator function once (on page init)', function() {
+
+            expect(spyModule.calls.count()).toBe(1);
+         });
+
+         it('should call the added module creator function', function() {
+
+            expect(firstSpyModule.calls.count()).toBe(1);
+         });
+
+         it('should pass the moduleObject to added moduleCreator', function() {
+
+            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+         });
+
+         describe('when event has been published', function() {
+
+            var publishedEvent;
+
+            beforeEach(function() {
+
+               publishedEvent = {
+                  name : 'MyTestEvent'
+               };
+
+               eventBus.publish(publishedEvent);
+            });
+
+            it('should call event listener function on added module once', function() {
+
+               expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on added module with expected event', function() {
+
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+         });
+      });
+
+      describe('on adding a dom node with a child module', function() {
+
+         const ADDED_DIV_ID = 'test-addedDiv';
+
+         beforeEach(function() {
+
+            var elementToAddAsTest = '<div><div id="' + ADDED_DIV_ID + '" modules="test-module1"></div></div>';
+
+            $(elementToAddAsTest).
+               appendTo($parentDiv);
+         });
+
+         it('should call the module creator function', function() {
+
+            expect(firstSpyModule.calls.count()).toBe(1);
+         });
+
+         it('should pass the created moduleObject to moduleCreator', function() {
+
+            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+         });
+
+         describe('when event has been published', function() {
+
+            var publishedEvent;
+
+            beforeEach(function() {
+
+               publishedEvent = {
+                  name : 'MyTestEvent'
+               };
+
+               eventBus.publish(publishedEvent);
+            });
+
+            it('should call event listener function on added module once', function() {
+
+               expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on added module with expected event', function() {
+
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+         });
+      });
+
+      describe('on adding a dom node with two child modules', function() {
+
+         const FIRST_ADDED_DIV_ID = 'test-addedDiv';
+         const SECOND_ADDED_DIV_ID = 'test-addedDiv';
+
+         beforeEach(function() {
+
+            var elementToAddAsTest = '<div>' +
+               '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1"></div>' +
+               '<div id="' + SECOND_ADDED_DIV_ID + '" modules="test-module1"></div>' +
+               '</div>';
+
+            $(elementToAddAsTest).
+               appendTo($parentDiv);
+         });
+
+         it('should call the module creator function', function() {
+
+            expect(firstSpyModule.calls.count()).toBe(2);
+         });
+
+         it('should pass the moduleObject to first moduleCreator', function() {
+
+            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+         });
+
+         it('should pass the moduleObject to second moduleCreator', function() {
+
+            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
+         });
+
+         describe('when event has been published', function() {
+
+            var publishedEvent;
+
+            beforeEach(function() {
+
+               publishedEvent = {
+                  name : 'MyTestEvent'
+               };
+
+               eventBus.publish(publishedEvent);
+            });
+
+            it('should call event listener function on first added module once', function() {
+
+               expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on first added module with expected event', function() {
+
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+         });
+      });
+
+      describe('on adding a dom node with two different child modules', function() {
+
+         const FIRST_ADDED_DIV_ID = 'test-addedDiv';
+         const SECOND_ADDED_DIV_ID = 'test-addedDiv';
+
+         beforeEach(function() {
+
+            var elementToAddAsTest = '<div>' +
+               '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1"></div>' +
+               '<div id="' + SECOND_ADDED_DIV_ID + '" modules="test-module2"></div>' +
+               '</div>';
+
+            $(elementToAddAsTest).
+               appendTo($parentDiv);
+         });
+
+         it('should call the module creator function', function() {
+
+            expect(firstSpyModule.calls.count()).toBe(1);
+            expect(secondSpyModule.calls.count()).toBe(1);
+         });
+
+         it('should pass the moduleObject to first moduleCreator', function() {
+
+            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+         });
+
+         it('should pass the moduleObject to second moduleCreator', function() {
+
+            expect(secondSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
+         });
+
+         describe('when event has been published', function() {
+
+            var publishedEvent;
+
+            beforeEach(function() {
+
+               publishedEvent = {
+                  name : 'MyTestEvent'
+               };
+
+               eventBus.publish(publishedEvent);
+            });
+
+            it('should call event listener function on first added module once', function() {
+
+               expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on first added module with expected event', function() {
+
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+
+            it('should call event listener function on second added module once', function() {
+
+               expect(secondSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on second added module with expected event', function() {
+
+               expect(secondSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+         });
+      });
+
+      describe('on adding a dom node with two different child modules', function() {
+
+         const FIRST_ADDED_DIV_ID = 'test-addedDiv';
+
+         beforeEach(function() {
+
+            var elementToAddAsTest = '<div>' +
+               '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1,test-module2"></div>' +
+               '</div>';
+
+            $(elementToAddAsTest).
+               appendTo($parentDiv);
+         });
+
+         it('should call the module creator function', function() {
+
+            expect(firstSpyModule.calls.count()).toBe(1);
+            expect(secondSpyModule.calls.count()).toBe(1);
+         });
+
+         it('should pass the moduleObject to first moduleCreator', function() {
+
+            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+         });
+
+         it('should pass the moduleObject to second moduleCreator', function() {
+
+            expect(secondSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+         });
+
+         describe('when event has been published', function() {
+
+            var publishedEvent;
+
+            beforeEach(function() {
+
+               publishedEvent = {
+                  name : 'MyTestEvent'
+               };
+
+               eventBus.publish(publishedEvent);
+            });
+
+            it('should call event listener function on first added module once', function() {
+
+               expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on first added module with expected event', function() {
+
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+
+            it('should call event listener function on second added module once', function() {
+
+               expect(secondSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on second added module with expected event', function() {
+
+               expect(secondSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+         });
+      });
+   });
+
+   describe('when dom mutation support is disabled', function() {
 
       const ADDED_DIV_ID = 'test-addedDiv';
 
       beforeEach(function() {
+         var settings = {
+            domMutationSupport: false
+         };
 
-         var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
+         moduleSystem.initModulePage(settings);
 
-         $(elementToAddAsTest).
-            appendTo($parentDiv);
+         eventBus = moduleSystem.getPart('event-bus');
       });
 
-      it('should call the existing module creator function once (on page init)', function() {
-
-         expect(spyModule.calls.count()).toBe(1);
-      });
-
-      it('should call the added module creator function', function() {
-
-         expect(firstSpyModule.calls.count()).toBe(1);
-      });
-
-      it('should pass the moduleObject to added moduleCreator', function() {
-
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
-      });
-
-      describe('when event has been published', function() {
-
-         var publishedEvent;
+      describe('when div has been added to dom', function() {
 
          beforeEach(function() {
 
-            publishedEvent = {
-               name : 'MyTestEvent'
-            };
+            var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
 
-            eventBus.publish(publishedEvent);
+            $(elementToAddAsTest).
+               appendTo($parentDiv);
          });
 
-         it('should call event listener function on added module once', function() {
+         it('should call the existing module creator function once (on page init)', function() {
 
-            expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
+            expect(spyModule.calls.count()).toBe(1);
          });
 
-         it('should call event listener function on added module with expected event', function() {
+         it('should NOT call the added module creator function', function() {
 
-            expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
-         });
-      });
-   });
-
-   describe('on adding a dom node with a child module', function() {
-
-      const ADDED_DIV_ID = 'test-addedDiv';
-
-      beforeEach(function() {
-
-         var elementToAddAsTest = '<div><div id="' + ADDED_DIV_ID + '" modules="test-module1"></div></div>';
-
-         $(elementToAddAsTest).
-            appendTo($parentDiv);
-      });
-
-      it('should call the module creator function', function() {
-
-         expect(firstSpyModule.calls.count()).toBe(1);
-      });
-
-      it('should pass the created moduleObject to moduleCreator', function() {
-
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
-      });
-
-      describe('when event has been published', function() {
-
-         var publishedEvent;
-
-         beforeEach(function() {
-
-            publishedEvent = {
-               name : 'MyTestEvent'
-            };
-
-            eventBus.publish(publishedEvent);
-         });
-
-         it('should call event listener function on added module once', function() {
-
-            expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
-         });
-
-         it('should call event listener function on added module with expected event', function() {
-
-            expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
-         });
-      });
-   });
-
-   describe('on adding a dom node with two child modules', function() {
-
-      const FIRST_ADDED_DIV_ID = 'test-addedDiv';
-      const SECOND_ADDED_DIV_ID = 'test-addedDiv';
-
-      beforeEach(function() {
-
-         var elementToAddAsTest = '<div>' +
-            '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1"></div>' +
-            '<div id="' + SECOND_ADDED_DIV_ID + '" modules="test-module1"></div>' +
-            '</div>';
-
-         $(elementToAddAsTest).
-            appendTo($parentDiv);
-      });
-
-      it('should call the module creator function', function() {
-
-         expect(firstSpyModule.calls.count()).toBe(2);
-      });
-
-      it('should pass the moduleObject to first moduleCreator', function() {
-
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
-      });
-
-      it('should pass the moduleObject to second moduleCreator', function() {
-
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
-      });
-
-      describe('when event has been published', function() {
-
-         var publishedEvent;
-
-         beforeEach(function() {
-
-            publishedEvent = {
-               name : 'MyTestEvent'
-            };
-
-            eventBus.publish(publishedEvent);
-         });
-
-         it('should call event listener function on first added module once', function() {
-
-            expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
-         });
-
-         it('should call event listener function on first added module with expected event', function() {
-
-            expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
-         });
-      });
-   });
-
-   describe('on adding a dom node with two different child modules', function() {
-
-      const FIRST_ADDED_DIV_ID = 'test-addedDiv';
-      const SECOND_ADDED_DIV_ID = 'test-addedDiv';
-
-      beforeEach(function() {
-
-         var elementToAddAsTest = '<div>' +
-            '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1"></div>' +
-            '<div id="' + SECOND_ADDED_DIV_ID + '" modules="test-module2"></div>' +
-            '</div>';
-
-         $(elementToAddAsTest).
-            appendTo($parentDiv);
-      });
-
-      it('should call the module creator function', function() {
-
-         expect(firstSpyModule.calls.count()).toBe(1);
-         expect(secondSpyModule.calls.count()).toBe(1);
-      });
-
-      it('should pass the moduleObject to first moduleCreator', function() {
-
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
-      });
-
-      it('should pass the moduleObject to second moduleCreator', function() {
-
-         expect(secondSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
-      });
-
-      describe('when event has been published', function() {
-
-         var publishedEvent;
-
-         beforeEach(function() {
-
-            publishedEvent = {
-               name : 'MyTestEvent'
-            };
-
-            eventBus.publish(publishedEvent);
-         });
-
-         it('should call event listener function on first added module once', function() {
-
-            expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
-         });
-
-         it('should call event listener function on first added module with expected event', function() {
-
-            expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
-         });
-
-         it('should call event listener function on second added module once', function() {
-
-            expect(secondSpyModuleObject.onEvent.calls.count()).toBe(1);
-         });
-
-         it('should call event listener function on second added module with expected event', function() {
-
-            expect(secondSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
-         });
-      });
-   });
-
-   describe('on adding a dom node with two different child modules', function() {
-
-      const FIRST_ADDED_DIV_ID = 'test-addedDiv';
-
-      beforeEach(function() {
-
-         var elementToAddAsTest = '<div>' +
-            '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1,test-module2"></div>' +
-            '</div>';
-
-         $(elementToAddAsTest).
-            appendTo($parentDiv);
-      });
-
-      it('should call the module creator function', function() {
-
-         expect(firstSpyModule.calls.count()).toBe(1);
-         expect(secondSpyModule.calls.count()).toBe(1);
-      });
-
-      it('should pass the moduleObject to first moduleCreator', function() {
-
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
-      });
-
-      it('should pass the moduleObject to second moduleCreator', function() {
-
-         expect(secondSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
-      });
-
-      describe('when event has been published', function() {
-
-         var publishedEvent;
-
-         beforeEach(function() {
-
-            publishedEvent = {
-               name : 'MyTestEvent'
-            };
-
-            eventBus.publish(publishedEvent);
-         });
-
-         it('should call event listener function on first added module once', function() {
-
-            expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
-         });
-
-         it('should call event listener function on first added module with expected event', function() {
-
-            expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
-         });
-
-         it('should call event listener function on second added module once', function() {
-
-            expect(secondSpyModuleObject.onEvent.calls.count()).toBe(1);
-         });
-
-         it('should call event listener function on second added module with expected event', function() {
-
-            expect(secondSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            expect(firstSpyModule).not.toHaveBeenCalled();
          });
       });
    });

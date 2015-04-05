@@ -3,11 +3,16 @@ describe('Module system loads one module', function() {
    var spyModule;
 
    beforeEach(function() {
-      moduleSystem = moduleSystem.newInstance();
 
       loadFixtures('moduleSystem/oneModule.html');
 
       spyModule = jasmine.createSpy('spyModule');
+
+      moduleSystem = moduleSystem.newInstance();
+   });
+
+   afterEach(function() {
+      moduleSystem.dispose();
    });
 
    it('should provide Modules with static dependencies', function () {

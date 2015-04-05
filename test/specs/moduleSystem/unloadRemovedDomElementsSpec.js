@@ -43,7 +43,11 @@ describe('Module system when dom element removed', function() {
       moduleSystem.createModule('test-module2').creator(secondSpyModule);
       moduleSystem.createModule('test-module3').creator(thirdSpyModule);
 
-      moduleSystem.initModulePage();
+      var settings = {
+         domMutationSupport: true
+      };
+
+      moduleSystem.initModulePage(settings);
 
       eventBus = moduleSystem.getPart('event-bus');
    });
