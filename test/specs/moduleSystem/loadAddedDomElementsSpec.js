@@ -1,4 +1,4 @@
-describe('Module system when dom node added', function() {
+describe('Module system', function() {
 
    var $parentDiv;
 
@@ -8,6 +8,7 @@ describe('Module system when dom node added', function() {
    var secondSpyModule;
 
    var firstSpyModuleObject;
+   var firstSpyModuleObject_secondInstance;
    var secondSpyModuleObject;
 
    var eventBus;
@@ -19,13 +20,26 @@ describe('Module system when dom node added', function() {
       loadFixtures('moduleSystem/simpleModuleDiv.html');
       $parentDiv = $('#test-div');
 
-      firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1', ['onEvent']);
+      spyModule = jasmine.createSpy('spyModule');
+      firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1a', ['onEvent']);
+      firstSpyModuleObject_secondInstance = jasmine.createSpyObj('spyModuleObj1b', ['onEvent']);
       secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent']);
 
-      spyModule = jasmine.createSpy('spyModule');
-      firstSpyModule = jasmine.createSpy('spyModule1').and.callFake(function() {
-         return firstSpyModuleObject;
-      });
+      var getFirstSpy = (function() {
+         var hasBeenCalled = false;
+
+         return function() {
+            if(hasBeenCalled === true) {
+               return firstSpyModuleObject_secondInstance;
+            }
+            else {
+               hasBeenCalled = true;
+               return firstSpyModuleObject;
+            }
+         }
+      })();
+
+      firstSpyModule = jasmine.createSpy('spyModule1').and.callFake(getFirstSpy);
 
       secondSpyModule = jasmine.createSpy('spyModule2').and.callFake(function() {
          return secondSpyModuleObject;
@@ -196,14 +210,24 @@ describe('Module system when dom node added', function() {
                eventBus.publish(publishedEvent);
             });
 
-            it('should call event listener function on first added module once', function() {
+            it('should call event listener function on first instance of added module 1', function() {
 
                expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
             });
 
-            it('should call event listener function on first added module with expected event', function() {
+            it('should call event listener function on first instance of added module 1 with expected event', function() {
 
                expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+
+            it('should call event listener function on second instance of added module 1', function() {
+
+               expect(firstSpyModuleObject_secondInstance.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on second instance of added module 1 with expected event', function() {
+
+               expect(firstSpyModuleObject_secondInstance.onEvent).toHaveBeenCalledWith(publishedEvent);
             });
          });
       });

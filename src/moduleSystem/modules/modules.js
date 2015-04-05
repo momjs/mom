@@ -90,7 +90,6 @@ function modules(partAccess, eventBus, settings) {
 
       if (createdModule !== undefined) {
 
-         //loadedModules.push(createdModule);
          loadedModules.add(element, createdModule);
 
          //add module to eventBus
