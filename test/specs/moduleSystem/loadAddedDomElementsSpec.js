@@ -154,8 +154,8 @@ describe('Module system when dom node added', function() {
 
       describe('on adding a dom node with two child modules', function() {
 
-         const FIRST_ADDED_DIV_ID = 'test-addedDiv';
-         const SECOND_ADDED_DIV_ID = 'test-addedDiv';
+         const FIRST_ADDED_DIV_ID = 'test-addedDiv1';
+         const SECOND_ADDED_DIV_ID = 'test-addedDiv2';
 
          beforeEach(function() {
 
