@@ -57,7 +57,7 @@ function loadedModulesContainer() {
 
    function getByElement(element) {
       var elementJojId = element.getAttribute(JOJ_ID_ATTRIBUTE_NAME);
-      return modulesMap[elementJojId];
+      return modulesMap[elementJojId] || [];
    }
 
    modules.add = add;

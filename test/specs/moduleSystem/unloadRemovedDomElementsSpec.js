@@ -135,4 +135,41 @@ describe('Module system when dom element removed', function() {
          });
       });
    });
+
+   describe('when removing parent div (without module)', function() {
+
+      beforeEach(function() {
+
+         $('#test-parentDiv').remove();
+      });
+
+      describe('when event has been published', function() {
+
+         var publishedEvent;
+
+         beforeEach(function() {
+
+            publishedEvent = {
+               name : 'MyTestEvent'
+            };
+
+            eventBus.publish(publishedEvent);
+         });
+
+         it('should NOT call event listener function on first added module', function() {
+
+            expect(firstSpyModuleObject.onEvent).not.toHaveBeenCalled();
+         });
+
+         it('should NOT call event listener function on second added module', function() {
+
+            expect(secondSpyModuleObject.onEvent).not.toHaveBeenCalled();
+         });
+
+         it('should NOT call event listener function on third added module', function() {
+
+            expect(thirdSpyModuleObject.onEvent).not.toHaveBeenCalled();
+         });
+      });
+   });
 });

@@ -37,18 +37,15 @@ function domEventListener(settings, modules) {
 
    function onElementRemoved(event) {
       var target = event.target,
-         addedModuleElements;
-
-      if(target.hasAttribute(attributeName)) {
          addedModuleElements = target.querySelectorAll(actualSelector);
 
-         each(addedModuleElements, function(moduleElement) {
-            modules.unloadModules(moduleElement);
-         });
+      each(addedModuleElements, function(moduleElement) {
+         modules.unloadModules(moduleElement);
+      });
 
+      if(target.hasAttribute(attributeName)) {
          modules.unloadModules(target);
       }
-
    }
 
    function initModule(moduleElement) {
