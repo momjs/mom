@@ -10,7 +10,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          createPart = partBuilderCreator(partAccess, actualSettings),
          createModule = moduleBuilderCreator(moduleAccess),
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings),
-         domEventListener = domEventListenerCreator(actualSettings, moduleLoader, moduleAccess);
+         domEventListener = domEventListenerCreator(actualSettings, moduleAccess);
 
 
       createPart('event-bus')

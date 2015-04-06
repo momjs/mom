@@ -1,5 +1,5 @@
 /* exported domEventListener */
-function domEventListener(settings, moduleLoader, modules) {
+function domEventListener(settings, modules) {
    'use strict';
 
    var rootNode = settings.rootNode,
@@ -52,7 +52,7 @@ function domEventListener(settings, moduleLoader, modules) {
    }
 
    function initModule(moduleElement) {
-      moduleLoader.initModule(moduleElement);
+      modules.provisionModule(moduleElement);
    }
 
    return {
