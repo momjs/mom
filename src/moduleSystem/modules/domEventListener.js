@@ -24,14 +24,23 @@ function domEventListener(settings, modules) {
 
    function onElementAdded(event) {
       var target = event.target,
-         addedModules = target.querySelectorAll(actualSelector);
+         addedModules = target.querySelectorAll(actualSelector),
+         initializedModules = [],
+         initializedModule;
 
       if(target.hasAttribute(attributeName)) {
-         initModule(target);
+         initializedModule = initModule(target);
+         initializedModules = initializedModules.concat(initializedModule);
       }
 
       each(addedModules, function(addedModule) {
-         initModule(addedModule);
+         initializedModule = initModule(addedModule);
+         initializedModules = initializedModules.concat(initializedModule);
+      });
+
+      each(initializedModules, function(initializedModule) {
+
+         modules.postConstruct(initializedModule);
       });
    }
 
@@ -49,7 +58,7 @@ function domEventListener(settings, modules) {
    }
 
    function initModule(moduleElement) {
-      modules.provisionModule(moduleElement);
+      return modules.provisionModule(moduleElement);
    }
 
    return {

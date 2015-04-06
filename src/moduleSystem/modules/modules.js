@@ -11,12 +11,18 @@ function modules(partAccess, eventBus, settings) {
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute(settings.attribute),
-         moduleNamesArray = moduleNames.split(',');
+         moduleNamesArray = moduleNames.split(','),
+         initializedModules = [],
+         initializedModule;
 
       each(moduleNamesArray, function (moduleName) {
          moduleName = trim(moduleName);
-         initializeModule(element, moduleName);
+         initializedModule = initializeModule(element, moduleName);
+
+         initializedModules.push(initializedModule);
       });
+
+      return initializedModules;
    }
 
    function initializeModule(element, moduleName) {
@@ -30,7 +36,7 @@ function modules(partAccess, eventBus, settings) {
 
             foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
 
-            buildModule(element, moduleDescriptor, foundDependencies);
+            return buildModule(element, moduleDescriptor, foundDependencies);
          } else {
             settings.logger('Module', moduleName, 'not registered but found in dom');
          }
@@ -95,23 +101,28 @@ function modules(partAccess, eventBus, settings) {
          //add module to eventBus
          eventBus.add(createdModule);
       }
+
+      return createdModule;
+   }
+
+   function postConstruct(module) {
+      if (typeof module.postConstruct === 'function') {
+         try {
+            module.postConstruct();
+         } catch (e) {
+            settings.logger('Exception while calling postConstruct', e);
+         }
+      }
    }
 
    function callPostConstructs() {
 
       each(loadedModules, function (module) {
-         if (typeof module.postConstruct === 'function') {
-            try {
-               module.postConstruct();
-            } catch (e) {
-               settings.logger('Exception while calling postConstruct', e);
-            }
-         }
+         postConstruct(module);
       });
    }
 
    function unloadModules(element) {
-
       var modulesToUnload = loadedModules.get(element);
 
       each(modulesToUnload, function(module) {
@@ -126,8 +137,7 @@ function modules(partAccess, eventBus, settings) {
       provisionModule: initializeModules,
       unloadModules: unloadModules,
       provisionFinished: callPostConstructs,
+      postConstruct: postConstruct,
       addModuleDescriptor: addModuleDescriptor
    };
-
-
 }

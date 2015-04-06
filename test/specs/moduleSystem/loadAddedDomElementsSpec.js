@@ -21,9 +21,9 @@ describe('Module system', function() {
       $parentDiv = $('#test-div');
 
       spyModule = jasmine.createSpy('spyModule');
-      firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1a', ['onEvent']);
-      firstSpyModuleObject_secondInstance = jasmine.createSpyObj('spyModuleObj1b', ['onEvent']);
-      secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent']);
+      firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1a', ['onEvent', 'postConstruct']);
+      firstSpyModuleObject_secondInstance = jasmine.createSpyObj('spyModuleObj1b', ['onEvent', 'postConstruct']);
+      secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent', 'postConstruct']);
 
       var getFirstSpy = (function() {
          var hasBeenCalled = false;
@@ -94,6 +94,11 @@ describe('Module system', function() {
             expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
          });
 
+         it('should call postConstruct on module', function() {
+
+            expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
+         });
+
          describe('when event has been published', function() {
 
             var publishedEvent;
@@ -139,6 +144,11 @@ describe('Module system', function() {
          it('should pass the created moduleObject to moduleCreator', function() {
 
             expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+         });
+
+         it('should call postConstruct on module', function() {
+
+            expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
          describe('when event has been published', function() {
@@ -197,6 +207,16 @@ describe('Module system', function() {
             expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
          });
 
+         it('should call postConstruct on module', function() {
+
+            expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
+         });
+
+         it('should call postConstruct on 2nd instance module', function() {
+
+            expect(firstSpyModuleObject_secondInstance.postConstruct.calls.count()).toBe(1);
+         });
+
          describe('when event has been published', function() {
 
             var publishedEvent;
@@ -248,9 +268,13 @@ describe('Module system', function() {
                appendTo($parentDiv);
          });
 
-         it('should call the module creator function', function() {
+         it('should call the first module creator function', function() {
 
             expect(firstSpyModule.calls.count()).toBe(1);
+         });
+
+         it('should call the second module creator function', function() {
+
             expect(secondSpyModule.calls.count()).toBe(1);
          });
 
@@ -262,6 +286,16 @@ describe('Module system', function() {
          it('should pass the moduleObject to second moduleCreator', function() {
 
             expect(secondSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
+         });
+
+         it('should call postConstruct on first module', function() {
+
+            expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
+         });
+
+         it('should call postConstruct on second module', function() {
+
+            expect(secondSpyModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
          describe('when event has been published', function() {
