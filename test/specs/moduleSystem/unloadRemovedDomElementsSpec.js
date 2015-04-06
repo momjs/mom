@@ -21,9 +21,9 @@ describe('Module system when dom element removed', function() {
       loadFixtures('moduleSystem/nestedModules.html');
       $parentDiv = $('#test-div');
 
-      firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1', ['onEvent']);
-      secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent']);
-      thirdSpyModuleObject = jasmine.createSpyObj('spyModuleObj3', ['onEvent']);
+      firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1', ['onEvent', 'preDestruct']);
+      secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent', 'preDestruct']);
+      thirdSpyModuleObject = jasmine.createSpyObj('spyModuleObj3', ['onEvent', 'preDestruct']);
 
       spyModule = jasmine.createSpy('spyModule');
       firstSpyModule = jasmine.createSpy('spyModule1').and.callFake(function() {
@@ -62,6 +62,16 @@ describe('Module system when dom element removed', function() {
       beforeEach(function() {
 
          $('#test-div2').remove();
+      });
+
+      it('should call preDestruct on second module', function() {
+
+         expect(secondSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      it('should call preDestruct on third module', function() {
+
+         expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
       describe('when event has been published', function() {
@@ -106,6 +116,21 @@ describe('Module system when dom element removed', function() {
          $('#test-div1').remove();
       });
 
+      it('should call preDestruct on first module', function() {
+
+         expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      it('should call preDestruct on second module', function() {
+
+         expect(secondSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      it('should call preDestruct on third module', function() {
+
+         expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
       describe('when event has been published', function() {
 
          var publishedEvent;
@@ -141,6 +166,21 @@ describe('Module system when dom element removed', function() {
       beforeEach(function() {
 
          $('#test-parentDiv').remove();
+      });
+
+      it('should call preDestruct on first module', function() {
+
+         expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      it('should call preDestruct on second module', function() {
+
+         expect(secondSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      it('should call preDestruct on third module', function() {
+
+         expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
       describe('when event has been published', function() {

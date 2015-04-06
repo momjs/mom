@@ -127,6 +127,17 @@ function modules(partAccess, eventBus, settings) {
 
       each(modulesToUnload, function(module) {
 
+         if(typeof module.preDestruct === 'function') {
+            try {
+               module.preDestruct();
+            } catch (e) {
+               settings.logger('Exception while calling preDestruct', e);
+            }
+         }
+      });
+
+      each(modulesToUnload, function(module) {
+
          eventBus.remove(module);
       });
 
