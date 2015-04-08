@@ -80,6 +80,7 @@ module.exports = function (grunt) {
          options: {
             vendor: [
                '<%= dirs.dep %>/dist/jquery.js',
+               '<%= dirs.dep %>/jasmine-jsreporter.js',
                '<%= dirs.dep %>/lib/jasmine-jquery.js'
             ],
             helpers: ['<%= dirs.test %>/helpers/**/*.js'],
@@ -127,16 +128,38 @@ module.exports = function (grunt) {
       },
       exec: {
          gitAddAll: 'git add --all'
+      },
+      server: {
+
+      },
+      'saucelabs-jasmine': {
+         all: {
+            options: {
+               urls: ['http://127.0.0.1:8080/_SpecRunner.html'],
+               browsers: [{
+                  browserName: 'chrome'
+
+                     }]
+            }
+         }
+      },
+      connect: {
+         server: {
+            options: {
+               port: '8080',
+               base: '.'
+            }
+         }
       }
+
    });
 
-   // Load the plugin that provides the "jshint" task.
+   grunt.loadNpmTasks('grunt-contrib-connect');
+
    grunt.loadNpmTasks('grunt-contrib-jshint');
 
-   // Load the plugin that provides the "concat" task.
    grunt.loadNpmTasks('grunt-contrib-concat');
 
-   // Load the plugin that provides the "uglify" task.
    grunt.loadNpmTasks('grunt-contrib-uglify');
 
    grunt.loadNpmTasks('grunt-contrib-jasmine');
@@ -153,6 +176,9 @@ module.exports = function (grunt) {
 
    grunt.loadNpmTasks('grunt-exec');
 
+   grunt.loadNpmTasks('grunt-saucelabs');
+
+
    // Default task.
    grunt.registerTask('default', ['build']);
 
@@ -168,6 +194,8 @@ module.exports = function (grunt) {
    grunt.registerTask('test', ['jasmine:test']);
 
    grunt.registerTask('testProd', ['jasmine:prod', 'jasmine:prodMin']);
+
+   grunt.registerTask('sauce', ['createSpecRunner', 'connect', 'saucelabs-jasmine']);
 
    grunt.registerTask('createSpecRunner', [
         'jasmine:test:build'

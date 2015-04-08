@@ -106,6 +106,8 @@ describe('EventBus', function () {
             expect(secondTestListener.onTestChanged).toHaveBeenCalledWith(jasmine.objectContaining({
                testProperty: 'testValue'
             }));
+
+            expect(true).toBeFalsy();
          });
       });
    });

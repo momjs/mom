@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.3.0 - 2015-04-04 * @link 
+ * @version v1.3.0 - 2015-04-07 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -9,6 +9,7 @@
 (function (window, document, undefined) {   
 /* jshint ignore:end */
 
+/* exported getDOMSettings */
 function SettingsParseException(message) {
    'use strict';
    if (Error.captureStackTrace) {
@@ -20,7 +21,14 @@ function SettingsParseException(message) {
 }
 SettingsParseException.prototype = Error.prototype;
 
-/*exported getDOMSettings */
+/**
+ * Searches in the given element for the given selector and parses it's content as JSON
+ * 
+ * @param   {element} element  the element to search in
+ * @param   {string} selector the selector to search for
+ * @returns {object} JSON paresed content of element
+ * @throws {SettingsParseException} if the content of the element is not valid json
+ */
 function getDOMSettings(element, selector) {
    'use strict';
 
@@ -39,15 +47,17 @@ function getDOMSettings(element, selector) {
 
    return domSettings;
 }
+/*exported each */
+/*exported contains */
+/*exported isArray */
+
 /**
  * Iterates the array and callback function for each element.
+ * Uses nativ forEach if present
  *
- * @param {Array} array the array to iterate
- * @param {function} callback the callback function:
- *      - first parameter delivers the current index, second the current element
- *      - if the callback function returns true the iteration breaks up immediately
+ * @param {Array} array - the array to iterate
+ * @param {eachCallback} - callback the callback function:
  */
-/*exported each */
 var each = (function () {
    'use strict';
 
@@ -75,12 +85,21 @@ var each = (function () {
    return (Array.prototype.forEach) ? native : polyfill;
 })();
 /**
+ * @callback eachCallback
+ * @param element - the current element
+ * @param {number} index - the current index
+ * @param {array} array - the current array
+ * @returns {undefined | boolean} if returns true the iteration breaks up immediately
+ */
+
+
+/**
  * Indicates if the specified element looking for is containing in the specified array.
- * @param array the array to lookup
- * @param elementToSearch the element to lookup
+ *
+ * @param {array} array - the array to lookup
+ * @param elementToSearch - the element to lookup
  * @returns {boolean} true if the array contains the element, false if not
  */
-/*exported contains */
 function contains(array, elementToSearch) {
    'use strict';
 
@@ -99,33 +118,34 @@ function contains(array, elementToSearch) {
 /**
  * Indicates if the passed object is an Array.
  *
- * @param object the object which will be checked to be an Array
+ * @param object - the object which will be checked to be an Array
  * @returns {boolean} true if the passed object is an Array, false if not
  */
-/*exported isArray */
 function isArray(object) {
    'use strict';
 
    return Object.prototype.toString.call(object) === '[object Array]';
 }
+/*exported eachProperty*/
+/*exported merge */
 /**
  * Iterates over all own properties of the specified object.
- * @param object
- * @param callback the callback function which will be called for each property key and value
+ *
+ * @param {object} object - to iterate over
+ * @param {eachPropertyCallback} callback - function which will be called for each property key and value
  */
-/*exported eachProperty */
 function eachProperty(object, callback) {
    'use strict';
 
-   var propertyKey,
-      propertyValue,
+   var key,
+      value,
       breakup;
 
-   for (propertyKey in object) {
-      if (object.hasOwnProperty(propertyKey)) {
+   for (key in object) {
+      if (object.hasOwnProperty(key)) {
 
-         propertyValue = object[propertyKey];
-         breakup = callback(propertyKey, propertyValue);
+         value = object[key];
+         breakup = callback(value, key);
 
          if (breakup) {
             break;
@@ -133,17 +153,29 @@ function eachProperty(object, callback) {
       }
    }
 }
+/**
+ * @callback eachPropertyCallback
+ * @param value - the value of the property
+ * @param {string} key - the key of the property
+ * @returns {undefined | boolean} if returns true the iteration breaks up immediately
+ */
 
-/*exported merge */
-function merge() {
+
+/**
+ * Merges a variable list of inputs into the given mergeInto object.
+ * Objects from later arguments overrides properties from earlier Objects
+ *
+ * @param {object} mergeInto - the object to merge into
+ * @param {...object} objects - the objects to merge
+ * @returns {object} the merged object
+ */
+function merge(mergeInto) {
    'use strict';
-
-   var mergeInto = arguments[0];
 
    each(arguments, function (argument, index) {
       if (index > 0) {
 
-         eachProperty(argument, function (key, value) {
+         eachProperty(argument, function (value, key) {
             mergeInto[key] = value;
          });
       }
@@ -152,15 +184,22 @@ function merge() {
    return mergeInto;
 }
 /* exported trim */
+/**
+ * Removes whitespaces from both sides of a string
+ * the function does not modify the content of the sting
+ * uses nativ trim if present
+ * @param {string} text - input string
+ * @returns {string} the modified string
+ */
 var trim = (function () {
    'use strict';
 
-   function polyfill(string) {
-      return string.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+   function polyfill(text) {
+      return text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
    }
 
-   function native(string) {
-      return String.prototype.trim.call(string);
+   function native(text) {
+      return String.prototype.trim.call(text);
    }
 
    return (String.prototype.trim) ? native : polyfill;
@@ -601,9 +640,9 @@ function parts(settings) {
    function initEagerSingletons() {
       var eagerSingletonPartNames = [];
 
-      eachProperty(availablePartDescriptors, function (partName, partDescriptor) {
+      eachProperty(availablePartDescriptors, function (partDescriptor, partName) {
          if (partDescriptor.scope === constants.scope.eagerSingleton) {
-            eagerSingletonPartNames.push(partDescriptor.name);
+            eagerSingletonPartNames.push(partName);
          }
       });
 
@@ -739,7 +778,7 @@ function parts(settings) {
 
 
    function callPostConstructs() {
-      eachProperty(loadedParts, function (i, part) {
+      eachProperty(loadedParts, function (part) {
          callPostConstruct(part);
       });
    }
