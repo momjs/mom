@@ -136,10 +136,27 @@ module.exports = function (grunt) {
          all: {
             options: {
                urls: ['http://127.0.0.1:8080/_SpecRunner.html'],
+               build: (process.env.TRAVIS_BUILD_NUMBER) ? process.env.TRAVIS_BUILD_NUMBER : undefined,
+               testname: (process.env.TRAVIS_BRANCH) ? process.env.TRAVIS_BRANCH : 'manual test',
                browsers: [{
                   browserName: 'chrome'
-
-                     }]
+               }, {
+                  browserName: 'firefox'
+               }, {
+                  browserName: 'safari'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '11'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '10'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '9'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '8'
+               }]
             }
          }
       },
@@ -193,7 +210,7 @@ module.exports = function (grunt) {
 
    var testJobs = ['jasmine:test'];
    if (typeof process.env.SAUCE_ACCESS_KEY !== 'undefined') {
-      testJobs.push("sauce");
+      testJobs.push('sauce');
    }
 
    grunt.registerTask('test', testJobs);
