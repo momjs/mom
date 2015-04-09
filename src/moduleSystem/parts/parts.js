@@ -4,7 +4,9 @@ function parts(settings) {
 
    var loadedSingletonParts = {},
       loadedParts = [],
-      availablePartDescriptors = {};
+      buildingParts = {},
+      availablePartDescriptors = {},
+      BUILDING = 1;
 
    function addPartDescriptor(partDescriptor) {
       availablePartDescriptors[partDescriptor.name] = partDescriptor;
@@ -48,16 +50,34 @@ function parts(settings) {
          part;
 
       if (availablePartDescriptors.hasOwnProperty(partName)) {
+         buildingStart(partName);
+
          partDescriptor = availablePartDescriptors[partName];
          constructionStrategy = getConstructionStrategie(partDescriptor.scope);
          part = constructionStrategy(partDescriptor);
 
+         buildingFinished(partName);
       } else {
          throw new Error('tried to load ' + partName + ' but was not registered');
       }
 
       return part;
    }
+
+   function buildingStart(partName) {
+      var INDICATEBUILDING = true;
+      if (buildingParts.hasOwnProperty(partName)) {
+         throw new CircularDependencyException(partName);
+      } else {
+         buildingParts[partName] = INDICATEBUILDING;
+      }
+   }
+
+   function buildingFinished(partName) {
+      delete buildingParts[partName];
+   }
+
+
 
    function getConstructionStrategie(scope) {
       switch (scope) {
@@ -139,7 +159,7 @@ function parts(settings) {
          return createdPart;
       } catch (e) {
          switch (e.name) {
-         case 'RangeError':
+         case 'CircularDependencyException':
             throw e;
          default:
             throw new PartCreationException(partDescriptor, e);
@@ -187,6 +207,15 @@ function parts(settings) {
 
    }
    PartCreationException.prototype = Error.prototype;
+
+   function CircularDependencyException(partName) {
+      if (Error.captureStackTrace) {
+         Error.captureStackTrace(this);
+      }
+      this.name = 'CircularDependencyException';
+      this.message = 'Circular dependency detected for ' + partName;
+   }
+   CircularDependencyException.prototype = Error.prototype;
 
 
    return {
