@@ -143,7 +143,17 @@ module.exports = function (grunt) {
                }, {
                   browserName: 'firefox'
                }, {
-                  browserName: 'safari'
+                  browserName: 'safari',
+                  version: '8'
+               }, {
+                  browserName: 'safari',
+                  version: '7'
+               }, {
+                  browserName: 'safari',
+                  version: '6'
+               }, {
+                  browserName: 'safari',
+                  version: '5'
                }, {
                   browserName: 'internet explorer',
                   version: '11'
