@@ -5,8 +5,7 @@ function parts(settings) {
    var loadedSingletonParts = {},
       loadedParts = [],
       buildingParts = {},
-      availablePartDescriptors = {},
-      BUILDING = 1;
+      availablePartDescriptors = {};
 
    function addPartDescriptor(partDescriptor) {
       availablePartDescriptors[partDescriptor.name] = partDescriptor;
