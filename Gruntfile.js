@@ -25,6 +25,7 @@ module.exports = function (grunt) {
       },
       files: {
          src: [
+               '<%= dirs.source %>/utils/console.js',
                '<%= dirs.source %>/utils/settingsUtils.js',
                '<%= dirs.source %>/utils/arrayUtils.js',
                '<%= dirs.source %>/utils/objectUtils.js',
@@ -80,6 +81,7 @@ module.exports = function (grunt) {
          options: {
             vendor: [
                '<%= dirs.dep %>/dist/jquery.js',
+               '<%= dirs.dep %>/jasmine-jsreporter.js',
                '<%= dirs.dep %>/lib/jasmine-jquery.js'
             ],
             helpers: ['<%= dirs.test %>/helpers/**/*.js'],
@@ -127,16 +129,65 @@ module.exports = function (grunt) {
       },
       exec: {
          gitAddAll: 'git add --all'
+      },
+      server: {
+
+      },
+      'saucelabs-jasmine': {
+         all: {
+            options: {
+               urls: ['http://127.0.0.1:8080/_SpecRunner.html'],
+               build: (process.env.TRAVIS_BUILD_NUMBER) ? process.env.TRAVIS_BUILD_NUMBER : undefined,
+               testname: (process.env.TRAVIS_BRANCH) ? process.env.TRAVIS_BRANCH : 'manual test',
+               browsers: [{
+                  browserName: 'chrome'
+               }, {
+                  browserName: 'firefox'
+               }, {
+                  browserName: 'safari',
+                  version: '8'
+               }, {
+                  browserName: 'safari',
+                  version: '7'
+               }, {
+                  browserName: 'safari',
+                  version: '6'
+               }, {
+                  browserName: 'safari',
+                  version: '5'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '11'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '10'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '9'
+               }, {
+                  browserName: 'internet explorer',
+                  version: '8'
+               }]
+            }
+         }
+      },
+      connect: {
+         server: {
+            options: {
+               port: '8080',
+               base: '.'
+            }
+         }
       }
+
    });
 
-   // Load the plugin that provides the "jshint" task.
+   grunt.loadNpmTasks('grunt-contrib-connect');
+
    grunt.loadNpmTasks('grunt-contrib-jshint');
 
-   // Load the plugin that provides the "concat" task.
    grunt.loadNpmTasks('grunt-contrib-concat');
 
-   // Load the plugin that provides the "uglify" task.
    grunt.loadNpmTasks('grunt-contrib-uglify');
 
    grunt.loadNpmTasks('grunt-contrib-jasmine');
@@ -153,6 +204,9 @@ module.exports = function (grunt) {
 
    grunt.loadNpmTasks('grunt-exec');
 
+   grunt.loadNpmTasks('grunt-saucelabs');
+
+
    // Default task.
    grunt.registerTask('default', ['build']);
 
@@ -165,9 +219,17 @@ module.exports = function (grunt) {
    // Build task.
    grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);
 
-   grunt.registerTask('test', ['jasmine:test']);
+   var testJobs = ['jasmine:test'];
+   if (typeof process.env.SAUCE_ACCESS_KEY !== 'undefined') {
+      testJobs.push('sauce');
+   }
+
+   grunt.registerTask('test', testJobs);
+
 
    grunt.registerTask('testProd', ['jasmine:prod', 'jasmine:prodMin']);
+
+   grunt.registerTask('sauce', ['createSpecRunner', 'connect', 'saucelabs-jasmine']);
 
    grunt.registerTask('createSpecRunner', [
         'jasmine:test:build'

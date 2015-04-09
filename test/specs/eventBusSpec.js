@@ -79,7 +79,7 @@ describe('EventBus', function () {
       it('should do nothing when published event is undefined', function () {
 
          expect(function () {
-            eventbus.publish()
+            eventbus.publish();
          }).toThrowError('Published event cannot be undefined');
       });
 

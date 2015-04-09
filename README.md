@@ -1,6 +1,5 @@
 ModuleSystem
 ============
-
 Dynamic Loading of Javascript based on DOM elements. 
 Especially usefull for Content Management Systems (CMS):
    - where you don't know which javascript needs to be loaded on which page
