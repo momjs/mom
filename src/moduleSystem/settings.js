@@ -5,15 +5,10 @@ function settings() {
    var defaults = {
          rootNode: document,
          defaultScope: constants.scope.multiInstance,
-         moduleSettingsSelector: 'script[type="%moduleName%/settings"]',
-         partSettingsSelector: 'head script[type="%partName%/settings"]',
+         moduleSettingsSelector: 'script[type="%name%/settings"]',
+         partSettingsSelector: 'head script[type="%name%/settings"]',
          attribute: 'modules',
-         selector: '[%attribute%]',
-         logger: function () {
-            if (console.error && console.error.apply) {
-               console.error.apply(console, arguments);
-            }
-         }
+         selector: '[%attribute%]'
       },
       actualSettings = defaults;
 

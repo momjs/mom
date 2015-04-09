@@ -162,7 +162,7 @@ describe('Module system when loading parts', function () {
 
       expect(function () {
          moduleSystem.getPart('test-part');
-      }).toThrow();
+      }).toThrowError('Circular dependency detected for part [test-part]');
    });
 
    it('should get new instance of part when selecting default scope', function () {
