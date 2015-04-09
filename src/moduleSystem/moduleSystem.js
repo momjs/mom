@@ -18,9 +18,8 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
       //deprecated remove in 1.4
       createPart('eventBus')
          .creator(function () {
-            if (window.console && console.warn) {
-               console.warn('partName "eventBus" deprecated use "event-bus" instead');
-            }
+            console.warn('partName "eventBus" deprecated use "event-bus" instead');
+
             return eventBus;
          });
 

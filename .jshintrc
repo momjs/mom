@@ -22,7 +22,7 @@
    "globals": {
       "jQuery": false,
       "$": false,
-      "console": false,
+      "console": true,
       "toString": false,
       "contains": false,
       "each": true,

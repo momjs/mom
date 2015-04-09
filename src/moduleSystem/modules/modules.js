@@ -52,9 +52,7 @@ function modules(partAccess, eventBus, settings) {
       function doTrace(e) {
          var currentException = e;
 
-         if (window.console && console.group) {
-            console.group();
-         }
+         console.group();
 
          settings.logger(e.message, 'while loading module', moduleDescriptor);
 
@@ -65,9 +63,7 @@ function modules(partAccess, eventBus, settings) {
 
          settings.logger('caused by:', currentException.stack);
 
-         if (window.console && console.groupEnd) {
-            console.groupEnd();
-         }
+         console.groupEnd();
       }
    }
 
