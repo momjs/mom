@@ -32,6 +32,7 @@ function modules(partAccess, eventBus, settings) {
          buildModule(element, moduleDescriptor, foundDependencies);
       } else {
          throw new Error('Module [' + moduleName + '] not created but found in dom');
+
       }
    }
 
@@ -73,11 +74,6 @@ function modules(partAccess, eventBus, settings) {
          }
       });
    }
-
-
-
-
-
 
    return {
       provisionModule: initializeModules,
