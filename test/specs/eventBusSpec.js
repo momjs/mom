@@ -79,7 +79,7 @@ describe('EventBus', function () {
       it('should do nothing when published event is undefined', function () {
 
          expect(function () {
-            eventbus.publish()
+            eventbus.publish();
          }).toThrowError('Published event cannot be undefined');
       });
 
@@ -105,9 +105,9 @@ describe('EventBus', function () {
             }));
             expect(secondTestListener.onTestChanged).toHaveBeenCalledWith(jasmine.objectContaining({
                testProperty: 'testValue'
+               git
             }));
 
-            expect(true).toBeFalsy();
          });
       });
    });
