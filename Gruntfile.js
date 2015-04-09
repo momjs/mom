@@ -191,7 +191,13 @@ module.exports = function (grunt) {
    // Build task.
    grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);
 
-   grunt.registerTask('test', ['jasmine:test']);
+   var testJobs = ['jasmine:test'];
+   if (typeof process.env.SAUCE_ACCESS_KEY !== 'undefined') {
+      testJobs.push("sauce");
+   }
+
+   grunt.registerTask('test', testJobs);
+
 
    grunt.registerTask('testProd', ['jasmine:prod', 'jasmine:prodMin']);
 
