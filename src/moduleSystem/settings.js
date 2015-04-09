@@ -10,7 +10,7 @@ function settings() {
          attribute: 'modules',
          selector: '[%attribute%]',
          logger: function () {
-            if (console.error && console.error.apply) {
+            if (console && console.error && console.error.apply) {
                console.error.apply(console, arguments);
             }
          }
