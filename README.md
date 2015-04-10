@@ -300,15 +300,15 @@ To do for 1.3
 - [x] embrace module names with '-' instead of CamelCase
 - [x] better wrong formated settings json exception
 - [x] module/part builder sanity checks
-- [ ] provision single dom node
-- [ ] provide a method for dynamic loading and unloading of modules
-- [ ] cleanup jshint globals
-- [ ] sauce laps travis-ci browser tests
+- [x] cleanup jshint globals
+- [x] sauce laps travis-ci browser tests
 - [x] merge part settings with settings provided from initialization
 - [x] clean up tests
-- [x] exception handling in module/part construction
 - [x] ie8 compatibility
-
+To do for 1.4
+-------------
+- [ ] provision single dom node
+- [ ] provide a method for dynamic loading and unloading of modules
 To do future releases
 -------------
 - [ ] add plugin concept for spezialized modules and parts
