@@ -101,21 +101,6 @@ module.exports = function (grunt) {
             options: '<%= jasmine.options %>'
          }
       },
-      bump: {
-         options: {
-            files: ['package.json', 'bower.json'],
-            updateConfigs: ['pkg'],
-            commit: true,
-            commitMessage: 'Release v%VERSION%',
-            commitFiles: ['-a'],
-            createTag: false,
-            tagName: 'v%VERSION%',
-            tagMessage: 'Version %VERSION%',
-            push: true,
-            pushTo: 'origin',
-            gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
-         }
-      },
       copy: {
          release: {
             src: '<%= concat.dist.dest %>',
@@ -125,9 +110,6 @@ module.exports = function (grunt) {
             src: '<%= uglify.dist.dest %>',
             dest: '<%= dirs.dest %>/<%= pkg.name %>.min.js'
          }
-      },
-      exec: {
-         gitAddAll: 'git add --all'
       },
       'saucelabs-jasmine': {
          all: {
@@ -196,21 +178,11 @@ module.exports = function (grunt) {
 
    grunt.loadNpmTasks('grunt-bower');
 
-   grunt.loadNpmTasks('grunt-bump');
-
-   grunt.loadNpmTasks('grunt-exec');
-
    grunt.loadNpmTasks('grunt-saucelabs');
-
 
    // Default task.
    grunt.registerTask('default', ['build']);
 
-   grunt.registerTask('releasePatch', ['bump-only:patch', 'build', 'exec', 'bump-commit']);
-
-   grunt.registerTask('releaseMinior', ['bump-only:minor', 'build', 'exec', 'bump-commit']);
-
-   grunt.registerTask('releaseMajor', ['bump-only:major', 'build', 'exec', 'bump-commit']);
 
    // Build task.
    grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);

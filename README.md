@@ -5,6 +5,14 @@ Especially usefull for Content Management Systems (CMS):
    - where you don't know which javascript needs to be loaded on which page
    - where you want to configure javascript on render time from the CMS
    - where you want to loosely couple modules, because you don't now if the other module is even on the page 
+   
+####Status
+Master: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=master)](https://travis-ci.org/alexan/ModuleSystem)
+Develop: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=develop)](https://travis-ci.org/alexan/ModuleSystem)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/alexan.svg)](https://saucelabs.com/u/alexan)
+
+[![Dev Dependencies](https://david-dm.org/alexan/ModuleSystem/dev-status.svg)](https://david-dm.org/alexan/ModuleSystem#info=devDependencies)
 
 Breaking changes
 ----------------
