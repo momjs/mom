@@ -305,10 +305,12 @@ To do for 1.3
 - [x] merge part settings with settings provided from initialization
 - [x] clean up tests
 - [x] ie8 compatibility
+
 To do for 1.4
 -------------
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
+
 To do future releases
 -------------
 - [ ] add plugin concept for spezialized modules and parts
