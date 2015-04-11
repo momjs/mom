@@ -25,7 +25,6 @@ module.exports = function (grunt) {
       },
       files: {
          src: [
-               '<%= dirs.source %>/utils/console.js',
                '<%= dirs.source %>/utils/settingsUtils.js',
                '<%= dirs.source %>/utils/arrayUtils.js',
                '<%= dirs.source %>/utils/objectUtils.js',
@@ -130,13 +129,10 @@ module.exports = function (grunt) {
       exec: {
          gitAddAll: 'git add --all'
       },
-      server: {
-
-      },
       'saucelabs-jasmine': {
          all: {
             options: {
-               urls: ['http://127.0.0.1:8080/_SpecRunner.html'],
+               urls: ['http://127.0.0.1:<%= connect.server.options.port %>/_SpecRunner.html'],
                build: (process.env.TRAVIS_BUILD_NUMBER) ? process.env.TRAVIS_BUILD_NUMBER : undefined,
                testname: (process.env.TRAVIS_BRANCH) ? process.env.TRAVIS_BRANCH : 'manual test',
                browsers: [{
