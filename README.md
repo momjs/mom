@@ -307,6 +307,7 @@ To do for 1.4
 -------------
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
+
 To do future releases
 -------------
 - [ ] add plugin concept for spezialized modules and parts
