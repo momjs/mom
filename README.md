@@ -294,17 +294,7 @@ $(function() {
     moduleSystem.initModulePage();
 });
 ```
-To do for 1.3
--------------
-- [x] initialize module system only on parts of the dom
-- [x] embrace module names with '-' instead of CamelCase
-- [x] better wrong formated settings json exception
-- [x] module/part builder sanity checks
-- [x] cleanup jshint globals
-- [x] sauce laps travis-ci browser tests
-- [x] merge part settings with settings provided from initialization
-- [x] clean up tests
-- [x] ie8 compatibility
+
 To do for 1.4
 -------------
 - [ ] provision single dom node

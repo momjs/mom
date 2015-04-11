@@ -1,9 +1,13 @@
 {
    "name": "moduleSystem",
    "description": "Dynamic Loading of Javascript based on DOM elements",
-   "version": "1.3.0",
+   "version": "1.4.0",
    "filename": "moduleSystem.min.js",
    "author": "Eder Alexander <eder.alexan@gmail.com>",
+   "repository": {
+      "type": "git",
+      "url": "git://github.com/alexan/ModuleSystem.git"
+   },
    "dependencies": {},
    "devDependencies": {
       "grunt": "~0.4.5",
