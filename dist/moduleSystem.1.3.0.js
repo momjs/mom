@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.3.0 - 2015-04-07 * @link 
+ * @version v1.3.0 - 2015-04-11 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -10,29 +10,22 @@
 /* jshint ignore:end */
 
 /* exported getDOMSettings */
-function SettingsParseException(message) {
-   'use strict';
-   if (Error.captureStackTrace) {
-      Error.captureStackTrace(this);
-   }
-   this.name = 'SettingsParseException';
-   this.message = message;
-
-}
-SettingsParseException.prototype = Error.prototype;
 
 /**
- * Searches in the given element for the given selector and parses it's content as JSON
- * 
+ * Replaced %name% in the given selectorTemplate.
+ * Searches in the given element for the constucted selector and parses it's content as JSON
+ *
  * @param   {element} element  the element to search in
- * @param   {string} selector the selector to search for
+ * @param   {string} selectorTemplate the selector to search for
+ * @param   {string} name of the element to parse
  * @returns {object} JSON paresed content of element
- * @throws {SettingsParseException} if the content of the element is not valid json
+ * @throws {Error} if the content of the element is not valid json
  */
-function getDOMSettings(element, selector) {
+function getDOMSettings(element, selectorTemplate, name) {
    'use strict';
 
-   var settingsScript = element.querySelector(selector),
+   var selector = selectorTemplate.replace(/%name%/g, name),
+      settingsScript = element.querySelector(selector),
       settingsAsHtml,
       domSettings;
 
@@ -41,7 +34,7 @@ function getDOMSettings(element, selector) {
       try {
          domSettings = JSON.parse(settingsAsHtml);
       } catch (e) {
-         throw new SettingsParseException(e.message);
+         throw new Error('Module [' + name + '] has invalid json in dom. Message: ' + e.message);
       }
    }
 
@@ -224,15 +217,10 @@ function settings() {
    var defaults = {
          rootNode: document,
          defaultScope: constants.scope.multiInstance,
-         moduleSettingsSelector: 'script[type="%moduleName%/settings"]',
-         partSettingsSelector: 'head script[type="%partName%/settings"]',
+         moduleSettingsSelector: 'script[type="%name%/settings"]',
+         partSettingsSelector: 'head script[type="%name%/settings"]',
          attribute: 'modules',
-         selector: '[%attribute%]',
-         logger: function () {
-            if (console.error && console.error.apply) {
-               console.error.apply(console, arguments);
-            }
-         }
+         selector: '[%attribute%]'
       },
       actualSettings = defaults;
 
@@ -395,56 +383,22 @@ function modules(partAccess, eventBus, settings) {
          foundDependencies;
 
       //check if module to be loaded is registered
-      try {
-         if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
-            moduleDescriptor = availableModuleDescriptors[moduleName];
+      if (availableModuleDescriptors.hasOwnProperty(moduleName)) {
+         moduleDescriptor = availableModuleDescriptors[moduleName];
 
-            foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
+         foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
 
-            buildModule(element, moduleDescriptor, foundDependencies);
-         } else {
-            settings.logger('Module', moduleName, 'not registered but found in dom');
-         }
-      } catch (e) {
-         switch (e.name) {
-         case 'SettingsParseException':
-            settings.logger('Wrong formatted JSON in DOM for module', moduleDescriptor.name, 'message:', e.message);
-            break;
-         case 'PartCreationException':
-            doTrace(e);
-            break;
-         default:
-            settings.logger('Error during provision of module', moduleDescriptor, e.stack);
-         }
+         buildModule(element, moduleDescriptor, foundDependencies);
+      } else {
+         throw new Error('Module [' + moduleName + '] not created but found in dom');
 
-      }
-
-
-      function doTrace(e) {
-         var currentException = e;
-
-         if (console.group) {
-            console.group();
-         }
-
-         settings.logger(e.message, 'while loading module', moduleDescriptor);
-
-         do {
-            settings.logger('... while loading part', currentException.descriptor);
-            currentException = currentException.cause;
-         } while (currentException.cause !== undefined);
-
-         settings.logger('caused by:', currentException.stack);
-
-         if (console.groupEnd) {
-            console.groupEnd();
-         }
       }
    }
 
+
    function buildModule(element, moduleDescriptor, foundDependencies) {
       var args = foundDependencies,
-         domSettings = getDOMSettings(element, settings.moduleSettingsSelector.replace(/%moduleName%/g, moduleDescriptor.name)),
+         domSettings = getDOMSettings(element, settings.moduleSettingsSelector, moduleDescriptor.name),
          mergedSettings = {},
          createdModule;
 
@@ -469,28 +423,16 @@ function modules(partAccess, eventBus, settings) {
 
       //add module to eventBus
       eventBus.add(createdModule);
-
-
    }
 
 
    function callPostConstructs() {
-
       each(loadedModules, function (module) {
          if (typeof module.postConstruct === 'function') {
-            try {
-               module.postConstruct();
-            } catch (e) {
-               settings.logger('Exception while calling postConstruct', e);
-            }
+            module.postConstruct();
          }
       });
    }
-
-
-
-
-
 
    return {
       provisionModule: initializeModules,
@@ -631,6 +573,7 @@ function parts(settings) {
 
    var loadedSingletonParts = {},
       loadedParts = [],
+      buildingParts = {},
       availablePartDescriptors = {};
 
    function addPartDescriptor(partDescriptor) {
@@ -646,24 +589,16 @@ function parts(settings) {
          }
       });
 
-      getOrInitializeParts(eagerSingletonPartNames, true);
+      getOrInitializeParts(eagerSingletonPartNames);
    }
 
 
-   function getOrInitializeParts(partNames, suppressErrors) {
+   function getOrInitializeParts(partNames) {
       var parts = [];
 
       each(partNames, function (partName) {
-         try {
-            var part = getOrInitializePart(partName);
-            parts.push(part);
-         } catch (e) {
-            if (suppressErrors) {
-               settings.logger(e);
-            } else {
-               throw e;
-            }
-         }
+         var part = getOrInitializePart(partName);
+         parts.push(part);
       });
 
       return parts;
@@ -675,16 +610,34 @@ function parts(settings) {
          part;
 
       if (availablePartDescriptors.hasOwnProperty(partName)) {
+         buildingStart(partName);
+
          partDescriptor = availablePartDescriptors[partName];
          constructionStrategy = getConstructionStrategie(partDescriptor.scope);
          part = constructionStrategy(partDescriptor);
 
+         buildingFinished(partName);
       } else {
          throw new Error('tried to load ' + partName + ' but was not registered');
       }
 
       return part;
    }
+
+   function buildingStart(partName) {
+      var INDICATEBUILDING = true;
+      if (buildingParts.hasOwnProperty(partName)) {
+         throw new Error('Circular dependency detected for part [' + partName + ']');
+      } else {
+         buildingParts[partName] = INDICATEBUILDING;
+      }
+   }
+
+   function buildingFinished(partName) {
+      delete buildingParts[partName];
+   }
+
+
 
    function getConstructionStrategie(scope) {
       switch (scope) {
@@ -738,40 +691,33 @@ function parts(settings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var domSettings = getDOMSettings(document, settings.partSettingsSelector.replace(/%partName%/g, partDescriptor.name)),
+      var domSettings = getDOMSettings(document, settings.partSettingsSelector, partDescriptor.name),
          mergedSettings = {},
          dependencies,
          foundDependencies,
          args,
          createdPart;
-      try {
-         dependencies = partDescriptor.dependencies;
-         foundDependencies = getOrInitializeParts(dependencies);
 
-         //initialize Parts here
-         args = foundDependencies;
-         // add settings from descriptor
-         if (partDescriptor.settings !== undefined || domSettings !== undefined) {
-            merge(mergedSettings, partDescriptor.settings, domSettings);
-            args.unshift(mergedSettings);
-         }
+      dependencies = partDescriptor.dependencies;
+      foundDependencies = getOrInitializeParts(dependencies);
 
-         // create part
-         createdPart = partDescriptor.creator.apply(partDescriptor, args);
-
-         if (createdPart === undefined) {
-            createdPart = {};
-         }
-
-         return createdPart;
-      } catch (e) {
-         switch (e.name) {
-         case 'RangeError':
-            throw e;
-         default:
-            throw new PartCreationException(partDescriptor, e);
-         }
+      //initialize Parts here
+      args = foundDependencies;
+      // add settings from descriptor
+      if (partDescriptor.settings !== undefined || domSettings !== undefined) {
+         merge(mergedSettings, partDescriptor.settings, domSettings);
+         args.unshift(mergedSettings);
       }
+
+      // create part
+      createdPart = partDescriptor.creator.apply(partDescriptor, args);
+
+      if (createdPart === undefined) {
+         createdPart = {};
+      }
+
+      return createdPart;
+
 
    }
 
@@ -785,11 +731,7 @@ function parts(settings) {
 
    function callPostConstruct(part) {
       if (typeof part.postConstruct === 'function') {
-         try {
-            part.postConstruct();
-         } catch (e) {
-            settings.logger('Exception while calling postConstruct', e);
-         }
+         part.postConstruct();
 
          //delete post constructor so it can definetly not be called again
          //e.g. a singleton part is requested via provisionPart
@@ -803,17 +745,6 @@ function parts(settings) {
 
       return part;
    }
-
-   function PartCreationException(descriptor, cause) {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'PartCreationException';
-      this.cause = cause;
-      this.descriptor = descriptor;
-
-   }
-   PartCreationException.prototype = Error.prototype;
 
 
    return {
@@ -900,7 +831,10 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
       //deprecated remove in 1.4
       createPart('eventBus')
          .creator(function () {
-            console.warn('partName "eventBus" deprecated use "event-bus" instead');
+            if (window.console && console.warn) {
+               console.warn('partName "eventBus" deprecated use "event-bus" instead');
+            }
+
             return eventBus;
          });
 
