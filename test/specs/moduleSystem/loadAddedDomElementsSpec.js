@@ -403,6 +403,65 @@ describe('Module system', function() {
             });
          });
       });
+
+      describe('on adding a dom node with one module with nested settings', function() {
+
+         const ADDED_DIV_ID = 'test-addedDiv';
+         const ADDED_DIV_SELECTOR = '#test-addedDiv';
+
+         beforeEach(function() {
+
+            var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1">' +
+               '<script type="test-module1/settings">' +
+               '{ "myProperty" : "my value" }' +
+               '</script>' +
+               '</div>';
+
+            $(elementToAddAsTest).
+               appendTo($parentDiv);
+         });
+
+         it('should call the existing module creator function once (on page init)', function() {
+
+            expect(spyModule.calls.count()).toBe(1);
+         });
+
+         it('should call the added module creator function', function() {
+
+            expect(firstSpyModule.calls.count()).toBe(1);
+         });
+
+         it('should pass the moduleObject to added moduleCreator', function() {
+
+            expect(firstSpyModule).toHaveBeenCalledWith(
+               jasmine.objectContaining({id:ADDED_DIV_ID}),
+               jasmine.objectContaining({ "myProperty" : "my value" }));
+         });
+
+         describe('when event has been published', function() {
+
+            var publishedEvent;
+
+            beforeEach(function() {
+
+               publishedEvent = {
+                  name : 'MyTestEvent'
+               };
+
+               eventBus.publish(publishedEvent);
+            });
+
+            it('should call event listener function on added module once', function() {
+
+               expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
+            });
+
+            it('should call event listener function on added module with expected event', function() {
+
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+         });
+      });
    });
 
    describe('when custom id attribute has been customized', function() {
