@@ -1,11 +1,18 @@
 ModuleSystem
 ============
-
 Dynamic Loading of Javascript based on DOM elements. 
 Especially usefull for Content Management Systems (CMS):
    - where you don't know which javascript needs to be loaded on which page
    - where you want to configure javascript on render time from the CMS
    - where you want to loosely couple modules, because you don't now if the other module is even on the page 
+   
+####Status
+Master: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=master)](https://travis-ci.org/alexan/ModuleSystem)
+Develop: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=develop)](https://travis-ci.org/alexan/ModuleSystem)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/alexan.svg)](https://saucelabs.com/u/alexan)
+
+[![Dev Dependencies](https://david-dm.org/alexan/ModuleSystem/dev-status.svg)](https://david-dm.org/alexan/ModuleSystem#info=devDependencies)
 
 Breaking changes
 ----------------
@@ -295,20 +302,11 @@ $(function() {
     moduleSystem.initModulePage();
 });
 ```
-To do for 1.3
+
+To do for 1.4
 -------------
-- [x] initialize module system only on parts of the dom
-- [x] embrace module names with '-' instead of CamelCase
-- [x] better wrong formated settings json exception
-- [x] module/part builder sanity checks
 - [ ] provision single dom node
 - [ ] provide a method for dynamic loading and unloading of modules
-- [ ] cleanup jshint globals
-- [ ] sauce laps travis-ci browser tests
-- [x] merge part settings with settings provided from initialization
-- [x] clean up tests
-- [x] exception handling in module/part construction
-- [x] ie8 compatibility
 
 To do future releases
 -------------

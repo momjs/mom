@@ -1,27 +1,20 @@
 /* exported getDOMSettings */
-function SettingsParseException(message) {
-   'use strict';
-   if (Error.captureStackTrace) {
-      Error.captureStackTrace(this);
-   }
-   this.name = 'SettingsParseException';
-   this.message = message;
-
-}
-SettingsParseException.prototype = Error.prototype;
 
 /**
- * Searches in the given element for the given selector and parses it's content as JSON
- * 
+ * Replaced %name% in the given selectorTemplate.
+ * Searches in the given element for the constucted selector and parses it's content as JSON
+ *
  * @param   {element} element  the element to search in
- * @param   {string} selector the selector to search for
+ * @param   {string} selectorTemplate the selector to search for
+ * @param   {string} name of the element to parse
  * @returns {object} JSON paresed content of element
- * @throws {SettingsParseException} if the content of the element is not valid json
+ * @throws {Error} if the content of the element is not valid json
  */
-function getDOMSettings(element, selector) {
+function getDOMSettings(element, selectorTemplate, name) {
    'use strict';
 
-   var settingsScript = element.querySelector(selector),
+   var selector = selectorTemplate.replace(/%name%/g, name),
+      settingsScript = element.querySelector(selector),
       settingsAsHtml,
       domSettings;
 
@@ -30,7 +23,7 @@ function getDOMSettings(element, selector) {
       try {
          domSettings = JSON.parse(settingsAsHtml);
       } catch (e) {
-         throw new SettingsParseException(e.message);
+         throw new Error('Module [' + name + '] has invalid json in dom. Message: ' + e.message);
       }
    }
 

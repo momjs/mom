@@ -1,4 +1,4 @@
-describe('Module system loads one module', function() {
+describe('Module system loads one module', function () {
 
    var spyModule;
 
@@ -13,6 +13,11 @@ describe('Module system loads one module', function() {
 
    afterEach(function() {
       moduleSystem.dispose();
+   });
+
+   it('should throw Error if a module is not registered but found in dom', function () {
+
+      expect(moduleSystem.initModulePage).toThrowError('Module [test-module] not created but found in dom');
    });
 
    it('should provide Modules with static dependencies', function () {
@@ -87,9 +92,9 @@ describe('Module system loads one module', function() {
       expect(spyModuleObject.postConstruct).toHaveBeenCalled();
    });
 
-   describe('when loading simple module', function() {
+   describe('when loading simple module', function () {
 
-      beforeEach(function() {
+      beforeEach(function () {
 
          moduleSystem.createModule('test-module').creator(spyModule);
       });

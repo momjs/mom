@@ -4,6 +4,7 @@ function parts(settings) {
 
    var loadedSingletonParts = {},
       loadedParts = [],
+      buildingParts = {},
       availablePartDescriptors = {};
 
    function addPartDescriptor(partDescriptor) {
@@ -19,24 +20,16 @@ function parts(settings) {
          }
       });
 
-      getOrInitializeParts(eagerSingletonPartNames, true);
+      getOrInitializeParts(eagerSingletonPartNames);
    }
 
 
-   function getOrInitializeParts(partNames, suppressErrors) {
+   function getOrInitializeParts(partNames) {
       var parts = [];
 
       each(partNames, function (partName) {
-         try {
-            var part = getOrInitializePart(partName);
-            parts.push(part);
-         } catch (e) {
-            if (suppressErrors) {
-               settings.logger(e);
-            } else {
-               throw e;
-            }
-         }
+         var part = getOrInitializePart(partName);
+         parts.push(part);
       });
 
       return parts;
@@ -48,16 +41,34 @@ function parts(settings) {
          part;
 
       if (availablePartDescriptors.hasOwnProperty(partName)) {
+         buildingStart(partName);
+
          partDescriptor = availablePartDescriptors[partName];
          constructionStrategy = getConstructionStrategie(partDescriptor.scope);
          part = constructionStrategy(partDescriptor);
 
+         buildingFinished(partName);
       } else {
          throw new Error('tried to load ' + partName + ' but was not registered');
       }
 
       return part;
    }
+
+   function buildingStart(partName) {
+      var INDICATEBUILDING = true;
+      if (buildingParts.hasOwnProperty(partName)) {
+         throw new Error('Circular dependency detected for part [' + partName + ']');
+      } else {
+         buildingParts[partName] = INDICATEBUILDING;
+      }
+   }
+
+   function buildingFinished(partName) {
+      delete buildingParts[partName];
+   }
+
+
 
    function getConstructionStrategie(scope) {
       switch (scope) {
@@ -111,40 +122,33 @@ function parts(settings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var domSettings = getDOMSettings(document, settings.partSettingsSelector.replace(/%partName%/g, partDescriptor.name)),
+      var domSettings = getDOMSettings(document, settings.partSettingsSelector, partDescriptor.name),
          mergedSettings = {},
          dependencies,
          foundDependencies,
          args,
          createdPart;
-      try {
-         dependencies = partDescriptor.dependencies;
-         foundDependencies = getOrInitializeParts(dependencies);
 
-         //initialize Parts here
-         args = foundDependencies;
-         // add settings from descriptor
-         if (partDescriptor.settings !== undefined || domSettings !== undefined) {
-            merge(mergedSettings, partDescriptor.settings, domSettings);
-            args.unshift(mergedSettings);
-         }
+      dependencies = partDescriptor.dependencies;
+      foundDependencies = getOrInitializeParts(dependencies);
 
-         // create part
-         createdPart = partDescriptor.creator.apply(partDescriptor, args);
-
-         if (createdPart === undefined) {
-            createdPart = {};
-         }
-
-         return createdPart;
-      } catch (e) {
-         switch (e.name) {
-         case 'RangeError':
-            throw e;
-         default:
-            throw new PartCreationException(partDescriptor, e);
-         }
+      //initialize Parts here
+      args = foundDependencies;
+      // add settings from descriptor
+      if (partDescriptor.settings !== undefined || domSettings !== undefined) {
+         merge(mergedSettings, partDescriptor.settings, domSettings);
+         args.unshift(mergedSettings);
       }
+
+      // create part
+      createdPart = partDescriptor.creator.apply(partDescriptor, args);
+
+      if (createdPart === undefined) {
+         createdPart = {};
+      }
+
+      return createdPart;
+
 
    }
 
@@ -158,11 +162,7 @@ function parts(settings) {
 
    function callPostConstruct(part) {
       if (typeof part.postConstruct === 'function') {
-         try {
-            part.postConstruct();
-         } catch (e) {
-            settings.logger('Exception while calling postConstruct', e);
-         }
+         part.postConstruct();
 
          //delete post constructor so it can definetly not be called again
          //e.g. a singleton part is requested via provisionPart
@@ -176,17 +176,6 @@ function parts(settings) {
 
       return part;
    }
-
-   function PartCreationException(descriptor, cause) {
-      if (Error.captureStackTrace) {
-         Error.captureStackTrace(this);
-      }
-      this.name = 'PartCreationException';
-      this.cause = cause;
-      this.descriptor = descriptor;
-
-   }
-   PartCreationException.prototype = Error.prototype;
 
 
    return {
