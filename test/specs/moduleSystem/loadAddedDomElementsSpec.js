@@ -429,12 +429,12 @@ describe('Module system', function() {
 
       it('should call the existing module creator function once (on page init)', function() {
 
-         expect(spyModule.calls.count()).toBe(1);
+         expect(spyModule.calls.count()).toEqual(1);
       });
 
       it('should call the added module creator function', function() {
 
-         expect(firstSpyModule.calls.count()).toBe(1);
+         expect(firstSpyModule.calls.count()).toEqual(1);
       });
 
       it('should pass the moduleObject to added moduleCreator', function() {
@@ -444,7 +444,7 @@ describe('Module system', function() {
 
       it('should call postConstruct on module', function() {
 
-         expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
+         expect(firstSpyModuleObject.postConstruct.calls.count()).toEqual(1);
       });
 
       it('should NOT set the joj-id attribute to the dom element', function() {
@@ -484,7 +484,7 @@ describe('Module system', function() {
 
          it('should call the existing module creator function once (on page init)', function() {
 
-            expect(spyModule.calls.count()).toBe(1);
+            expect(spyModule.calls.count()).toEqual(1);
          });
 
          it('should NOT call the added module creator function', function() {

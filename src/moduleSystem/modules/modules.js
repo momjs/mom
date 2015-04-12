@@ -35,10 +35,9 @@ function modules(partAccess, eventBus, settings) {
 
          foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
 
-         buildModule(element, moduleDescriptor, foundDependencies);
+         return buildModule(element, moduleDescriptor, foundDependencies);
       } else {
          throw new Error('Module [' + moduleName + '] not created but found in dom');
-
       }
    }
 
@@ -83,6 +82,28 @@ function modules(partAccess, eventBus, settings) {
       each(loadedModules, function (module) {
          postConstruct(module);
       });
+   }
+
+   function unloadModules(element) {
+      var modulesToUnload = loadedModules.get(element);
+
+      each(modulesToUnload, function(module) {
+
+         if(typeof module.preDestruct === 'function') {
+            try {
+               module.preDestruct();
+            } catch (e) {
+               settings.logger('Exception while calling preDestruct', e);
+            }
+         }
+      });
+
+      each(modulesToUnload, function(module) {
+
+         eventBus.remove(module);
+      });
+
+      loadedModules.remove(element);
    }
 
    return {

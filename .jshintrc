@@ -27,6 +27,7 @@
       "contains": false,
       "each": true,
       "isArray": false,
+      "remove" : false,
       "moduleSystem": true,
       "eventBus": false,
       "moduleBuilder": false,
