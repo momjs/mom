@@ -10,6 +10,7 @@ function settings() {
          attribute: 'modules',
          selector: '[%attribute%]',
          domMutationSupport: false,
+         customIdAttribute: 'joj-id',
          logger: function () {
             if (console.error && console.error.apply) {
                console.error.apply(console, arguments);

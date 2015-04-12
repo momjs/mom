@@ -10,7 +10,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          createPart = partBuilderCreator(partAccess, actualSettings),
          createModule = moduleBuilderCreator(moduleAccess),
          moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings),
-         domEventListener = domEventListenerCreator(actualSettings, moduleAccess);
+         domEventListener;
 
 
       createPart('event-bus')
@@ -29,11 +29,16 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          }
 
          moduleLoader.initModulePage();
+
+         domEventListener = domEventListenerCreator(actualSettings, moduleAccess);
          domEventListener.registerToEvents();
       }
 
       function dispose() {
-         domEventListener.unregisterToEvents();
+         if(domEventListener !== undefined) {
+            domEventListener.unregisterToEvents();
+         }
+
          eventBus.reset();
       }
 

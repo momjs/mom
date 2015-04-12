@@ -70,6 +70,7 @@ describe('Module system', function() {
       describe('on adding a dom node with one module', function() {
 
          const ADDED_DIV_ID = 'test-addedDiv';
+         const ADDED_DIV_SELECTOR = '#test-addedDiv';
 
          beforeEach(function() {
 
@@ -97,6 +98,11 @@ describe('Module system', function() {
          it('should call postConstruct on module', function() {
 
             expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
+         });
+
+         it('should set the joj-id attribute to the dom element', function() {
+
+            expect($(ADDED_DIV_SELECTOR).attr('joj-id')).toEqual('1')
          });
 
          describe('when event has been published', function() {
@@ -396,6 +402,59 @@ describe('Module system', function() {
                expect(secondSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
             });
          });
+      });
+   });
+
+   describe('when custom id attribute has been customized', function() {
+
+      const ADDED_DIV_ID = 'test-addedDiv';
+      const ADDED_DIV_SELECTOR = '#test-addedDiv';
+      const CUSTOM_ID = 'data-joj-id';
+
+      beforeEach(function() {
+         var settings = {
+            customIdAttribute: CUSTOM_ID,
+            domMutationSupport: true
+         };
+
+         moduleSystem.initModulePage(settings);
+
+         eventBus = moduleSystem.getPart('event-bus');
+
+         var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
+
+         $(elementToAddAsTest).
+            appendTo($parentDiv);
+      });
+
+      it('should call the existing module creator function once (on page init)', function() {
+
+         expect(spyModule.calls.count()).toBe(1);
+      });
+
+      it('should call the added module creator function', function() {
+
+         expect(firstSpyModule.calls.count()).toBe(1);
+      });
+
+      it('should pass the moduleObject to added moduleCreator', function() {
+
+         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+      });
+
+      it('should call postConstruct on module', function() {
+
+         expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
+      });
+
+      it('should NOT set the joj-id attribute to the dom element', function() {
+
+         expect($(ADDED_DIV_SELECTOR).attr('joj-id')).toBeUndefined();
+      });
+
+      it('should set the custom id attribute to the dom element', function() {
+
+         expect($(ADDED_DIV_SELECTOR).attr(CUSTOM_ID)).toEqual('1');
       });
    });
 

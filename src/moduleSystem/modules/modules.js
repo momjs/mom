@@ -2,7 +2,7 @@
 function modules(partAccess, eventBus, settings) {
    'use strict';
 
-   var loadedModules = loadedModulesContainer(),
+   var loadedModules = loadedModulesContainer(settings),
       availableModuleDescriptors = {};
 
    function addModuleDescriptor(moduleDescriptor) {

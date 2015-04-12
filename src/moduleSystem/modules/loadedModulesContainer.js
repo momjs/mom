@@ -1,9 +1,8 @@
 /* exported loadedModulesContainer */
-function loadedModulesContainer() {
+function loadedModulesContainer(settings) {
    'use strict';
 
-   var JOJ_ID_ATTRIBUTE_NAME = 'joj-id',
-      modulesMap = {},
+   var modulesMap = {},
       modules = [],
       createJojId = (function() {
          var currentId = 0;
@@ -12,6 +11,10 @@ function loadedModulesContainer() {
             return ++currentId;
          };
       })();
+
+   function getIdAttribute() {
+      return settings.customIdAttribute;
+   }
 
    function add(element, module) {
       var modulesListForElement,
@@ -30,24 +33,26 @@ function loadedModulesContainer() {
    }
 
    function estimateElementsJojId(element) {
-      var elementJojId;
+      var idAttributeName = getIdAttribute(),
+         elementJojId;
 
-      if (element.hasAttribute(JOJ_ID_ATTRIBUTE_NAME)) {
-         elementJojId = element.getAttribute(JOJ_ID_ATTRIBUTE_NAME);
+      if (element.hasAttribute(idAttributeName)) {
+         elementJojId = element.getAttribute(idAttributeName);
       }
       else {
          elementJojId = createJojId();
-         element.setAttribute(JOJ_ID_ATTRIBUTE_NAME, elementJojId);
+         element.setAttribute(idAttributeName, elementJojId);
       }
 
       return elementJojId;
    }
 
    function removeElement(element) {
-      var elementJojId;
+      var idAttributeName = getIdAttribute(),
+         elementJojId;
 
-      if(element.hasAttribute(JOJ_ID_ATTRIBUTE_NAME)) {
-         elementJojId = element.getAttribute(JOJ_ID_ATTRIBUTE_NAME);
+      if(element.hasAttribute(idAttributeName)) {
+         elementJojId = element.getAttribute(idAttributeName);
 
          if(modulesMap.hasOwnProperty(elementJojId)) {
             delete modulesMap[elementJojId];
@@ -56,7 +61,9 @@ function loadedModulesContainer() {
    }
 
    function getByElement(element) {
-      var elementJojId = element.getAttribute(JOJ_ID_ATTRIBUTE_NAME);
+      var idAttributeName = getIdAttribute(),
+         elementJojId = element.getAttribute(idAttributeName);
+
       return modulesMap[elementJojId] || [];
    }
 
