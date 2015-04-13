@@ -16,7 +16,7 @@ jasmine.getEnv().addReporter(new jasmine.JSReporter2());
    };
 
    function removePassingTests(suites) {
-      return $.grep($.map(suites, mapSuite), grepFailed);
+      return $.map($.grep(suites, grepFailed), mapSuite);
    }
 
    function mapSuite(suite) {
