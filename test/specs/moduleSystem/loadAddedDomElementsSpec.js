@@ -210,7 +210,7 @@ describe('Module system', function() {
                appendTo($parentDiv);
          });
 
-         it('should call the module creator function', function() {
+         it('should call the module creator function twice', function() {
 
             expect(firstSpyModule.calls.count()).toBe(2);
          });
@@ -227,11 +227,13 @@ describe('Module system', function() {
 
          it('should call postConstruct on module', function() {
 
+            expect(firstSpyModuleObject.postConstruct).toHaveBeenCalled();
             expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
          it('should call postConstruct on 2nd instance module', function() {
 
+            expect(firstSpyModuleObject_secondInstance.postConstruct).toHaveBeenCalled();
             expect(firstSpyModuleObject_secondInstance.postConstruct.calls.count()).toBe(1);
          });
 
@@ -250,6 +252,7 @@ describe('Module system', function() {
 
             it('should call event listener function on first instance of added module 1', function() {
 
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalled();
                expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
             });
 
@@ -260,6 +263,7 @@ describe('Module system', function() {
 
             it('should call event listener function on second instance of added module 1', function() {
 
+               expect(firstSpyModuleObject_secondInstance.onEvent).toHaveBeenCalled();
                expect(firstSpyModuleObject_secondInstance.onEvent.calls.count()).toBe(1);
             });
 
@@ -288,11 +292,13 @@ describe('Module system', function() {
 
          it('should call the first module creator function', function() {
 
+            expect(firstSpyModule).toHaveBeenCalled();
             expect(firstSpyModule.calls.count()).toBe(1);
          });
 
          it('should call the second module creator function', function() {
 
+            expect(secondSpyModule).toHaveBeenCalled();
             expect(secondSpyModule.calls.count()).toBe(1);
          });
 
@@ -331,6 +337,7 @@ describe('Module system', function() {
 
             it('should call event listener function on first added module once', function() {
 
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalled();
                expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
             });
 
@@ -341,6 +348,7 @@ describe('Module system', function() {
 
             it('should call event listener function on second added module once', function() {
 
+               expect(secondSpyModuleObject.onEvent).toHaveBeenCalled();
                expect(secondSpyModuleObject.onEvent.calls.count()).toBe(1);
             });
 
@@ -365,9 +373,15 @@ describe('Module system', function() {
                appendTo($parentDiv);
          });
 
-         it('should call the module creator function', function() {
+         it('should call the first module creator function', function() {
 
+            expect(firstSpyModule).toHaveBeenCalled();
             expect(firstSpyModule.calls.count()).toBe(1);
+         });
+
+         it('should call the second module creator function', function() {
+
+            expect(secondSpyModule).toHaveBeenCalled();
             expect(secondSpyModule.calls.count()).toBe(1);
          });
 
@@ -396,6 +410,7 @@ describe('Module system', function() {
 
             it('should call event listener function on first added module once', function() {
 
+               expect(firstSpyModuleObject.onEvent).toHaveBeenCalled();
                expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
             });
 
@@ -406,6 +421,7 @@ describe('Module system', function() {
 
             it('should call event listener function on second added module once', function() {
 
+               expect(secondSpyModuleObject.onEvent).toHaveBeenCalled();
                expect(secondSpyModuleObject.onEvent.calls.count()).toBe(1);
             });
 
@@ -434,11 +450,13 @@ describe('Module system', function() {
 
          it('should call the existing module creator function once (on page init)', function() {
 
+            expect(existingModuleCreator).toHaveBeenCalled();
             expect(existingModuleCreator.calls.count()).toBe(1);
          });
 
          it('should call the added module creator function', function() {
 
+            expect(firstSpyModule).toHaveBeenCalled();
             expect(firstSpyModule.calls.count()).toBe(1);
          });
 
@@ -522,16 +540,19 @@ describe('Module system', function() {
 
       it('should call the dependency part creator creator function', function() {
 
+         expect(dependencyPartSpy).toHaveBeenCalled();
          expect(dependencyPartSpy.calls.count()).toBe(1);
       });
 
       it('should call postConstruct on dependency part', function() {
 
+         expect(dependencyPartObject.postConstruct).toHaveBeenCalled();
          expect(dependencyPartObject.postConstruct.calls.count()).toBe(1);
       });
 
       it('should call the added module creator function', function() {
 
+         expect(moduleWithDependencySpy).toHaveBeenCalled();
          expect(moduleWithDependencySpy.calls.count()).toBe(1);
       });
 
@@ -542,6 +563,7 @@ describe('Module system', function() {
 
       it('should call postConstruct on module', function() {
 
+         expect(moduleWithDependencyObject.postConstruct).toHaveBeenCalled();
          expect(moduleWithDependencyObject.postConstruct.calls.count()).toBe(1);
       });
    });
