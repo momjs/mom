@@ -10,7 +10,7 @@ function settings() {
          attribute: 'modules',
          selector: '[%attribute%]',
          domMutationSupport: false,
-         customIdAttribute: 'joj-id'
+         customIdAttribute: 'mom-id'
       },
       actualSettings = defaults;
 

@@ -14,6 +14,8 @@ describe('Module system', function() {
 
    var eventBus;
 
+   var DEFAULT_CUSTOM_ID = 'mom-id';
+
    beforeEach(function() {
 
       moduleSystem = moduleSystem.newInstance();
@@ -44,9 +46,7 @@ describe('Module system', function() {
 
       firstSpyModule = jasmine.createSpy('spyModule1').and.callFake(getFirstSpy);
 
-      secondSpyModule = jasmine.createSpy('spyModule2').and.callFake(function() {
-         return secondSpyModuleObject;
-      });
+      secondSpyModule = jasmine.createSpy('spyModule2').and.returnValue(secondSpyModuleObject);
 
       moduleSystem.createModule('test-module').creator(existingModuleCreator);
       moduleSystem.createModule('test-module1').creator(firstSpyModule);
@@ -72,8 +72,8 @@ describe('Module system', function() {
 
       describe('on adding a dom node with one module', function() {
 
-         const ADDED_DIV_ID = 'test-addedDiv';
-         const ADDED_DIV_SELECTOR = '#test-addedDiv';
+         var ADDED_DIV_ID = 'test-addedDiv';
+         var ADDED_DIV_SELECTOR = '#test-addedDiv';
 
          beforeEach(function() {
 
@@ -85,16 +85,19 @@ describe('Module system', function() {
 
          it('should NOT call postConstruct of existing module TWICE', function() {
 
+            expect(existingModuleObject.postConstruct).toHaveBeenCalled();
             expect(existingModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
          it('should call the existing module creator function once (on page init)', function() {
 
+            expect(existingModuleCreator).toHaveBeenCalled();
             expect(existingModuleCreator.calls.count()).toBe(1);
          });
 
          it('should call the added module creator function', function() {
 
+            expect(firstSpyModule).toHaveBeenCalled();
             expect(firstSpyModule.calls.count()).toBe(1);
          });
 
@@ -105,12 +108,13 @@ describe('Module system', function() {
 
          it('should call postConstruct on module', function() {
 
+            expect(firstSpyModuleObject.postConstruct).toHaveBeenCalled();
             expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
          it('should set the joj-id attribute to the dom element', function() {
 
-            expect($(ADDED_DIV_SELECTOR).attr('joj-id')).toEqual('2')
+            expect(ADDED_DIV_SELECTOR).toHaveAttr(DEFAULT_CUSTOM_ID);
          });
 
          describe('when event has been published', function() {
@@ -140,7 +144,7 @@ describe('Module system', function() {
 
       describe('on adding a dom node with a child module', function() {
 
-         const ADDED_DIV_ID = 'test-addedDiv';
+         var ADDED_DIV_ID = 'test-addedDiv';
 
          beforeEach(function() {
 
@@ -192,8 +196,8 @@ describe('Module system', function() {
 
       describe('on adding a dom node with two child modules', function() {
 
-         const FIRST_ADDED_DIV_ID = 'test-addedDiv1';
-         const SECOND_ADDED_DIV_ID = 'test-addedDiv2';
+         var FIRST_ADDED_DIV_ID = 'test-addedDiv1';
+         var SECOND_ADDED_DIV_ID = 'test-addedDiv2';
 
          beforeEach(function() {
 
@@ -268,8 +272,8 @@ describe('Module system', function() {
 
       describe('on adding a dom node with two different child modules', function() {
 
-         const FIRST_ADDED_DIV_ID = 'test-addedDiv';
-         const SECOND_ADDED_DIV_ID = 'test-addedDiv';
+         var FIRST_ADDED_DIV_ID = 'test-addedDiv';
+         var SECOND_ADDED_DIV_ID = 'test-addedDiv';
 
          beforeEach(function() {
 
@@ -349,7 +353,7 @@ describe('Module system', function() {
 
       describe('on adding a dom node with two different child modules', function() {
 
-         const FIRST_ADDED_DIV_ID = 'test-addedDiv';
+         var FIRST_ADDED_DIV_ID = 'test-addedDiv';
 
          beforeEach(function() {
 
@@ -414,7 +418,7 @@ describe('Module system', function() {
 
       describe('on adding a dom node with one module with nested settings', function() {
 
-         const ADDED_DIV_ID = 'test-addedDiv';
+         var ADDED_DIV_ID = 'test-addedDiv';
 
          beforeEach(function() {
 
@@ -475,7 +479,7 @@ describe('Module system', function() {
 
    describe('on adding a dom node with one module with a multi-instance', function() {
 
-      const ADDED_DIV_ID = 'test-addedDiv';
+      var ADDED_DIV_ID = 'test-addedDiv';
 
       var moduleWithDependencySpy;
       var moduleWithDependencyObject;
@@ -544,9 +548,9 @@ describe('Module system', function() {
 
    describe('when custom id attribute has been customized', function() {
 
-      const ADDED_DIV_ID = 'test-addedDiv';
-      const ADDED_DIV_SELECTOR = '#test-addedDiv';
-      const CUSTOM_ID = 'data-joj-id';
+      var ADDED_DIV_ID = 'test-addedDiv';
+      var ADDED_DIV_SELECTOR = '#test-addedDiv';
+      var CUSTOM_ID = 'data-mom-id';
 
       beforeEach(function() {
          var settings = {
@@ -566,11 +570,13 @@ describe('Module system', function() {
 
       it('should call the existing module creator function once (on page init)', function() {
 
+         expect(existingModuleCreator).toHaveBeenCalled();
          expect(existingModuleCreator.calls.count()).toEqual(1);
       });
 
       it('should call the added module creator function', function() {
 
+         expect(firstSpyModule).toHaveBeenCalled();
          expect(firstSpyModule.calls.count()).toEqual(1);
       });
 
@@ -581,12 +587,13 @@ describe('Module system', function() {
 
       it('should call postConstruct on module', function() {
 
+         expect(firstSpyModuleObject.postConstruct).toHaveBeenCalled();
          expect(firstSpyModuleObject.postConstruct.calls.count()).toEqual(1);
       });
 
       it('should NOT set the joj-id attribute to the dom element', function() {
 
-         expect(ADDED_DIV_SELECTOR).not.toHaveAttr('joj-id');
+         expect(ADDED_DIV_SELECTOR).not.toHaveAttr(DEFAULT_CUSTOM_ID);
       });
 
       it('should set the custom id attribute to the dom element', function() {
@@ -597,7 +604,7 @@ describe('Module system', function() {
 
    describe('when dom mutation support is disabled', function() {
 
-      const ADDED_DIV_ID = 'test-addedDiv';
+      var ADDED_DIV_ID = 'test-addedDiv';
 
       beforeEach(function() {
          var settings = {
@@ -621,6 +628,7 @@ describe('Module system', function() {
 
          it('should call the existing module creator function once (on page init)', function() {
 
+            expect(existingModuleCreator).toHaveBeenCalled();
             expect(existingModuleCreator.calls.count()).toEqual(1);
          });
 
