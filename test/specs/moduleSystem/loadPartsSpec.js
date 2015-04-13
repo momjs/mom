@@ -31,13 +31,22 @@ describe('Module system when loading parts', function () {
    });
 
    it('should call postConstruct from multi instance parts again', function () {
-      var postConstructSpy = jasmine.createSpy('post construct');
-
+      var postConstructSpy1 = jasmine.createSpy('post construct');
+      var postConstructSpy2 = jasmine.createSpy('post construct');
+      var first = true;
 
       moduleSystem.createPart('test-part')
          .creator(function () {
+            var postConstruct;
+            if(first) {
+               postConstruct = postConstructSpy1;
+               first = false;
+            } else {
+               postConstruct = postConstructSpy2;
+            }
+
             return {
-               postConstruct: postConstructSpy
+               postConstruct: postConstruct
             };
          });
 
@@ -46,7 +55,8 @@ describe('Module system when loading parts', function () {
       moduleSystem.getPart('test-part');
 
 
-      expect(postConstructSpy.calls.count()).toEqual(2);
+      expect(postConstructSpy1.calls.count()).toEqual(1);
+      expect(postConstructSpy2.calls.count()).toEqual(1);
    });
 
    it('should call postConstruct from lazy singleton parts once', function () {

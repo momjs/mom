@@ -33,7 +33,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
          moduleLoader.initModulePage();
 
-         domEventListener = domEventListenerCreator(actualSettings, moduleAccess);
+         domEventListener = domEventListenerCreator(actualSettings, moduleAccess, partAccess);
          domEventListener.registerToEvents();
       }
 

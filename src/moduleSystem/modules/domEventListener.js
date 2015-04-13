@@ -1,5 +1,5 @@
 /* exported domEventListener */
-function domEventListener(settings, modules) {
+function domEventListener(settings, modules, parts) {
    'use strict';
 
    var rootNode = settings.rootNode,
@@ -24,24 +24,18 @@ function domEventListener(settings, modules) {
 
    function onElementAdded(event) {
       var target = event.target,
-         addedModules = target.querySelectorAll(actualSelector),
-         initializedModules = [],
-         initializedModule;
+         addedModules = target.querySelectorAll(actualSelector);
 
       if(target.hasAttribute(attributeName)) {
-         initializedModule = initModule(target);
-         initializedModules = initializedModules.concat(initializedModule);
+         initModule(target);
       }
 
       each(addedModules, function(addedModule) {
-         initializedModule = initModule(addedModule);
-         initializedModules = initializedModules.concat(initializedModule);
+         initModule(addedModule);
       });
 
-      each(initializedModules, function(initializedModule) {
-
-         modules.postConstruct(initializedModule);
-      });
+      modules.provisionFinished();
+      parts.provisionFinished();
    }
 
    function onElementRemoved(event) {

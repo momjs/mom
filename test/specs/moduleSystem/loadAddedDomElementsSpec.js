@@ -2,7 +2,8 @@ describe('Module system', function() {
 
    var $parentDiv;
 
-   var spyModule;
+   var existingModuleCreator;
+   var existingModuleObject;
 
    var firstSpyModule;
    var secondSpyModule;
@@ -20,7 +21,7 @@ describe('Module system', function() {
       loadFixtures('moduleSystem/simpleModuleDiv.html');
       $parentDiv = $('#test-div');
 
-      spyModule = jasmine.createSpy('spyModule');
+      existingModuleObject = jasmine.createSpyObj('existingModuleObject', ['postConstruct']);
       firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1a', ['onEvent', 'postConstruct']);
       firstSpyModuleObject_secondInstance = jasmine.createSpyObj('spyModuleObj1b', ['onEvent', 'postConstruct']);
       secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent', 'postConstruct']);
@@ -39,13 +40,15 @@ describe('Module system', function() {
          }
       })();
 
+      existingModuleCreator = jasmine.createSpy('spyModule').and.returnValue(existingModuleObject);
+
       firstSpyModule = jasmine.createSpy('spyModule1').and.callFake(getFirstSpy);
 
       secondSpyModule = jasmine.createSpy('spyModule2').and.callFake(function() {
          return secondSpyModuleObject;
       });
 
-      moduleSystem.createModule('test-module').creator(spyModule);
+      moduleSystem.createModule('test-module').creator(existingModuleCreator);
       moduleSystem.createModule('test-module1').creator(firstSpyModule);
       moduleSystem.createModule('test-module2').creator(secondSpyModule);
 
@@ -80,9 +83,14 @@ describe('Module system', function() {
                appendTo($parentDiv);
          });
 
+         it('should NOT call postConstruct of existing module TWICE', function() {
+
+            expect(existingModuleObject.postConstruct.calls.count()).toBe(1);
+         });
+
          it('should call the existing module creator function once (on page init)', function() {
 
-            expect(spyModule.calls.count()).toBe(1);
+            expect(existingModuleCreator.calls.count()).toBe(1);
          });
 
          it('should call the added module creator function', function() {
@@ -102,7 +110,7 @@ describe('Module system', function() {
 
          it('should set the joj-id attribute to the dom element', function() {
 
-            expect($(ADDED_DIV_SELECTOR).attr('joj-id')).toEqual('1')
+            expect($(ADDED_DIV_SELECTOR).attr('joj-id')).toEqual('2')
          });
 
          describe('when event has been published', function() {
@@ -407,7 +415,6 @@ describe('Module system', function() {
       describe('on adding a dom node with one module with nested settings', function() {
 
          const ADDED_DIV_ID = 'test-addedDiv';
-         const ADDED_DIV_SELECTOR = '#test-addedDiv';
 
          beforeEach(function() {
 
@@ -423,7 +430,7 @@ describe('Module system', function() {
 
          it('should call the existing module creator function once (on page init)', function() {
 
-            expect(spyModule.calls.count()).toBe(1);
+            expect(existingModuleCreator.calls.count()).toBe(1);
          });
 
          it('should call the added module creator function', function() {
@@ -462,6 +469,77 @@ describe('Module system', function() {
             });
          });
       });
+
+
+   });
+
+   describe('on adding a dom node with one module with a multi-instance', function() {
+
+      const ADDED_DIV_ID = 'test-addedDiv';
+
+      var moduleWithDependencySpy;
+      var moduleWithDependencyObject;
+
+      var dependencyPartSpy;
+      var dependencyPartObject;
+
+      beforeEach(function() {
+
+         moduleWithDependencyObject = jasmine.createSpyObj('moduleWithDependencyObject', ['postConstruct']);
+         dependencyPartObject = jasmine.createSpyObj('dependencyPartObject', ['postConstruct']);
+
+         moduleWithDependencySpy = jasmine.createSpy('moduleWithDependency').and.callFake(
+            function() {
+               return moduleWithDependencyObject;
+            }
+         );
+
+         dependencyPartSpy = jasmine.createSpy('dependencyPart').and.returnValue(dependencyPartObject);
+
+         moduleSystem.createPart('dependency-part')
+            .creator(dependencyPartSpy);
+
+         moduleSystem.createModule('module-with-dependency')
+            .dependencies(['dependency-part'])
+            .creator(moduleWithDependencySpy);
+
+         var settings = {
+            domMutationSupport: true
+         };
+
+         moduleSystem.initModulePage(settings);
+
+         var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="module-with-dependency">' +
+            '</div>';
+
+         $(elementToAddAsTest).
+            appendTo($parentDiv);
+      });
+
+      it('should call the dependency part creator creator function', function() {
+
+         expect(dependencyPartSpy.calls.count()).toBe(1);
+      });
+
+      it('should call postConstruct on dependency part', function() {
+
+         expect(dependencyPartObject.postConstruct.calls.count()).toBe(1);
+      });
+
+      it('should call the added module creator function', function() {
+
+         expect(moduleWithDependencySpy.calls.count()).toBe(1);
+      });
+
+      it('should pass the moduleObject to added moduleCreator', function() {
+
+         expect(moduleWithDependencySpy).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}), dependencyPartObject);
+      });
+
+      it('should call postConstruct on module', function() {
+
+         expect(moduleWithDependencyObject.postConstruct.calls.count()).toBe(1);
+      });
    });
 
    describe('when custom id attribute has been customized', function() {
@@ -488,7 +566,7 @@ describe('Module system', function() {
 
       it('should call the existing module creator function once (on page init)', function() {
 
-         expect(spyModule.calls.count()).toEqual(1);
+         expect(existingModuleCreator.calls.count()).toEqual(1);
       });
 
       it('should call the added module creator function', function() {
@@ -508,12 +586,12 @@ describe('Module system', function() {
 
       it('should NOT set the joj-id attribute to the dom element', function() {
 
-         expect($(ADDED_DIV_SELECTOR).attr('joj-id')).toBeUndefined();
+         expect(ADDED_DIV_SELECTOR).not.toHaveAttr('joj-id');
       });
 
       it('should set the custom id attribute to the dom element', function() {
 
-         expect($(ADDED_DIV_SELECTOR).attr(CUSTOM_ID)).toEqual('1');
+         expect(ADDED_DIV_SELECTOR).toHaveAttr(CUSTOM_ID);
       });
    });
 
@@ -543,7 +621,7 @@ describe('Module system', function() {
 
          it('should call the existing module creator function once (on page init)', function() {
 
-            expect(spyModule.calls.count()).toEqual(1);
+            expect(existingModuleCreator.calls.count()).toEqual(1);
          });
 
          it('should NOT call the added module creator function', function() {

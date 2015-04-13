@@ -3,7 +3,8 @@ function modules(partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = loadedModulesContainer(settings),
-      availableModuleDescriptors = {};
+      availableModuleDescriptors = {},
+      calledPostConstructs = [];
 
    function addModuleDescriptor(moduleDescriptor) {
       availableModuleDescriptors[moduleDescriptor.name] = moduleDescriptor;
@@ -11,18 +12,12 @@ function modules(partAccess, eventBus, settings) {
 
    function initializeModules(element) {
       var moduleNames = element.getAttribute(settings.attribute),
-         moduleNamesArray = moduleNames.split(','),
-         initializedModules = [],
-         initializedModule;
+         moduleNamesArray = moduleNames.split(',');
 
       each(moduleNamesArray, function (moduleName) {
          moduleName = trim(moduleName);
-         initializedModule = initializeModule(element, moduleName);
-
-         initializedModules.push(initializedModule);
+         initializeModule(element, moduleName);
       });
-
-      return initializedModules;
    }
 
    function initializeModule(element, moduleName) {
@@ -35,12 +30,11 @@ function modules(partAccess, eventBus, settings) {
 
          foundDependencies = partAccess.getParts(moduleDescriptor.dependencies);
 
-         return buildModule(element, moduleDescriptor, foundDependencies);
+         buildModule(element, moduleDescriptor, foundDependencies);
       } else {
          throw new Error('Module [' + moduleName + '] not created but found in dom');
       }
    }
-
 
    function buildModule(element, moduleDescriptor, foundDependencies) {
       var args = foundDependencies,
@@ -68,20 +62,22 @@ function modules(partAccess, eventBus, settings) {
          //add module to eventBus
          eventBus.add(createdModule);
       }
-
-      return createdModule;
-   }
-
-   function postConstruct(module) {
-      if (typeof module.postConstruct === 'function') {
-         module.postConstruct();
-      }
    }
 
    function callPostConstructs() {
       each(loadedModules, function (module) {
-         postConstruct(module);
+         callPostConstruct(module);
       });
+   }
+
+   function callPostConstruct(module) {
+      var postConstruct = module.postConstruct;
+      if (typeof postConstruct === 'function') {
+         if(!contains(calledPostConstructs, postConstruct)) {
+            postConstruct();
+            calledPostConstructs.push(postConstruct);
+         }
+      }
    }
 
    function unloadModules(element) {
@@ -110,7 +106,6 @@ function modules(partAccess, eventBus, settings) {
       provisionModule: initializeModules,
       unloadModules: unloadModules,
       provisionFinished: callPostConstructs,
-      postConstruct: postConstruct,
       addModuleDescriptor: addModuleDescriptor
    };
 }
