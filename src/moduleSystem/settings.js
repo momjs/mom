@@ -12,7 +12,8 @@ function settings() {
          domMutationSupport: false,
          customIdAttribute: 'mom-id'
       },
-      actualSettings = defaults;
+      actualSettings = defaults,
+      actualSelector;
 
    function mergeWith(newSettings) {
       merge(actualSettings, newSettings);
@@ -22,8 +23,17 @@ function settings() {
       return actualSettings;
    }
 
+   function getActualSelector() {
+      if(actualSelector === undefined) {
+         actualSelector = actualSettings.selector.replace(/%attribute%/g, actualSettings.attribute);
+      }
+
+      return actualSelector;
+   }
+
    return {
       get: get,
-      mergeWith: mergeWith
+      mergeWith: mergeWith,
+      getSelector : getActualSelector
    };
 }

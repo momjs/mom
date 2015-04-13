@@ -9,7 +9,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
          createPart = partBuilderCreator(partAccess, actualSettings),
          createModule = moduleBuilderCreator(moduleAccess),
-         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings),
+         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, settings),
          domEventListener;
 
 
@@ -33,7 +33,7 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
          moduleLoader.initModulePage();
 
-         domEventListener = domEventListenerCreator(actualSettings, moduleAccess, partAccess);
+         domEventListener = domEventListenerCreator(settings, moduleAccess, partAccess);
          domEventListener.registerToEvents();
       }
 

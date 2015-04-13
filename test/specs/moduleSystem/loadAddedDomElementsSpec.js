@@ -568,7 +568,7 @@ describe('Module system', function() {
       });
    });
 
-   describe('when custom id attribute has been customized', function() {
+   describe('when id attribute has been customized', function() {
 
       var ADDED_DIV_ID = 'test-addedDiv';
       var ADDED_DIV_SELECTOR = '#test-addedDiv';
@@ -621,6 +621,43 @@ describe('Module system', function() {
       it('should set the custom id attribute to the dom element', function() {
 
          expect(ADDED_DIV_SELECTOR).toHaveAttr(CUSTOM_ID);
+      });
+   });
+
+   describe('when modules attribute has been customized', function() {
+
+      var ADDED_DIV_ID = 'test-addedDiv';
+
+      beforeEach(function() {
+
+         var settings = {
+            attribute: 'data-modules',
+            domMutationSupport: true
+         };
+
+         moduleSystem.initModulePage(settings);
+
+         var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" data-modules="test-module1"></div>';
+
+         $(elementToAddAsTest).
+            appendTo($parentDiv);
+      });
+
+      it('should call the added module creator function', function() {
+
+         expect(firstSpyModule).toHaveBeenCalled();
+         expect(firstSpyModule.calls.count()).toEqual(1);
+      });
+
+      it('should pass the moduleObject to added moduleCreator', function() {
+
+         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+      });
+
+      it('should call postConstruct on module', function() {
+
+         expect(firstSpyModuleObject.postConstruct).toHaveBeenCalled();
+         expect(firstSpyModuleObject.postConstruct.calls.count()).toEqual(1);
       });
    });
 

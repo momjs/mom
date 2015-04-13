@@ -2,18 +2,16 @@
 function domEventListener(settings, modules, parts) {
    'use strict';
 
-   var rootNode = settings.rootNode,
-      attributeName = settings.attribute,
-      actualSelector;
+   var actualSettings = settings.get(),
+      rootNode = actualSettings.rootNode,
+      attributeName = actualSettings.attribute,
+      actualSelector = settings.getSelector();
 
    function registerToEvents() {
-      if(settings.domMutationSupport === true) {
+      if(actualSettings.domMutationSupport === true) {
 
          rootNode.addEventListener('DOMNodeInserted', onElementAdded, false);
          rootNode.addEventListener('DOMNodeRemoved', onElementRemoved, false);
-
-         // FIXME this line is copied from moduleLoader
-         actualSelector = settings.selector.replace(/%attribute%/g, settings.attribute);
       }
    }
 
