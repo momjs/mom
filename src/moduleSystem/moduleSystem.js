@@ -1,49 +1,48 @@
-moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
+moduleSystem = (function () {
    'use strict';
 
    function newInstance() {
-      var settings = settingsCreator(),
-         actualSettings = settings.get(),
-         partAccess = partsCreator(actualSettings),
-         eventBus = eventBusCreator(),
-         moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
-         createPart = partBuilderCreator(partAccess, actualSettings),
-         createModule = moduleBuilderCreator(moduleAccess),
-         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
+      var _settings = settings(),
+         _parts = parts(_settings),
+         _eventBus = eventBus(),
+         _modules = modules(_parts, _eventBus, _settings),
+         _partBuilder = partBuilder(_parts, _settings),
+         _moduleBuilder = moduleBuilder(_modules),
+         _moduleLoader = moduleLoader(_modules, _parts, _settings);
 
 
-      createPart('event-bus')
-         .returns(eventBus);
+      _partBuilder('event-bus')
+         .returns(_eventBus);
 
       //deprecated remove in 1.4
-      createPart('eventBus')
+      _partBuilder('eventBus')
          .creator(function () {
             if (window.console && console.warn) {
                console.warn('partName "eventBus" deprecated use "event-bus" instead');
             }
 
-            return eventBus;
+            return _eventBus;
          });
 
 
       function initModulePageInterceptor(newSettings) {
          if (newSettings !== undefined) {
-            settings.mergeWith(newSettings);
+            _settings.mergeWith(newSettings);
          }
 
-         moduleLoader.initModulePage();
+         _moduleLoader.initModulePage();
       }
 
       return merge({
-         createPart: createPart,
-         createModule: createModule,
+         createPart: _partBuilder,
+         createModule: _moduleBuilder,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
-         getPart: partAccess.provisionPart,
+         getPart: _parts.provisionPart,
 
       }, constants);
    }
 
    return newInstance();
 
-})(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus);
+})();
