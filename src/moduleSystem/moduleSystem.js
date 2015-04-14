@@ -2,43 +2,43 @@ moduleSystem = (function () {
    'use strict';
 
    function newInstance() {
-      var _settings = settings(),
-         _parts = parts(_settings),
-         _eventBus = eventBus(),
-         _modules = modules(_parts, _eventBus, _settings),
-         _partBuilder = partBuilder(_parts, _settings),
-         _moduleBuilder = moduleBuilder(_modules),
-         _moduleLoader = moduleLoader(_modules, _parts, _settings);
+      var settings = settingsCreator(),
+         parts = partsCreator(settings),
+         eventBus = eventBusCreator(),
+         modules = modulesCreator(parts, eventBus, settings),
+         partBuilder = partBuilderCreator(parts, settings),
+         modleBuilder = moduleBuilderCreator(modules),
+         moduleLoader = moduleLoaderCreator(modules, parts, settings);
 
 
-      _partBuilder('event-bus')
-         .returns(_eventBus);
+      partBuilder('event-bus')
+         .returns(eventBus);
 
       //deprecated remove in 1.4
-      _partBuilder('eventBus')
+      partBuilder('eventBus')
          .creator(function () {
             if (window.console && console.warn) {
                console.warn('partName "eventBus" deprecated use "event-bus" instead');
             }
 
-            return _eventBus;
+            return eventBus;
          });
 
 
       function initModulePageInterceptor(newSettings) {
          if (newSettings !== undefined) {
-            _settings.mergeWith(newSettings);
+            settings.mergeWith(newSettings);
          }
 
-         _moduleLoader.initModulePage();
+         moduleLoader.initModulePage();
       }
 
       return merge({
-         createPart: _partBuilder,
-         createModule: _moduleBuilder,
+         createPart: partBuilder,
+         createModule: modleBuilder,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
-         getPart: _parts.provisionPart,
+         getPart: parts.provisionPart,
 
       }, constants);
    }

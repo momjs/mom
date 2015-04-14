@@ -1,5 +1,5 @@
-/*exported parts */
-function parts(settings) {
+/*exported partsCreator */
+function partsCreator(settings) {
    'use strict';
 
    var loadedSingletonParts = {},

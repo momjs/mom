@@ -1,5 +1,5 @@
-/*exported moduleLoader */
-function moduleLoader(moduleAccess, partAccess, settings) {
+/*exported moduleLoaderCreator */
+function moduleLoaderCreator(moduleAccess, partAccess, settings) {
    'use strict';
 
    function initModulePage() {

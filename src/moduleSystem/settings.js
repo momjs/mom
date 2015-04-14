@@ -1,21 +1,20 @@
-/*exported settings */
-function settings() {
+/*exported settingsCreator */
+function settingsCreator() {
    'use strict';
 
-   var _settings = {
-         rootNode: document,
-         defaultScope: constants.scope.multiInstance,
-         moduleSettingsSelector: 'script[type="%name%/settings"]',
-         partSettingsSelector: 'head script[type="%name%/settings"]',
-         attribute: 'modules',
-         selector: '[%attribute%]',
-         mergeWith: mergeWith
-      };
+   var settings = {
+      rootNode: document,
+      defaultScope: constants.scope.multiInstance,
+      moduleSettingsSelector: 'script[type="%name%/settings"]',
+      partSettingsSelector: 'head script[type="%name%/settings"]',
+      attribute: 'modules',
+      selector: '[%attribute%]',
+      mergeWith: mergeWith
+   };
 
    function mergeWith(newSettings) {
-      merge(_settings, newSettings);
+      merge(settings, newSettings);
    }
 
-
-   return _settings;
+   return settings;
 }
