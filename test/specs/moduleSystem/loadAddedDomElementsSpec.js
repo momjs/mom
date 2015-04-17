@@ -78,10 +78,11 @@ describe('Module system', function() {
          var ADDED_DIV_ID = 'test-addedDiv';
          var ADDED_DIV_SELECTOR = '#test-addedDiv';
 
-         beforeEach(function(done) {
-            var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
+         var elementToAddAsHtml = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
 
-            $(elementToAddAsTest).
+         beforeEach(function(done) {
+
+            $(elementToAddAsHtml).
                appendTo($parentDiv);
 
             setTimeout(function() {
@@ -109,7 +110,16 @@ describe('Module system', function() {
 
          it('should pass the moduleObject to added moduleCreator', function() {
 
-            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+            // TODO this line is not running on firefox/internet explorer
+            //expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1');
+            expect(firstParameter).toHaveId(ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
+
          });
 
          it('should call postConstruct on module', function() {
@@ -172,7 +182,12 @@ describe('Module system', function() {
 
          it('should pass the created moduleObject to moduleCreator', function() {
 
-            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1');
+            expect(firstParameter).toHaveId(ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
          });
 
          it('should call postConstruct on module', function() {
@@ -232,12 +247,22 @@ describe('Module system', function() {
 
          it('should pass the moduleObject to first moduleCreator', function() {
 
-            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1');
+            expect(firstParameter).toHaveId(FIRST_ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
          });
 
          it('should pass the moduleObject to second moduleCreator', function() {
 
-            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
+            var firstParameter = firstSpyModule.calls.argsFor(1)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1');
+            expect(firstParameter).toHaveId(SECOND_ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
          });
 
          it('should call postConstruct on module', function() {
@@ -323,12 +348,23 @@ describe('Module system', function() {
 
          it('should pass the moduleObject to first moduleCreator', function() {
 
-            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1');
+            expect(firstParameter).toHaveId(FIRST_ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
+
          });
 
          it('should pass the moduleObject to second moduleCreator', function() {
 
-            expect(secondSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:SECOND_ADDED_DIV_ID}));
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1');
+            expect(firstParameter).toHaveId(SECOND_ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
          });
 
          it('should call postConstruct on first module', function() {
@@ -410,12 +446,22 @@ describe('Module system', function() {
 
          it('should pass the moduleObject to first moduleCreator', function() {
 
-            expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1,test-module2');
+            expect(firstParameter).toHaveId(FIRST_ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
          });
 
          it('should pass the moduleObject to second moduleCreator', function() {
 
-            expect(secondSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:FIRST_ADDED_DIV_ID}));
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1,test-module2');
+            expect(firstParameter).toHaveId(FIRST_ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
          });
 
          describe('when event has been published', function() {
@@ -487,11 +533,21 @@ describe('Module system', function() {
             expect(firstSpyModule.calls.count()).toBe(1);
          });
 
-         it('should pass the moduleObject to added moduleCreator', function() {
+         it('should pass moduleObject to added moduleCreator', function() {
 
-            expect(firstSpyModule).toHaveBeenCalledWith(
-               jasmine.objectContaining({id:ADDED_DIV_ID}),
-               jasmine.objectContaining({ "myProperty" : "my value" }));
+            var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+            expect(firstParameter).toBeInDOM();
+            expect(firstParameter).toHaveAttr('modules', 'test-module1');
+            expect(firstParameter).toHaveId(ADDED_DIV_ID);
+            expect(firstParameter.tagName).toEqual('DIV');
+         });
+
+         it('should pass settings to added moduleCreator', function() {
+
+            var parameter = firstSpyModule.calls.argsFor(0)[1];
+
+            expect(parameter).toEqual(jasmine.objectContaining({ "myProperty" : "my value" }));
          });
 
          describe('when event has been published', function() {
@@ -518,8 +574,6 @@ describe('Module system', function() {
             });
          });
       });
-
-
    });
 
    describe('on adding a dom node with one module with a multi-instance', function() {
@@ -587,9 +641,21 @@ describe('Module system', function() {
          expect(moduleWithDependencySpy.calls.count()).toBe(1);
       });
 
-      it('should pass the moduleObject to added moduleCreator', function() {
+      it('should pass moduleObject to added moduleCreator', function() {
 
-         expect(moduleWithDependencySpy).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}), dependencyPartObject);
+         var firstParameter = moduleWithDependencySpy.calls.argsFor(0)[0];
+
+         expect(firstParameter).toBeInDOM();
+         expect(firstParameter).toHaveAttr('modules', 'module-with-dependency');
+         expect(firstParameter).toHaveId(ADDED_DIV_ID);
+         expect(firstParameter.tagName).toEqual('DIV');
+      });
+
+      it('should pass dependency object to added moduleCreator', function() {
+
+         var parameter = moduleWithDependencySpy.calls.argsFor(0)[1];
+
+         expect(parameter).toBe(dependencyPartObject);
       });
 
       it('should call postConstruct on module', function() {
@@ -639,7 +705,12 @@ describe('Module system', function() {
 
       it('should pass the moduleObject to added moduleCreator', function() {
 
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+         var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+         expect(firstParameter).toBeInDOM();
+         expect(firstParameter).toHaveAttr('modules', 'test-module1');
+         expect(firstParameter).toHaveId(ADDED_DIV_ID);
+         expect(firstParameter.tagName).toEqual('DIV');
       });
 
       it('should call postConstruct on module', function() {
@@ -690,7 +761,12 @@ describe('Module system', function() {
 
       it('should pass the moduleObject to added moduleCreator', function() {
 
-         expect(firstSpyModule).toHaveBeenCalledWith(jasmine.objectContaining({id:ADDED_DIV_ID}));
+         var firstParameter = firstSpyModule.calls.argsFor(0)[0];
+
+         expect(firstParameter).toBeInDOM();
+         expect(firstParameter).toHaveAttr('data-modules', 'test-module1');
+         expect(firstParameter).toHaveId(ADDED_DIV_ID);
+         expect(firstParameter.tagName).toEqual('DIV');
       });
 
       it('should call postConstruct on module', function() {
