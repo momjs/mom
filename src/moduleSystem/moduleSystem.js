@@ -34,7 +34,11 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
          moduleLoader.initModulePage();
 
          domEventListener = domEventListenerCreator(settings, moduleAccess, partAccess);
-         domEventListener.registerToEvents();
+
+         if(settings.get().domMutationSupport === true) {
+
+            domEventListener.registerToEvents();
+         }
       }
 
       function dispose() {

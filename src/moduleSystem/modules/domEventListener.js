@@ -8,11 +8,8 @@ function domEventListener(settings, modules, parts) {
       actualSelector = settings.getSelector();
 
    function registerToEvents() {
-      if(actualSettings.domMutationSupport === true) {
-
-         rootNode.addEventListener('DOMNodeInserted', onElementAdded, false);
-         rootNode.addEventListener('DOMNodeRemoved', onElementRemoved, false);
-      }
+      rootNode.addEventListener('DOMNodeInserted', onElementAdded, false);
+      rootNode.addEventListener('DOMNodeRemoved', onElementRemoved, false);
    }
 
    function unregisterToEvents() {
