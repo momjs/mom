@@ -83,7 +83,8 @@ function domEventListener(settings, modules, parts) {
       }
 
       function unregisterToEvents() {
-         //observer.disconnect();
+         observer.takeRecords();
+         observer.disconnect();
       }
 
       function onMutation(mutations, observer) {
