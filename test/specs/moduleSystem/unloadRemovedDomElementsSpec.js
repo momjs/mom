@@ -14,6 +14,10 @@ describe('Module system when dom element removed', function() {
 
    var eventBus;
 
+
+   var WAIT_TIME_FOR_MUTATION_EVENT = 0;
+   var MAX_WAIT_TIME = 1000;
+
    beforeEach(function() {
 
       moduleSystem = moduleSystem.newInstance();
@@ -59,10 +63,14 @@ describe('Module system when dom element removed', function() {
 
    describe('when removing child module dom element', function() {
 
-      beforeEach(function() {
+      beforeEach(function(done) {
 
          $('#test-div2').remove();
-      });
+
+         setTimeout(function() {
+            done();
+         }, WAIT_TIME_FOR_MUTATION_EVENT);
+      }, MAX_WAIT_TIME);
 
       it('should call preDestruct on second module', function() {
 
@@ -111,10 +119,14 @@ describe('Module system when dom element removed', function() {
 
    describe('when removing child module dom element', function() {
 
-      beforeEach(function() {
+      beforeEach(function(done) {
 
          $('#test-div1').remove();
-      });
+
+         setTimeout(function() {
+            done();
+         }, WAIT_TIME_FOR_MUTATION_EVENT);
+      }, MAX_WAIT_TIME);
 
       it('should call preDestruct on first module', function() {
 
@@ -163,10 +175,14 @@ describe('Module system when dom element removed', function() {
 
    describe('when removing parent div (without module)', function() {
 
-      beforeEach(function() {
+      beforeEach(function(done) {
 
          $('#test-parentDiv').remove();
-      });
+
+         setTimeout(function() {
+            done();
+         }, WAIT_TIME_FOR_MUTATION_EVENT);
+      }, MAX_WAIT_TIME);
 
       it('should call preDestruct on first module', function() {
 

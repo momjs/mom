@@ -5,53 +5,130 @@ function domEventListener(settings, modules, parts) {
    var actualSettings = settings.get(),
       rootNode = actualSettings.rootNode,
       attributeName = actualSettings.attribute,
-      actualSelector = settings.getSelector();
+      actualSelector = settings.getSelector(),
+      registerStrategy = decideDomMutationStrategy();
 
-   function registerToEvents() {
-      rootNode.addEventListener('DOMNodeInserted', onElementAdded, false);
-      rootNode.addEventListener('DOMNodeRemoved', onElementRemoved, false);
+   function decideDomMutationStrategy() {
+      var strategy = tryToGetMutationObserverStrategy();
+      // TODO remove the following line to enable/disable MutationObserver support
+      //strategy = null;
+
+      if(strategy === null) {
+         return createLegacyDomMutationStrategy();
+      }
+
+      return strategy;
    }
 
-   function unregisterToEvents() {
-      rootNode.removeEventListener('DOMNodeInserted', onElementAdded);
-      rootNode.removeEventListener('DOMNodeRemoved', onElementRemoved, false);
-   }
+   function onElementAdded(addedNode) {
+      var addedModules = addedNode.querySelectorAll(actualSelector);
 
-   function onElementAdded(event) {
-      var target = event.target,
-         addedModules = target.querySelectorAll(actualSelector);
-
-      if(target.hasAttribute(attributeName)) {
-         initModule(target);
+      if(addedNode.hasAttribute(attributeName)) {
+         loadModule(addedNode);
       }
 
       each(addedModules, function(addedModule) {
-         initModule(addedModule);
+         loadModule(addedModule);
       });
 
       modules.provisionFinished();
       parts.provisionFinished();
    }
 
-   function onElementRemoved(event) {
-      var target = event.target,
-         addedModuleElements = target.querySelectorAll(actualSelector);
+   function onElementRemoved(removedElement) {
+      var addedModuleElements = removedElement.querySelectorAll(actualSelector);
 
       each(addedModuleElements, function(moduleElement) {
-         modules.unloadModules(moduleElement);
+         unloadModules(moduleElement);
       });
 
-      if(target.hasAttribute(attributeName)) {
-         modules.unloadModules(target);
+      if(removedElement.hasAttribute(attributeName)) {
+         unloadModules(removedElement);
       }
    }
 
-   function initModule(moduleElement) {
+   function loadModule(moduleElement) {
       return modules.provisionModule(moduleElement);
    }
 
+   function unloadModules(moduleElement) {
+      modules.unloadModules(moduleElement);
+   }
+
    return {
-      registerToEvents : registerToEvents,
-      unregisterToEvents : unregisterToEvents
+      registerToEvents : registerStrategy.register,
+      unregisterToEvents : registerStrategy.unregister
    };
+
+   function tryToGetMutationObserverStrategy() {
+
+      var ObserverCreator = window.MutationObserver || window.WebKitMutationObserver || null,
+         observerConfig = { attributes: true, childList: true, characterData: true, subtree: true },
+         observer;
+
+      if(ObserverCreator !== null) {
+         observer = new ObserverCreator(onMutation);
+
+         return {
+            register : registerToEvents,
+            unregister : unregisterToEvents
+         };
+      }
+      else {
+         return null;
+      }
+
+      function registerToEvents() {
+         observer.observe(rootNode, observerConfig);
+      }
+
+      function unregisterToEvents() {
+         //observer.disconnect();
+      }
+
+      function onMutation(mutations, observer) {
+
+         each(mutations, function(mutationRecord) {
+
+            each(mutationRecord.addedNodes, function(addedNode) {
+               onElementAdded(addedNode);
+            });
+
+            each(mutationRecord.removedNodes, function(removedNode) {
+               onElementRemoved(removedNode);
+            });
+         });
+
+         observer.takeRecords();
+      }
+   }
+
+   function createLegacyDomMutationStrategy() {
+
+      var DOM_NODE_INSERTED_EVENT_NAME = 'DOMNodeInserted',
+         DOM_NODE_REMOVED_EVENT_NAME = 'DOMNodeRemoved';
+
+      function registerToEvents() {
+         rootNode.addEventListener(DOM_NODE_INSERTED_EVENT_NAME, onDomNodeInserted, false);
+         rootNode.addEventListener(DOM_NODE_REMOVED_EVENT_NAME, onDomNodeRemoved, false);
+      }
+
+      function onDomNodeInserted(event) {
+         onElementAdded(event.target);
+      }
+
+      function unregisterToEvents() {
+         rootNode.removeEventListener(DOM_NODE_INSERTED_EVENT_NAME, onDomNodeInserted);
+         rootNode.removeEventListener(DOM_NODE_REMOVED_EVENT_NAME, onDomNodeRemoved, false);
+      }
+
+      function onDomNodeRemoved(event) {
+         onElementRemoved(event.target);
+      }
+
+      return {
+         register : registerToEvents,
+         unregister : unregisterToEvents
+      };
+   }
 }

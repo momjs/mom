@@ -16,6 +16,9 @@ describe('Module system', function() {
 
    var DEFAULT_CUSTOM_ID = 'mom-id';
 
+   var WAIT_TIME_FOR_MUTATION_EVENT = 0;
+   var MAX_WAIT_TIME = 1000;
+
    beforeEach(function() {
 
       moduleSystem = moduleSystem.newInstance();
@@ -75,13 +78,16 @@ describe('Module system', function() {
          var ADDED_DIV_ID = 'test-addedDiv';
          var ADDED_DIV_SELECTOR = '#test-addedDiv';
 
-         beforeEach(function() {
-
+         beforeEach(function(done) {
             var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
 
             $(elementToAddAsTest).
                appendTo($parentDiv);
-         });
+
+            setTimeout(function() {
+               done();
+            }, WAIT_TIME_FOR_MUTATION_EVENT);
+         }, MAX_WAIT_TIME);
 
          it('should NOT call postConstruct of existing module TWICE', function() {
 
@@ -146,16 +152,21 @@ describe('Module system', function() {
 
          var ADDED_DIV_ID = 'test-addedDiv';
 
-         beforeEach(function() {
+         beforeEach(function(done) {
 
             var elementToAddAsTest = '<div><div id="' + ADDED_DIV_ID + '" modules="test-module1"></div></div>';
 
             $(elementToAddAsTest).
                appendTo($parentDiv);
-         });
+
+            setTimeout(function() {
+               done();
+            }, WAIT_TIME_FOR_MUTATION_EVENT);
+         }, MAX_WAIT_TIME);
 
          it('should call the module creator function', function() {
 
+            expect(firstSpyModule).toHaveBeenCalled();
             expect(firstSpyModule.calls.count()).toBe(1);
          });
 
@@ -199,7 +210,7 @@ describe('Module system', function() {
          var FIRST_ADDED_DIV_ID = 'test-addedDiv1';
          var SECOND_ADDED_DIV_ID = 'test-addedDiv2';
 
-         beforeEach(function() {
+         beforeEach(function(done) {
 
             var elementToAddAsTest = '<div>' +
                '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1"></div>' +
@@ -208,7 +219,11 @@ describe('Module system', function() {
 
             $(elementToAddAsTest).
                appendTo($parentDiv);
-         });
+
+            setTimeout(function() {
+               done();
+            }, WAIT_TIME_FOR_MUTATION_EVENT);
+         }, MAX_WAIT_TIME);
 
          it('should call the module creator function twice', function() {
 
@@ -279,7 +294,7 @@ describe('Module system', function() {
          var FIRST_ADDED_DIV_ID = 'test-addedDiv';
          var SECOND_ADDED_DIV_ID = 'test-addedDiv';
 
-         beforeEach(function() {
+         beforeEach(function(done) {
 
             var elementToAddAsTest = '<div>' +
                '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1"></div>' +
@@ -288,7 +303,11 @@ describe('Module system', function() {
 
             $(elementToAddAsTest).
                appendTo($parentDiv);
-         });
+
+            setTimeout(function() {
+               done();
+            }, WAIT_TIME_FOR_MUTATION_EVENT);
+         }, MAX_WAIT_TIME);
 
          it('should call the first module creator function', function() {
 
@@ -363,7 +382,7 @@ describe('Module system', function() {
 
          var FIRST_ADDED_DIV_ID = 'test-addedDiv';
 
-         beforeEach(function() {
+         beforeEach(function(done) {
 
             var elementToAddAsTest = '<div>' +
                '<div id="' + FIRST_ADDED_DIV_ID + '" modules="test-module1,test-module2"></div>' +
@@ -371,7 +390,11 @@ describe('Module system', function() {
 
             $(elementToAddAsTest).
                appendTo($parentDiv);
-         });
+
+            setTimeout(function() {
+               done();
+            }, WAIT_TIME_FOR_MUTATION_EVENT);
+         }, MAX_WAIT_TIME);
 
          it('should call the first module creator function', function() {
 
@@ -436,7 +459,7 @@ describe('Module system', function() {
 
          var ADDED_DIV_ID = 'test-addedDiv';
 
-         beforeEach(function() {
+         beforeEach(function(done) {
 
             var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1">' +
                '<script type="test-module1/settings">' +
@@ -446,7 +469,11 @@ describe('Module system', function() {
 
             $(elementToAddAsTest).
                appendTo($parentDiv);
-         });
+
+            setTimeout(function() {
+               done();
+            }, WAIT_TIME_FOR_MUTATION_EVENT);
+         }, MAX_WAIT_TIME);
 
          it('should call the existing module creator function once (on page init)', function() {
 
@@ -505,7 +532,7 @@ describe('Module system', function() {
       var dependencyPartSpy;
       var dependencyPartObject;
 
-      beforeEach(function() {
+      beforeEach(function(done) {
 
          moduleWithDependencyObject = jasmine.createSpyObj('moduleWithDependencyObject', ['postConstruct']);
          dependencyPartObject = jasmine.createSpyObj('dependencyPartObject', ['postConstruct']);
@@ -536,7 +563,11 @@ describe('Module system', function() {
 
          $(elementToAddAsTest).
             appendTo($parentDiv);
-      });
+
+         setTimeout(function() {
+            done();
+         }, WAIT_TIME_FOR_MUTATION_EVENT);
+      }, MAX_WAIT_TIME);
 
       it('should call the dependency part creator creator function', function() {
 
@@ -574,7 +605,7 @@ describe('Module system', function() {
       var ADDED_DIV_SELECTOR = '#test-addedDiv';
       var CUSTOM_ID = 'data-mom-id';
 
-      beforeEach(function() {
+      beforeEach(function(done) {
          var settings = {
             customIdAttribute: CUSTOM_ID,
             domMutationSupport: true
@@ -588,7 +619,11 @@ describe('Module system', function() {
 
          $(elementToAddAsTest).
             appendTo($parentDiv);
-      });
+
+         setTimeout(function() {
+            done();
+         }, WAIT_TIME_FOR_MUTATION_EVENT);
+      }, MAX_WAIT_TIME);
 
       it('should call the existing module creator function once (on page init)', function() {
 
@@ -628,7 +663,7 @@ describe('Module system', function() {
 
       var ADDED_DIV_ID = 'test-addedDiv';
 
-      beforeEach(function() {
+      beforeEach(function(done) {
 
          var settings = {
             attribute: 'data-modules',
@@ -641,7 +676,11 @@ describe('Module system', function() {
 
          $(elementToAddAsTest).
             appendTo($parentDiv);
-      });
+
+         setTimeout(function() {
+            done();
+         }, WAIT_TIME_FOR_MUTATION_EVENT);
+      }, MAX_WAIT_TIME);
 
       it('should call the added module creator function', function() {
 
