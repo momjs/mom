@@ -9,12 +9,18 @@ function domEventListener(settings, modules, parts) {
       registerStrategy = decideDomMutationStrategy();
 
    function decideDomMutationStrategy() {
-      var strategy = tryToGetMutationObserverStrategy();
-      // TODO remove the following line to enable/disable MutationObserver support
-      //strategy = null;
+      var WebKitMutationObserver = window.WebKitMutationObserver,
+         MutationObserver = window.MutationObserver,
+         strategy;
 
-      if(strategy === null) {
-         return createLegacyDomMutationStrategy();
+      if(WebKitMutationObserver) {
+         strategy = tryToGetMutationObserverStrategy(WebKitMutationObserver);
+      }
+      else if(MutationObserver) {
+         strategy = tryToGetMutationObserverStrategy(MutationObserver);
+      }
+      else {
+         strategy = createLegacyDomMutationStrategy();
       }
 
       return strategy;
@@ -60,23 +66,10 @@ function domEventListener(settings, modules, parts) {
       unregisterToEvents : registerStrategy.unregister
    };
 
-   function tryToGetMutationObserverStrategy() {
+   function tryToGetMutationObserverStrategy(ObserverCreator) {
 
-      var ObserverCreator = window.MutationObserver || window.WebKitMutationObserver || null,
-         observerConfig = { attributes: true, childList: true, characterData: true, subtree: true },
-         observer;
-
-      if(ObserverCreator !== null) {
+      var observerConfig = { attributes: true, childList: true, characterData: true, subtree: true },
          observer = new ObserverCreator(onMutation);
-
-         return {
-            register : registerToEvents,
-            unregister : unregisterToEvents
-         };
-      }
-      else {
-         return null;
-      }
 
       function registerToEvents() {
          observer.observe(rootNode, observerConfig);
@@ -102,6 +95,11 @@ function domEventListener(settings, modules, parts) {
 
          observer.takeRecords();
       }
+
+      return {
+         register : registerToEvents,
+         unregister : unregisterToEvents
+      };
    }
 
    function createLegacyDomMutationStrategy() {
