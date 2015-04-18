@@ -27,9 +27,9 @@ function domEventListener(settings, modules, parts) {
    }
 
    function onElementAdded(addedNode) {
-      var addedModules = addedNode.querySelectorAll(actualSelector);
+      var addedModules = querySelectorAll(addedNode, actualSelector);
 
-      if(addedNode.hasAttribute(attributeName)) {
+      if(hasAttribute(addedNode, attributeName)) {
          loadModule(addedNode);
       }
 
@@ -42,15 +42,33 @@ function domEventListener(settings, modules, parts) {
    }
 
    function onElementRemoved(removedElement) {
-      var addedModuleElements = removedElement.querySelectorAll(actualSelector);
+      var addedModuleElements = querySelectorAll(removedElement, actualSelector);
 
       each(addedModuleElements, function(moduleElement) {
          unloadModules(moduleElement);
       });
 
-      if(removedElement.hasAttribute(attributeName)) {
+      if (hasAttribute(removedElement, attributeName)) {
          unloadModules(removedElement);
       }
+   }
+
+   function hasAttribute(element, attributeName) {
+
+      if(element.hasAttribute) {
+         return element.hasAttribute(attributeName);
+      }
+
+      return false;
+   }
+
+   function querySelectorAll(element, selector) {
+
+      if(element.querySelectorAll) {
+         return element.querySelectorAll(selector);
+      }
+
+      return [];
    }
 
    function loadModule(moduleElement) {
@@ -134,9 +152,23 @@ function domEventListener(settings, modules, parts) {
 
       function unregisterToEvents() {
 
-         Element.prototype.appendChild = appendChild;
-         Element.prototype.insertBefore = insertBefore;
-         Element.prototype.removeChild = removeChild;
+         (function(appendChild) {
+            Element.prototype.appendChild = function(newElement, element) {
+               return appendChild.apply(this, [newElement, element]);
+            };
+         })(appendChild);
+
+         (function(insertBefore) {
+            Element.prototype.insertBefore = function(newElement, element) {
+               return insertBefore.apply(this, [newElement, element]);
+            };
+         })(insertBefore);
+
+         (function(removeChild) {
+            Element.prototype.removeChild = function(newElement, element) {
+               return removeChild.apply(this, [newElement, element]);
+            };
+         })(removeChild);
       }
 
       return {
