@@ -122,7 +122,9 @@ function partsCreator(settings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var domSettings = getDOMSettings(document, settings.partSettingsSelector, partDescriptor.name),
+      var partName = partDescriptor.name,
+         actualSelector = settings.getPartSettingsSelector(partName),
+         domSettings = getDOMSettings(document, actualSelector, partDescriptor.name),
          mergedSettings = {},
          dependencies,
          foundDependencies,

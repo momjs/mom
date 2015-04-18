@@ -31,6 +31,7 @@
       "eventBusCreator": false,
       "moduleBuilderCreator": false,
       "partBuilderCreator": false,
+      "stringContains": false,
       "moduleLoaderCreator": false,
       "partsCreator": false,
       "modulesCreator": false,

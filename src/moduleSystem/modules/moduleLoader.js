@@ -7,7 +7,7 @@ function moduleLoaderCreator(moduleAccess, partAccess, settings) {
       initModules();
 
       function initModules() {
-         var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
+         var selector = settings.actualSelector,
             modulesOnPage = settings.rootNode.querySelectorAll(selector);
 
          partAccess.initEagerSingletons();
