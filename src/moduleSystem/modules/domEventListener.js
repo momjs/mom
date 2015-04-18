@@ -104,25 +104,33 @@ function domEventListener(settings, modules, parts) {
 
    function createLegacyDomMutationStrategy() {
 
-      var DOM_NODE_INSERTED_EVENT_NAME = 'DOMNodeInserted',
-         DOM_NODE_REMOVED_EVENT_NAME = 'DOMNodeRemoved';
+      var appendChild = Element.prototype.appendChild,
+         insertBefore = Element.prototype.insertBefore,
+         removeChild = Element.prototype.removeChild;
 
       function registerToEvents() {
-         rootNode.addEventListener(DOM_NODE_INSERTED_EVENT_NAME, onDomNodeInserted, false);
-         rootNode.addEventListener(DOM_NODE_REMOVED_EVENT_NAME, onDomNodeRemoved, false);
-      }
 
-      function onDomNodeInserted(event) {
-         onElementAdded(event.target);
+         Element.prototype.appendChild = function(newElement, element) {
+            onElementAdded(newElement);
+            return appendChild.apply(this, [newElement, element]);
+         };
+
+         Element.prototype.insertBefore = function(newElement, element) {
+            onElementAdded(newElement);
+            return insertBefore.apply(this, [newElement, element]);
+         };
+
+         Element.prototype.removeChild = function(newElement, element) {
+            onElementRemoved(newElement);
+            return removeChild.apply(this, [newElement, element]);
+         };
       }
 
       function unregisterToEvents() {
-         rootNode.removeEventListener(DOM_NODE_INSERTED_EVENT_NAME, onDomNodeInserted);
-         rootNode.removeEventListener(DOM_NODE_REMOVED_EVENT_NAME, onDomNodeRemoved, false);
-      }
 
-      function onDomNodeRemoved(event) {
-         onElementRemoved(event.target);
+         Element.prototype.appendChild = appendChild;
+         Element.prototype.insertBefore = insertBefore;
+         Element.prototype.removeChild = removeChild;
       }
 
       return {
