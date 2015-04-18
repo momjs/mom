@@ -110,20 +110,26 @@ function domEventListener(settings, modules, parts) {
 
       function registerToEvents() {
 
-         Element.prototype.appendChild = function(newElement, element) {
-            onElementAdded(newElement);
-            return appendChild.apply(this, [newElement, element]);
-         };
+         (function(appendChild) {
+            Element.prototype.appendChild = function(newElement, element) {
+               onElementAdded(newElement);
+               return appendChild.apply(this, [newElement, element]);
+            };
+         })(Element.prototype.appendChild);
 
-         Element.prototype.insertBefore = function(newElement, element) {
-            onElementAdded(newElement);
-            return insertBefore.apply(this, [newElement, element]);
-         };
+         (function(insertBefore) {
+            Element.prototype.insertBefore = function(newElement, element) {
+               onElementAdded(newElement);
+               return insertBefore.apply(this, [newElement, element]);
+            };
+         })(Element.prototype.insertBefore);
 
-         Element.prototype.removeChild = function(newElement, element) {
-            onElementRemoved(newElement);
-            return removeChild.apply(this, [newElement, element]);
-         };
+         (function(removeChild) {
+            Element.prototype.removeChild = function(newElement, element) {
+               onElementRemoved(newElement);
+               return removeChild.apply(this, [newElement, element]);
+            };
+         })(Element.prototype.removeChild);
       }
 
       function unregisterToEvents() {
