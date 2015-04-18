@@ -14,10 +14,10 @@ function domEventListener(settings, modules, parts) {
          strategy;
 
       if(WebKitMutationObserver) {
-         strategy = tryToGetMutationObserverStrategy(WebKitMutationObserver);
+         strategy = createMutationObserverStrategy(WebKitMutationObserver);
       }
       else if(MutationObserver) {
-         strategy = tryToGetMutationObserverStrategy(MutationObserver);
+         strategy = createMutationObserverStrategy(MutationObserver);
       }
       else {
          strategy = createLegacyDomMutationStrategy();
@@ -66,7 +66,7 @@ function domEventListener(settings, modules, parts) {
       unregisterToEvents : registerStrategy.unregister
    };
 
-   function tryToGetMutationObserverStrategy(ObserverCreator) {
+   function createMutationObserverStrategy(ObserverCreator) {
 
       var observerConfig = { attributes: true, childList: true, characterData: true, subtree: true },
          observer = new ObserverCreator(onMutation);
