@@ -29,16 +29,8 @@ function getDOMSettings(element, selectorTemplate, name) {
    return domSettings;
 
    function selectSettingsScript() {
-      var selector = selectorTemplate.replace(/%name%/g, name),
-         settingsScript = element.querySelector(selector);
+      var selector = selectorTemplate.replace(/%name%/g, name);
 
-      // FIXME settings of dynamically added dom elements will get a 'true/' prefix in the type attribute value.
-      // FIXME I don't know this manipulation come from
-      if(settingsScript === null) {
-         selector = selectorTemplate.replace(/%name%/g, 'true/' + name);
-         settingsScript = element.querySelector(selector);
-      }
-
-      return settingsScript;
+      return element.querySelector(selector);
    }
 }
