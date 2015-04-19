@@ -1,5 +1,5 @@
-/*exported eventBus */
-function eventBus() {
+/*exported eventBusCreator */
+function eventBusCreator() {
    'use strict';
 
    var ON_EVENT_FUNCTION_NAME = 'onEvent',

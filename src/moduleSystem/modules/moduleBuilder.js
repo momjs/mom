@@ -1,5 +1,5 @@
-/*exported moduleBuilder */
-function moduleBuilder(moduleAccess) {
+/*exported moduleBuilderCreator */
+function moduleBuilderCreator(moduleAccess) {
    'use strict';
 
    function createModule(name) {

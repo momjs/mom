@@ -1,39 +1,55 @@
-/*exported settings */
-function settings() {
+/*exported settingsCreator */
+function settingsCreator() {
    'use strict';
 
-   var defaults = {
-         rootNode: document,
-         defaultScope: constants.scope.multiInstance,
-         moduleSettingsSelector: 'script[type="%name%/settings"],script[type="true/%name%/settings"]',
-         partSettingsSelector: 'head script[type="%name%/settings"]',
-         attribute: 'modules',
-         selector: '[%attribute%]',
-         domMutationSupport: false,
-         customIdAttribute: 'mom-id'
-      },
-      actualSettings = defaults,
-      actualSelector;
+   var settings = {
+      rootNode: document,
+      defaultScope: constants.scope.multiInstance,
+      moduleSettingsSelector: 'script[type="%name%/settings"]',
+      partSettingsSelector: 'head script[type="%name%/settings"]',
+      attribute: 'modules',
+      selector: '[%attribute%]',
+      domMutationSupport: false,
+      customIdAttribute: 'mom-id'
+   };
 
-   function mergeWith(newSettings) {
-      merge(actualSettings, newSettings);
+
+   function init() {
+      settings.actualSelector = replacePlaceholder(settings.selector, 'attribute', settings.attribute);
+      settings.mergeWith = mergeWith;
+      settings.getModuleSettingsSelector = getModuleSettingsSelelector;
+      settings.getPartSettingsSelector = getPartSettingsSelector;
    }
 
-   function get() {
-      return actualSettings;
+
+   function getModuleSettingsSelelector(moduleName) {
+      return replacePlaceholder(settings.moduleSettingsSelector, 'name', moduleName);
    }
 
-   function getActualSelector() {
-      if(actualSelector === undefined) {
-         actualSelector = actualSettings.selector.replace(/%attribute%/g, actualSettings.attribute);
+   function getPartSettingsSelector(partName) {
+      return replacePlaceholder(settings.partSettingsSelector, 'name', partName);
+   }
+
+   function replacePlaceholder(text, placeholder, value) {
+      var actualPlaceholder = '%' + placeholder + '%',
+         regEx,
+         result = text;
+
+      if (stringContains(text, actualPlaceholder)) {
+         regEx = new RegExp(actualPlaceholder, 'g');
+
+         result = text.replace(regEx, value);
       }
 
-      return actualSelector;
+      return result;
    }
 
-   return {
-      get: get,
-      mergeWith: mergeWith,
-      getSelector : getActualSelector
-   };
+   function mergeWith(newSettings) {
+      merge(settings, newSettings);
+      init();
+   }
+
+   init();
+
+   return settings;
 }

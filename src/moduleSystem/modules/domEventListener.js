@@ -1,10 +1,9 @@
-/* exported domEventListener */
-function domEventListener(settings, modules, parts) {
+/* exported domEventListenerCreator */
+function domEventListenerCreator(settings, modules, parts) {
    'use strict';
 
-   var actualSettings = settings.get(),
-      rootNode = actualSettings.rootNode,
-      modulesAttributeSelector = settings.getSelector(),
+   var rootNode = settings.rootNode,
+      modulesAttributeSelector = settings.actualSelector,
       registerStrategy = decideDomMutationStrategy();
 
    function decideDomMutationStrategy() {

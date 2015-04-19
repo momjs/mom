@@ -1,23 +1,22 @@
-moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator, domEventListenerCreator) {
+moduleSystem = (function () {
    'use strict';
 
    function newInstance() {
       var settings = settingsCreator(),
-         actualSettings = settings.get(),
-         partAccess = partsCreator(actualSettings),
+         parts = partsCreator(settings),
          eventBus = eventBusCreator(),
-         moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
-         createPart = partBuilderCreator(partAccess, actualSettings),
-         createModule = moduleBuilderCreator(moduleAccess),
-         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, settings),
+         modules = modulesCreator(parts, eventBus, settings),
+         partBuilder = partBuilderCreator(parts, settings),
+         modleBuilder = moduleBuilderCreator(modules),
+         moduleLoader = moduleLoaderCreator(modules, parts, settings),
          domEventListener;
 
 
-      createPart('event-bus')
+      partBuilder('event-bus')
          .returns(eventBus);
 
       //deprecated remove in 1.4
-      createPart('eventBus')
+      partBuilder('eventBus')
          .creator(function () {
             if (window.console && console.warn) {
                console.warn('partName "eventBus" deprecated use "event-bus" instead');
@@ -33,16 +32,16 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
 
          moduleLoader.initModulePage();
 
-         domEventListener = domEventListenerCreator(settings, moduleAccess, partAccess);
+         domEventListener = domEventListenerCreator(settings, modules, parts);
 
-         if(settings.get().domMutationSupport === true) {
+         if (settings.domMutationSupport === true) {
 
             domEventListener.registerToEvents();
          }
       }
 
       function dispose() {
-         if(domEventListener !== undefined) {
+         if (domEventListener !== undefined) {
             domEventListener.unregisterToEvents();
          }
 
@@ -50,16 +49,16 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
       }
 
       return merge({
-         createPart: createPart,
-         createModule: createModule,
+         createPart: partBuilder,
+         createModule: modleBuilder,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
          dispose: dispose,
-         getPart: partAccess.provisionPart
+         getPart: parts.provisionPart
 
       }, constants);
    }
 
    return newInstance();
 
-})(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus, domEventListener);
+})();

@@ -1,18 +1,18 @@
-/*exported moduleLoader */
-function moduleLoader(moduleAccess, partAccess, settings) {
+/*exported moduleLoaderCreator */
+function moduleLoaderCreator(moduleAccess, partAccess, settings) {
    'use strict';
 
-   function initModules() {
-      var actualSettings = settings.get(),
-         selector = settings.getSelector(),
-         modulesOnPage = actualSettings.rootNode.querySelectorAll(selector);
+   function initModulePage() {
+      var selector = settings.actualSelector,
+         modulesOnPage = settings.rootNode.querySelectorAll(selector);
 
       partAccess.initEagerSingletons();
 
       each(modulesOnPage, function (element) {
          initModule(element);
       });
-      
+
+
       partAccess.provisionFinished();
       moduleAccess.provisionFinished();
    }
@@ -22,7 +22,7 @@ function moduleLoader(moduleAccess, partAccess, settings) {
    }
 
    return {
-      initModulePage: initModules,
-      initModule : initModule
+      initModulePage: initModulePage,
+      initModule: initModule
    };
 }

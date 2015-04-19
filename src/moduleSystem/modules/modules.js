@@ -1,5 +1,5 @@
-/* exported modules */
-function modules(partAccess, eventBus, settings) {
+/*exported modulesCreator */
+function modulesCreator(partAccess, eventBus, settings) {
    'use strict';
 
    var loadedModules = loadedModulesContainer(settings),
@@ -38,7 +38,9 @@ function modules(partAccess, eventBus, settings) {
 
    function buildModule(element, moduleDescriptor, foundDependencies) {
       var args = foundDependencies,
-         domSettings = getDOMSettings(element, settings.moduleSettingsSelector, moduleDescriptor.name),
+         moduleName = moduleDescriptor.name,
+         actualSelector = settings.getModuleSettingsSelector(moduleName),
+         domSettings = getDOMSettings(element, actualSelector, moduleDescriptor.name),
          mergedSettings = {},
          createdModule;
 

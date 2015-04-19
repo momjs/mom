@@ -1,5 +1,5 @@
-/*exported partBuilder */
-function partBuilder(partAccess, moduleSystemSettings) {
+/*exported partBuilderCreator */
+function partBuilderCreator(partAccess, moduleSystemSettings) {
    'use strict';
 
    var scopes = constants.scope,
