@@ -591,7 +591,6 @@ describe('Module system', function() {
             beforeEach(function(done) {
 
                parentElement = document.getElementById(EXISTING_DIV_ID);
-               parentElement.id = PARENT_DIV_ID;
 
                childElement = document.createElement('div');
                childElement.id = CHILD_DIV_ID;

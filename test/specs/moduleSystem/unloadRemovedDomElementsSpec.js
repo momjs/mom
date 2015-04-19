@@ -1,5 +1,8 @@
 describe('Module system when dom element removed', function() {
 
+   var EXISTING_DIV_ID = 'test-div';
+   var EXISTING_DIV_ID_SELECTOR = '#' + EXISTING_DIV_ID;
+
    var $parentDiv;
 
    var spyModule;
@@ -23,7 +26,7 @@ describe('Module system when dom element removed', function() {
       moduleSystem = moduleSystem.newInstance();
 
       loadFixtures('moduleSystem/nestedModules.html');
-      $parentDiv = $('#test-div');
+      $parentDiv = $(EXISTING_DIV_ID_SELECTOR);
 
       firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1', ['onEvent', 'preDestruct']);
       secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent', 'preDestruct']);
