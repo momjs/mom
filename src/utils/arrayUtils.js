@@ -5,7 +5,7 @@
 
 /**
  * Iterates the array and callback function for each element.
- * Uses nativ forEach if present
+ * Uses native forEach if present
  *
  * @param {Array} array - the array to iterate
  * @param {eachCallback} - callback the callback function:
@@ -36,14 +36,6 @@ var each = (function () {
 
    return (Array.prototype.forEach) ? native : polyfill;
 })();
-/**
- * @callback eachCallback
- * @param element - the current element
- * @param {number} index - the current index
- * @param {array} array - the current array
- * @returns {undefined | boolean} if returns true the iteration breaks up immediately
- */
-
 
 /**
  * Indicates if the specified element looking for is containing in the specified array.

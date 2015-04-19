@@ -4,8 +4,7 @@ function domEventListener(settings, modules, parts) {
 
    var actualSettings = settings.get(),
       rootNode = actualSettings.rootNode,
-      attributeName = actualSettings.attribute,
-      actualSelector = settings.getSelector(),
+      modulesAttributeSelector = settings.getSelector(),
       registerStrategy = decideDomMutationStrategy();
 
    function decideDomMutationStrategy() {
@@ -27,9 +26,9 @@ function domEventListener(settings, modules, parts) {
    }
 
    function onElementAdded(addedNode) {
-      var addedModules = querySelectorAll(addedNode, actualSelector);
+      var addedModules = querySelectorAll(addedNode, modulesAttributeSelector);
 
-      if(hasAttribute(addedNode, attributeName)) {
+      if(matchesSelector(addedNode, modulesAttributeSelector)) {
          loadModule(addedNode);
       }
 
@@ -42,24 +41,15 @@ function domEventListener(settings, modules, parts) {
    }
 
    function onElementRemoved(removedElement) {
-      var addedModuleElements = querySelectorAll(removedElement, actualSelector);
+      var addedModuleElements = querySelectorAll(removedElement, modulesAttributeSelector);
 
       each(addedModuleElements, function(moduleElement) {
          unloadModules(moduleElement);
       });
 
-      if (hasAttribute(removedElement, attributeName)) {
+      if (matchesSelector(removedElement, modulesAttributeSelector)) {
          unloadModules(removedElement);
       }
-   }
-
-   function hasAttribute(element, attributeName) {
-
-      if(element.hasAttribute) {
-         return element.hasAttribute(attributeName);
-      }
-
-      return false;
    }
 
    function querySelectorAll(element, selector) {

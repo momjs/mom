@@ -29,6 +29,7 @@ module.exports = function (grunt) {
                '<%= dirs.source %>/utils/arrayUtils.js',
                '<%= dirs.source %>/utils/objectUtils.js',
                '<%= dirs.source %>/utils/stringUtils.js',
+               '<%= dirs.source %>/utils/htmlElementUtils.js',
                '<%= dirs.source %>/moduleSystem/constants.js',
                '<%= dirs.source %>/moduleSystem/settings.js',
                '<%= dirs.source %>/moduleSystem/descriptorCreators.js',
