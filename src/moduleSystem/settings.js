@@ -5,7 +5,7 @@ function settingsCreator() {
    var settings = {
       rootNode: document,
       defaultScope: constants.scope.multiInstance,
-      moduleSettingsSelector: 'script[type="%name%/settings"]',
+      moduleSettingsSelector: 'script[type="%name%/settings"],script[type="true/%name%/settings"]',
       partSettingsSelector: 'head script[type="%name%/settings"]',
       attribute: 'modules',
       selector: '[%attribute%]',
