@@ -3,7 +3,8 @@ var matchesSelector = (function() {
    'use strict';
 
    var ElementPrototype = Element.prototype,
-      nativeFunction = ElementPrototype.matchesSelector ||
+      nativeFunction = ElementPrototype.matches || 
+         ElementPrototype.matchesSelector ||
          ElementPrototype.mozMatchesSelector ||
          ElementPrototype.msMatchesSelector ||
          ElementPrototype.oMatchesSelector ||
