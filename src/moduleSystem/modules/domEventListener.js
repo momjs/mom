@@ -26,18 +26,31 @@ function domEventListener(settings, modules, parts) {
    }
 
    function onElementAdded(addedNode) {
-      var addedModules = querySelectorAll(addedNode, modulesAttributeSelector);
 
-      if(matchesSelector(addedNode, modulesAttributeSelector)) {
-         loadModule(addedNode);
+      if(containsNode(rootNode, addedNode)) {
+         var addedModules = querySelectorAll(addedNode, modulesAttributeSelector);
+
+         if(matchesSelector(addedNode, modulesAttributeSelector)) {
+            loadModule(addedNode);
+         }
+
+         each(addedModules, function(addedModule) {
+            loadModule(addedModule);
+         });
+
+         modules.provisionFinished();
+         parts.provisionFinished();
       }
+   }
 
-      each(addedModules, function(addedModule) {
-         loadModule(addedModule);
-      });
+   function containsNode(parentNode, node) {
 
-      modules.provisionFinished();
-      parts.provisionFinished();
+      if(parentNode === document) {
+         return document.body.contains(node);
+      }
+      else {
+         return parentNode.contains(node);
+      }
    }
 
    function onElementRemoved(removedElement) {
@@ -120,22 +133,31 @@ function domEventListener(settings, modules, parts) {
 
          (function(appendChild) {
             Element.prototype.appendChild = function(newElement, element) {
+               var result = appendChild.apply(this, [newElement, element]);
+
                onElementAdded(newElement);
-               return appendChild.apply(this, [newElement, element]);
+
+               return result;
             };
          })(Element.prototype.appendChild);
 
          (function(insertBefore) {
             Element.prototype.insertBefore = function(newElement, element) {
+               var result = insertBefore.apply(this, [newElement, element]);
+
                onElementAdded(newElement);
-               return insertBefore.apply(this, [newElement, element]);
+
+               return result;
             };
          })(Element.prototype.insertBefore);
 
          (function(removeChild) {
             Element.prototype.removeChild = function(newElement, element) {
+               var result = removeChild.apply(this, [newElement, element]);
+
                onElementRemoved(newElement);
-               return removeChild.apply(this, [newElement, element]);
+
+               return result;
             };
          })(Element.prototype.removeChild);
       }

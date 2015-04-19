@@ -1,5 +1,8 @@
 describe('Module system', function() {
 
+   var EXISTING_DIV_ID = 'test-div';
+   var EXISTING_DIV_ID_SELECTOR = '#' + EXISTING_DIV_ID;
+
    var $parentDiv;
 
    var existingModuleCreator;
@@ -24,7 +27,7 @@ describe('Module system', function() {
       moduleSystem = moduleSystem.newInstance();
 
       loadFixtures('moduleSystem/simpleModuleDiv.html');
-      $parentDiv = $('#test-div');
+      $parentDiv = $(EXISTING_DIV_ID_SELECTOR);
 
       existingModuleObject = jasmine.createSpyObj('existingModuleObject', ['postConstruct']);
       firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1a', ['onEvent', 'postConstruct']);
@@ -571,6 +574,63 @@ describe('Module system', function() {
             it('should call event listener function on added module with expected event', function() {
 
                expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
+            });
+         });
+      });
+
+      describe('on adding a dom node with one module without using jquery', function() {
+
+         var PARENT_DIV_ID = 'test-addedDiv';
+         var CHILD_DIV_ID = 'test-addedDiv2';
+
+         var parentElement;
+         var childElement;
+
+         describe('when parent node IS in DOM', function() {
+
+            beforeEach(function(done) {
+
+               parentElement = document.getElementById(EXISTING_DIV_ID);
+               parentElement.id = PARENT_DIV_ID;
+
+               childElement = document.createElement('div');
+               childElement.id = CHILD_DIV_ID;
+               childElement.setAttribute('modules', 'test-module1');
+
+               parentElement.appendChild(childElement);
+
+               setTimeout(function() {
+                  done();
+               }, WAIT_TIME_FOR_MUTATION_EVENT);
+            }, MAX_WAIT_TIME);
+
+            it('should NOT call module creator', function() {
+
+               expect(firstSpyModule).toHaveBeenCalled();
+            });
+         });
+
+         describe('when parent node is NOT in DOM', function() {
+
+            beforeEach(function(done) {
+
+               parentElement = document.createElement('div');
+               parentElement.id = PARENT_DIV_ID;
+
+               childElement = document.createElement('div');
+               childElement.id = CHILD_DIV_ID;
+               childElement.setAttribute('modules', 'test-module1');
+
+               parentElement.appendChild(childElement);
+
+               setTimeout(function() {
+                  done();
+               }, WAIT_TIME_FOR_MUTATION_EVENT);
+            }, MAX_WAIT_TIME);
+
+            it('should NOT call module creator', function() {
+
+               expect(firstSpyModule).not.toHaveBeenCalled();
             });
          });
       });
