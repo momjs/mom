@@ -38,7 +38,7 @@
       "partsCreator": false,
       "modulesCreator": false,
       "domEventListenerCreator": false,
-      "loadedModulesContainer": false,
+      "loadedModulesContainerCreator": false,
       "merge": false,
       "createDescriptor": false,
       "creatorDescriptor": false,

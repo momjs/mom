@@ -2,7 +2,7 @@
 function modulesCreator(partAccess, eventBus, settings) {
    'use strict';
 
-   var loadedModules = loadedModulesContainer(settings),
+   var loadedModules = loadedModulesContainerCreator(settings),
       availableModuleDescriptors = {},
       calledPostConstructs = [];
 
@@ -75,7 +75,7 @@ function modulesCreator(partAccess, eventBus, settings) {
    function callPostConstruct(module) {
       var postConstruct = module.postConstruct;
       if (typeof postConstruct === 'function') {
-         if(!contains(calledPostConstructs, postConstruct)) {
+         if (!contains(calledPostConstructs, postConstruct)) {
             postConstruct();
             calledPostConstructs.push(postConstruct);
          }
@@ -85,9 +85,9 @@ function modulesCreator(partAccess, eventBus, settings) {
    function unloadModules(element) {
       var modulesToUnload = loadedModules.get(element);
 
-      each(modulesToUnload, function(module) {
+      each(modulesToUnload, function (module) {
 
-         if(typeof module.preDestruct === 'function') {
+         if (typeof module.preDestruct === 'function') {
             try {
                module.preDestruct();
             } catch (e) {
@@ -96,7 +96,7 @@ function modulesCreator(partAccess, eventBus, settings) {
          }
       });
 
-      each(modulesToUnload, function(module) {
+      each(modulesToUnload, function (module) {
 
          eventBus.remove(module);
       });

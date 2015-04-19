@@ -1,13 +1,13 @@
-/* exported loadedModulesContainer */
-function loadedModulesContainer(settings) {
+/* exported loadedModulesContainerCreator */
+function loadedModulesContainerCreator(settings) {
    'use strict';
 
    var modulesMap = {},
       modules = [],
-      createJojId = (function() {
+      createJojId = (function () {
          var currentId = 0;
 
-         return function() {
+         return function () {
             return ++currentId;
          };
       })();
@@ -20,10 +20,9 @@ function loadedModulesContainer(settings) {
       var modulesListForElement,
          elementJojId = estimateElementsJojId(element);
 
-      if(modulesMap.hasOwnProperty(elementJojId)) {
+      if (modulesMap.hasOwnProperty(elementJojId)) {
          modulesListForElement = modulesMap[elementJojId];
-      }
-      else {
+      } else {
          modulesListForElement = [];
          modulesMap[elementJojId] = modulesListForElement;
       }
@@ -38,8 +37,7 @@ function loadedModulesContainer(settings) {
 
       if (element.hasAttribute(idAttributeName)) {
          elementJojId = element.getAttribute(idAttributeName);
-      }
-      else {
+      } else {
          elementJojId = createJojId();
          element.setAttribute(idAttributeName, elementJojId);
       }
@@ -51,10 +49,10 @@ function loadedModulesContainer(settings) {
       var idAttributeName = getIdAttribute(),
          elementJojId;
 
-      if(element.hasAttribute(idAttributeName)) {
+      if (element.hasAttribute(idAttributeName)) {
          elementJojId = element.getAttribute(idAttributeName);
 
-         if(modulesMap.hasOwnProperty(elementJojId)) {
+         if (modulesMap.hasOwnProperty(elementJojId)) {
             delete modulesMap[elementJojId];
          }
       }
