@@ -1,7 +1,7 @@
 /**
  * moduleSystem
  * Dynamic Loading of Javascript based on DOM elements
- * @version v1.4.0 - 2015-04-11 * @link 
+ * @version v1.4.0 - 2015-04-21 * @link 
  * @author Eder Alexander <eder.alexan@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  *//* jshint ignore:start */
@@ -12,20 +12,18 @@
 /* exported getDOMSettings */
 
 /**
- * Replaced %name% in the given selectorTemplate.
- * Searches in the given element for the constucted selector and parses it's content as JSON
+ * Searches in the given element for the selector and parses it's content as JSON
  *
  * @param   {element} element  the element to search in
- * @param   {string} selectorTemplate the selector to search for
+ * @param   {string} selector the selector to search for
  * @param   {string} name of the element to parse
  * @returns {object} JSON paresed content of element
  * @throws {Error} if the content of the element is not valid json
  */
-function getDOMSettings(element, selectorTemplate, name) {
+function getDOMSettings(element, selector, name) {
    'use strict';
 
-   var selector = selectorTemplate.replace(/%name%/g, name),
-      settingsScript = element.querySelector(selector),
+   var settingsScript = element.querySelector(selector),
       settingsAsHtml,
       domSettings;
 
@@ -43,10 +41,11 @@ function getDOMSettings(element, selectorTemplate, name) {
 /*exported each */
 /*exported contains */
 /*exported isArray */
+/* exported remove */
 
 /**
  * Iterates the array and callback function for each element.
- * Uses nativ forEach if present
+ * Uses native forEach if present
  *
  * @param {Array} array - the array to iterate
  * @param {eachCallback} - callback the callback function:
@@ -77,14 +76,6 @@ var each = (function () {
 
    return (Array.prototype.forEach) ? native : polyfill;
 })();
-/**
- * @callback eachCallback
- * @param element - the current element
- * @param {number} index - the current index
- * @param {array} array - the current array
- * @returns {undefined | boolean} if returns true the iteration breaks up immediately
- */
-
 
 /**
  * Indicates if the specified element looking for is containing in the specified array.
@@ -119,6 +110,26 @@ function isArray(object) {
 
    return Object.prototype.toString.call(object) === '[object Array]';
 }
+
+/**
+ * Remove the passed element from the passed array
+ * @param array the array to remove the passed element
+ * @param element the element which will be removed from the passed array
+ * @returns {boolean} returns true if the element has been removed, returns false otherwise
+ */
+function remove(array, element) {
+   'use strict';
+
+   var index = array.indexOf(element);
+
+   if (index > -1) {
+      array.splice(index, 1);
+      return true;
+   }
+
+   return false;
+}
+
 /*exported eachProperty*/
 /*exported merge */
 /**
@@ -177,6 +188,8 @@ function merge(mergeInto) {
    return mergeInto;
 }
 /* exported trim */
+/* exported stringContains */
+
 /**
  * Removes whitespaces from both sides of a string
  * the function does not modify the content of the sting
@@ -197,6 +210,49 @@ var trim = (function () {
 
    return (String.prototype.trim) ? native : polyfill;
 })();
+
+/**
+ * Searches in text for value returns true if value is found.
+ * false if not
+ * @param {string} text - input string
+ * @param {string} value - the value to search
+ * @returns {boolean} conatins
+ */
+function stringContains(text, value) {
+   'use strict';
+
+   return text.indexOf(value) > -1;
+}
+/* exported matchesSelector */
+var matchesSelector = (function() {
+   'use strict';
+
+   var ElementPrototype = Element.prototype,
+      nativeFunction = ElementPrototype.matches || 
+         ElementPrototype.matchesSelector ||
+         ElementPrototype.mozMatchesSelector ||
+         ElementPrototype.msMatchesSelector ||
+         ElementPrototype.oMatchesSelector ||
+         ElementPrototype.webkitMatchesSelector;
+
+   function nativeCall(element, selector) {
+      return nativeFunction.call(element, selector);
+   }
+
+   function polyfill(element, selector) {
+      var parentElement = element.parentNode || element.document,
+         selectedElements = parentElement.querySelectorAll(selector),
+         i = -1;
+
+      /* jshint noempty: false */
+      while (selectedElements[++i] && selectedElements[i] !== element){}
+
+      return !!selectedElements[i];
+   }
+
+   return (nativeFunction) ? nativeCall : polyfill;
+})();
+
 /*exported constants */
 var constants = {
    scope: {
@@ -210,34 +266,6 @@ var constants = {
    }
 };
 
-/*exported settings */
-function settings() {
-   'use strict';
-
-   var defaults = {
-         rootNode: document,
-         defaultScope: constants.scope.multiInstance,
-         moduleSettingsSelector: 'script[type="%name%/settings"]',
-         partSettingsSelector: 'head script[type="%name%/settings"]',
-         attribute: 'modules',
-         selector: '[%attribute%]'
-      },
-      actualSettings = defaults;
-
-   function mergeWith(newSettings) {
-      merge(actualSettings, newSettings);
-   }
-
-
-   function get() {
-      return actualSettings;
-   }
-
-   return {
-      get: get,
-      mergeWith: mergeWith
-   };
-}
 /*exported createDescriptor */
 function createDescriptor(name) {
    'use strict';
@@ -264,41 +292,91 @@ function creatorDescriptor(name) {
    return descriptor;
 }
 
-/*exported moduleLoader */
-function moduleLoader(moduleAccess, partAccess, settings) {
+/*exported settingsCreator */
+function settingsCreator() {
+   'use strict';
+
+   var settings = {
+      rootNode: document,
+      defaultScope: constants.scope.multiInstance,
+      moduleSettingsSelector: 'script[type="%name%/settings"],script[type="true/%name%/settings"]',
+      partSettingsSelector: 'head script[type="%name%/settings"]',
+      attribute: 'modules',
+      selector: '[%attribute%]',
+      domMutationSupport: false,
+      customIdAttribute: 'mom-id'
+   };
+
+
+   function init() {
+      settings.actualSelector = replacePlaceholder(settings.selector, 'attribute', settings.attribute);
+      settings.mergeWith = mergeWith;
+      settings.getModuleSettingsSelector = getModuleSettingsSelelector;
+      settings.getPartSettingsSelector = getPartSettingsSelector;
+   }
+
+
+   function getModuleSettingsSelelector(moduleName) {
+      return replacePlaceholder(settings.moduleSettingsSelector, 'name', moduleName);
+   }
+
+   function getPartSettingsSelector(partName) {
+      return replacePlaceholder(settings.partSettingsSelector, 'name', partName);
+   }
+
+   function replacePlaceholder(text, placeholder, value) {
+      var actualPlaceholder = '%' + placeholder + '%',
+         regEx,
+         result = text;
+
+      if (stringContains(text, actualPlaceholder)) {
+         regEx = new RegExp(actualPlaceholder, 'g');
+
+         result = text.replace(regEx, value);
+      }
+
+      return result;
+   }
+
+   function mergeWith(newSettings) {
+      merge(settings, newSettings);
+      init();
+   }
+
+   init();
+
+   return settings;
+}
+/*exported moduleLoaderCreator */
+function moduleLoaderCreator(moduleAccess, partAccess, settings) {
    'use strict';
 
    function initModulePage() {
+      var selector = settings.actualSelector,
+         modulesOnPage = settings.rootNode.querySelectorAll(selector);
 
-      initModules();
+      partAccess.initEagerSingletons();
 
-      function initModules() {
-         var selector = settings.selector.replace(/%attribute%/g, settings.attribute),
-            modulesOnPage = settings.rootNode.querySelectorAll(selector);
-
-         partAccess.initEagerSingletons();
-
-         each(modulesOnPage, function (element) {
-            initModule(element);
-         });
+      each(modulesOnPage, function (element) {
+         initModule(element);
+      });
 
 
-         partAccess.provisionFinished();
-         moduleAccess.provisionFinished();
-      }
+      partAccess.provisionFinished();
+      moduleAccess.provisionFinished();
+   }
 
-      function initModule(element) {
-         moduleAccess.provisionModule(element);
-      }
+   function initModule(element) {
+      moduleAccess.provisionModule(element);
    }
 
    return {
-      initModulePage: initModulePage
+      initModulePage: initModulePage,
+      initModule: initModule
    };
 }
-
-/*exported moduleBuilder */
-function moduleBuilder(moduleAccess) {
+/*exported moduleBuilderCreator */
+function moduleBuilderCreator(moduleAccess) {
    'use strict';
 
    function createModule(name) {
@@ -357,12 +435,86 @@ function moduleBuilder(moduleAccess) {
    return createModule;
 }
 
-/*exported modules */
-function modules(partAccess, eventBus, settings) {
+/* exported loadedModulesContainerCreator */
+function loadedModulesContainerCreator(settings) {
    'use strict';
 
-   var loadedModules = [],
-      availableModuleDescriptors = {};
+   var modulesMap = {},
+      modules = [],
+      createJojId = (function () {
+         var currentId = 0;
+
+         return function () {
+            return ++currentId;
+         };
+      })();
+
+   function getIdAttribute() {
+      return settings.customIdAttribute;
+   }
+
+   function add(element, module) {
+      var modulesListForElement,
+         elementJojId = estimateElementsJojId(element);
+
+      if (modulesMap.hasOwnProperty(elementJojId)) {
+         modulesListForElement = modulesMap[elementJojId];
+      } else {
+         modulesListForElement = [];
+         modulesMap[elementJojId] = modulesListForElement;
+      }
+
+      modulesListForElement.push(module);
+      modules.push(module);
+   }
+
+   function estimateElementsJojId(element) {
+      var idAttributeName = getIdAttribute(),
+         elementJojId;
+
+      if (element.hasAttribute(idAttributeName)) {
+         elementJojId = element.getAttribute(idAttributeName);
+      } else {
+         elementJojId = createJojId();
+         element.setAttribute(idAttributeName, elementJojId);
+      }
+
+      return elementJojId;
+   }
+
+   function removeElement(element) {
+      var idAttributeName = getIdAttribute(),
+         elementJojId;
+
+      if (element.hasAttribute(idAttributeName)) {
+         elementJojId = element.getAttribute(idAttributeName);
+
+         if (modulesMap.hasOwnProperty(elementJojId)) {
+            delete modulesMap[elementJojId];
+         }
+      }
+   }
+
+   function getByElement(element) {
+      var idAttributeName = getIdAttribute(),
+         elementJojId = element.getAttribute(idAttributeName);
+
+      return modulesMap[elementJojId] || [];
+   }
+
+   modules.add = add;
+   modules.remove = removeElement;
+   modules.get = getByElement;
+
+   return modules;
+}
+/*exported modulesCreator */
+function modulesCreator(partAccess, eventBus, settings) {
+   'use strict';
+
+   var loadedModules = loadedModulesContainerCreator(settings),
+      availableModuleDescriptors = {},
+      calledPostConstructs = [];
 
    function addModuleDescriptor(moduleDescriptor) {
       availableModuleDescriptors[moduleDescriptor.name] = moduleDescriptor;
@@ -391,14 +543,14 @@ function modules(partAccess, eventBus, settings) {
          buildModule(element, moduleDescriptor, foundDependencies);
       } else {
          throw new Error('Module [' + moduleName + '] not created but found in dom');
-
       }
    }
 
-
    function buildModule(element, moduleDescriptor, foundDependencies) {
       var args = foundDependencies,
-         domSettings = getDOMSettings(element, settings.moduleSettingsSelector, moduleDescriptor.name),
+         moduleName = moduleDescriptor.name,
+         actualSelector = settings.getModuleSettingsSelector(moduleName),
+         domSettings = getDOMSettings(element, actualSelector, moduleDescriptor.name),
          mergedSettings = {},
          createdModule;
 
@@ -415,33 +567,277 @@ function modules(partAccess, eventBus, settings) {
       //create Module
       createdModule = moduleDescriptor.creator.apply(moduleDescriptor, args);
 
-      if (createdModule === undefined) {
-         createdModule = {};
+      if (createdModule !== undefined) {
+
+         loadedModules.add(element, createdModule);
+
+         //add module to eventBus
+         eventBus.add(createdModule);
       }
-
-      loadedModules.push(createdModule);
-
-      //add module to eventBus
-      eventBus.add(createdModule);
    }
-
 
    function callPostConstructs() {
       each(loadedModules, function (module) {
-         if (typeof module.postConstruct === 'function') {
-            module.postConstruct();
+         callPostConstruct(module);
+      });
+   }
+
+   function callPostConstruct(module) {
+      var postConstruct = module.postConstruct;
+      if (typeof postConstruct === 'function') {
+         if (!contains(calledPostConstructs, postConstruct)) {
+            postConstruct();
+            calledPostConstructs.push(postConstruct);
+         }
+      }
+   }
+
+   function unloadModules(element) {
+      var modulesToUnload = loadedModules.get(element);
+
+      each(modulesToUnload, function (module) {
+
+         if (typeof module.preDestruct === 'function') {
+            try {
+               module.preDestruct();
+            } catch (e) {
+               settings.logger('Exception while calling preDestruct', e);
+            }
          }
       });
+
+      each(modulesToUnload, function (module) {
+
+         eventBus.remove(module);
+      });
+
+      loadedModules.remove(element);
    }
 
    return {
       provisionModule: initializeModules,
+      unloadModules: unloadModules,
       provisionFinished: callPostConstructs,
       addModuleDescriptor: addModuleDescriptor
    };
 }
-/*exported partBuilder */
-function partBuilder(partAccess, moduleSystemSettings) {
+/* exported domEventListenerCreator */
+function domEventListenerCreator(settings, modules, parts) {
+   'use strict';
+
+   var rootNode = settings.rootNode,
+      modulesAttributeSelector = settings.actualSelector,
+      registerStrategy = decideDomMutationStrategy();
+
+   function decideDomMutationStrategy() {
+      var WebKitMutationObserver = window.WebKitMutationObserver,
+         MutationObserver = window.MutationObserver,
+         strategy;
+
+      if(WebKitMutationObserver) {
+         strategy = createMutationObserverStrategy(WebKitMutationObserver);
+      }
+      else if(MutationObserver) {
+         strategy = createMutationObserverStrategy(MutationObserver);
+      }
+      else {
+         strategy = createLegacyDomMutationStrategy();
+      }
+
+      return strategy;
+   }
+
+   function onElementAdded(addedNode) {
+
+      if(containsNode(rootNode, addedNode)) {
+         var addedModules = querySelectorAll(addedNode, modulesAttributeSelector);
+
+         if(matchesSelector(addedNode, modulesAttributeSelector)) {
+            loadModule(addedNode);
+         }
+
+         each(addedModules, function(addedModule) {
+            loadModule(addedModule);
+         });
+
+         modules.provisionFinished();
+         parts.provisionFinished();
+      }
+   }
+
+   function containsNode(parentNode, node) {
+
+      if(parentNode === document) {
+         return document.body.contains(node);
+      }
+      else {
+         return parentNode.contains(node);
+      }
+   }
+
+   function onElementRemoved(removedElement) {
+      var addedModuleElements = querySelectorAll(removedElement, modulesAttributeSelector);
+
+      each(addedModuleElements, function(moduleElement) {
+         unloadModules(moduleElement);
+      });
+
+      if (matchesSelector(removedElement, modulesAttributeSelector)) {
+         unloadModules(removedElement);
+      }
+   }
+
+   function onElementReplaced(newElement, oldElement) {
+
+      onElementAdded(newElement);
+      onElementRemoved(oldElement);
+   }
+
+
+   function querySelectorAll(element, selector) {
+
+      if(element.querySelectorAll) {
+         return element.querySelectorAll(selector);
+      }
+
+      return [];
+   }
+
+   function loadModule(moduleElement) {
+      return modules.provisionModule(moduleElement);
+   }
+
+   function unloadModules(moduleElement) {
+      modules.unloadModules(moduleElement);
+   }
+
+   return {
+      registerToEvents : registerStrategy.register,
+      unregisterToEvents : registerStrategy.unregister
+   };
+
+   function createMutationObserverStrategy(ObserverCreator) {
+
+      var observerConfig = { attributes: true, childList: true, characterData: true, subtree: true },
+         observer = new ObserverCreator(onMutation);
+
+      function registerToEvents() {
+         observer.observe(rootNode, observerConfig);
+      }
+
+      function unregisterToEvents() {
+         observer.takeRecords();
+         observer.disconnect();
+      }
+
+      function onMutation(mutations, observer) {
+
+         each(mutations, function(mutationRecord) {
+
+            each(mutationRecord.addedNodes, function(addedNode) {
+               onElementAdded(addedNode);
+            });
+
+            each(mutationRecord.removedNodes, function(removedNode) {
+               onElementRemoved(removedNode);
+            });
+         });
+
+         observer.takeRecords();
+      }
+
+      return {
+         register : registerToEvents,
+         unregister : unregisterToEvents
+      };
+   }
+
+   function createLegacyDomMutationStrategy() {
+
+      var appendChild = Element.prototype.appendChild,
+         insertBefore = Element.prototype.insertBefore,
+         removeChild = Element.prototype.removeChild,
+         replaceChild = Element.prototype.replaceChild;
+
+      function registerToEvents() {
+
+         (function(appendChild) {
+            Element.prototype.appendChild = function(newElement, element) {
+               var result = appendChild.apply(this, [newElement, element]);
+
+               onElementAdded(newElement);
+
+               return result;
+            };
+         })(Element.prototype.appendChild);
+
+         (function(insertBefore) {
+            Element.prototype.insertBefore = function(newElement, element) {
+               var result = insertBefore.apply(this, [newElement, element]);
+
+               onElementAdded(newElement);
+
+               return result;
+            };
+         })(Element.prototype.insertBefore);
+
+         (function(removeChild) {
+            Element.prototype.removeChild = function(newElement, element) {
+               var result = removeChild.apply(this, [newElement, element]);
+
+               onElementRemoved(newElement);
+
+               return result;
+            };
+         })(Element.prototype.removeChild);
+
+         (function(replaceChild) {
+            Element.prototype.replaceChild = function(newElement, oldElement) {
+               var result = replaceChild.apply(this, [newElement, oldElement]);
+
+               onElementReplaced(newElement, oldElement);
+
+               return result;
+            };
+         })(Element.prototype.replaceChild);
+      }
+
+      function unregisterToEvents() {
+
+         (function(appendChild) {
+            Element.prototype.appendChild = function(newElement, element) {
+               return appendChild.apply(this, [newElement, element]);
+            };
+         })(appendChild);
+
+         (function(insertBefore) {
+            Element.prototype.insertBefore = function(newElement, element) {
+               return insertBefore.apply(this, [newElement, element]);
+            };
+         })(insertBefore);
+
+         (function(removeChild) {
+            Element.prototype.removeChild = function(newElement, element) {
+               return removeChild.apply(this, [newElement, element]);
+            };
+         })(removeChild);
+
+         (function(replaceChild) {
+            Element.prototype.replaceChild = function(newElement, element) {
+               return replaceChild.apply(this, [newElement, element]);
+            };
+         })(replaceChild);
+      }
+
+      return {
+         register : registerToEvents,
+         unregister : unregisterToEvents
+      };
+   }
+}
+
+/*exported partBuilderCreator */
+function partBuilderCreator(partAccess, moduleSystemSettings) {
    'use strict';
 
    var scopes = constants.scope,
@@ -567,14 +963,15 @@ function partBuilder(partAccess, moduleSystemSettings) {
    return createPart;
 }
 
-/*exported parts */
-function parts(settings) {
+/*exported partsCreator */
+function partsCreator(settings) {
    'use strict';
 
    var loadedSingletonParts = {},
       loadedParts = [],
       buildingParts = {},
-      availablePartDescriptors = {};
+      availablePartDescriptors = {},
+      calledPostConstructs = [];
 
    function addPartDescriptor(partDescriptor) {
       availablePartDescriptors[partDescriptor.name] = partDescriptor;
@@ -691,7 +1088,9 @@ function parts(settings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var domSettings = getDOMSettings(document, settings.partSettingsSelector, partDescriptor.name),
+      var partName = partDescriptor.name,
+         actualSelector = settings.getPartSettingsSelector(partName),
+         domSettings = getDOMSettings(document, actualSelector, partDescriptor.name),
          mergedSettings = {},
          dependencies,
          foundDependencies,
@@ -730,12 +1129,12 @@ function parts(settings) {
    }
 
    function callPostConstruct(part) {
-      if (typeof part.postConstruct === 'function') {
-         part.postConstruct();
-
-         //delete post constructor so it can definetly not be called again
-         //e.g. a singleton part is requested via provisionPart
-         delete part.postConstruct;
+      var postConstruct = part.postConstruct;
+      if (typeof postConstruct === 'function') {
+         if(!contains(calledPostConstructs, postConstruct)) {
+            postConstruct();
+            calledPostConstructs.push(postConstruct);
+         }
       }
    }
 
@@ -755,12 +1154,12 @@ function parts(settings) {
       addPartDescriptor: addPartDescriptor
    };
 }
-/*exported eventBus */
-function eventBus() {
+/*exported eventBusCreator */
+function eventBusCreator() {
    'use strict';
 
    var ON_EVENT_FUNCTION_NAME = 'onEvent',
-      components = [];
+      listeners = [];
 
    function publishEvent(event) {
 
@@ -770,66 +1169,79 @@ function eventBus() {
 
       var callbackFunctionName = 'on' + event.name;
 
-      each(components, function (component) {
+      each(listeners, function (listener) {
 
          if (event.name !== undefined) {
-            tryToCallComponent(component, callbackFunctionName, event);
+            tryToCallListener(listener, callbackFunctionName, event);
          }
 
-         tryToCallComponent(component, ON_EVENT_FUNCTION_NAME, event);
+         tryToCallListener(listener, ON_EVENT_FUNCTION_NAME, event);
       });
    }
 
-   function tryToCallComponent(component, functionName, event) {
+   function tryToCallListener(listener, functionName, event) {
 
-      var callback = component[functionName];
+      var callback = listener[functionName];
 
       if (typeof callback === 'function') {
-         callback.call(component, event);
+         callback.call(listener, event);
       }
    }
 
-   function addComponent(component) {
-      if (component === undefined) {
-         throw new Error('Component to be registered is undefined');
+   function addListener(listener) {
+      if (listener === undefined) {
+         throw new Error('Listener to be registered is undefined');
       }
 
-      if (contains(components, component)) {
-         throw new Error('Component is already registered');
+      if (contains(listeners, listener)) {
+         throw new Error('Listener is already registered');
       }
 
-      components.push(component);
+      listeners.push(listener);
+   }
+
+   function removeListener(listener) {
+      if(listener === undefined) {
+         throw new Error('Listener to be removed is undefined');
+      }
+
+      var hasBeenRemoved = remove(listeners, listener);
+
+      if(!hasBeenRemoved) {
+         throw new Error('Listener to be removed is not registered');
+      }
    }
 
    function reset() {
-      components = [];
+      listeners = [];
    }
 
    return {
       publish: publishEvent,
-      add: addComponent,
+      add: addListener,
+      remove: removeListener,
       reset: reset
    };
 }
-moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCreator, moduleLoaderCreator, partsCreator, modulesCreator, eventBusCreator) {
+moduleSystem = (function () {
    'use strict';
 
    function newInstance() {
       var settings = settingsCreator(),
-         actualSettings = settings.get(),
-         partAccess = partsCreator(actualSettings),
+         parts = partsCreator(settings),
          eventBus = eventBusCreator(),
-         moduleAccess = modulesCreator(partAccess, eventBus, actualSettings),
-         createPart = partBuilderCreator(partAccess, actualSettings),
-         createModule = moduleBuilderCreator(moduleAccess),
-         moduleLoader = moduleLoaderCreator(moduleAccess, partAccess, actualSettings);
+         modules = modulesCreator(parts, eventBus, settings),
+         partBuilder = partBuilderCreator(parts, settings),
+         modleBuilder = moduleBuilderCreator(modules),
+         moduleLoader = moduleLoaderCreator(modules, parts, settings),
+         domEventListener;
 
 
-      createPart('event-bus')
+      partBuilder('event-bus')
          .returns(eventBus);
 
       //deprecated remove in 1.4
-      createPart('eventBus')
+      partBuilder('eventBus')
          .creator(function () {
             if (window.console && console.warn) {
                console.warn('partName "eventBus" deprecated use "event-bus" instead');
@@ -838,28 +1250,43 @@ moduleSystem = (function (settingsCreator, moduleBuilderCreator, partBuilderCrea
             return eventBus;
          });
 
-
       function initModulePageInterceptor(newSettings) {
          if (newSettings !== undefined) {
             settings.mergeWith(newSettings);
          }
 
          moduleLoader.initModulePage();
+
+         domEventListener = domEventListenerCreator(settings, modules, parts);
+
+         if (settings.domMutationSupport === true) {
+
+            domEventListener.registerToEvents();
+         }
+      }
+
+      function dispose() {
+         if (domEventListener !== undefined) {
+            domEventListener.unregisterToEvents();
+         }
+
+         eventBus.reset();
       }
 
       return merge({
-         createPart: createPart,
-         createModule: createModule,
+         createPart: partBuilder,
+         createModule: modleBuilder,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
-         getPart: partAccess.provisionPart,
+         dispose: dispose,
+         getPart: parts.provisionPart
 
       }, constants);
    }
 
    return newInstance();
 
-})(settings, moduleBuilder, partBuilder, moduleLoader, parts, modules, eventBus);
+})();
 /* jshint ignore:start */ 
 }(window, document));
 /* jshint ignore:end */

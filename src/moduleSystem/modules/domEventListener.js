@@ -64,6 +64,13 @@ function domEventListenerCreator(settings, modules, parts) {
       }
    }
 
+   function onElementReplaced(newElement, oldElement) {
+
+      onElementAdded(newElement);
+      onElementRemoved(oldElement);
+   }
+
+
    function querySelectorAll(element, selector) {
 
       if(element.querySelectorAll) {
@@ -126,7 +133,8 @@ function domEventListenerCreator(settings, modules, parts) {
 
       var appendChild = Element.prototype.appendChild,
          insertBefore = Element.prototype.insertBefore,
-         removeChild = Element.prototype.removeChild;
+         removeChild = Element.prototype.removeChild,
+         replaceChild = Element.prototype.replaceChild;
 
       function registerToEvents() {
 
@@ -159,6 +167,16 @@ function domEventListenerCreator(settings, modules, parts) {
                return result;
             };
          })(Element.prototype.removeChild);
+
+         (function(replaceChild) {
+            Element.prototype.replaceChild = function(newElement, oldElement) {
+               var result = replaceChild.apply(this, [newElement, oldElement]);
+
+               onElementReplaced(newElement, oldElement);
+
+               return result;
+            };
+         })(Element.prototype.replaceChild);
       }
 
       function unregisterToEvents() {
@@ -180,6 +198,12 @@ function domEventListenerCreator(settings, modules, parts) {
                return removeChild.apply(this, [newElement, element]);
             };
          })(removeChild);
+
+         (function(replaceChild) {
+            Element.prototype.replaceChild = function(newElement, element) {
+               return replaceChild.apply(this, [newElement, element]);
+            };
+         })(replaceChild);
       }
 
       return {

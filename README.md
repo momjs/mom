@@ -16,6 +16,9 @@ Develop: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=d
 
 Breaking changes
 ----------------
+#### 1.2 -> 1.3
+The 'eventBus' part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
+
 #### 1.1 -> 1.2
 #####Scopes. 
 By default the module system creates a new instance each time it suplies a part.
@@ -34,10 +37,6 @@ moduleSystem.initModuleSystem({
    defaultScope : 'singleton'
 });
 ```
-#### 1.2 -> 1.3
-The 'eventBus' part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
-
-
 
 How To Use
 ----------
@@ -124,7 +123,7 @@ The configuration has to be put in the html head
 <head>
    <script type="adder/settings">
    {
-      isDebug: fales
+      isDebug: false
    }
    </script>
 </head>
@@ -302,6 +301,52 @@ $(function() {
     moduleSystem.initModulePage();
 });
 ```
+
+###Dynamic DOM mutation support
+You are able to add (append) and remove DOM elements containing modules. This function is disabled by default but can easily be configured by the domMutationSupport setting.
+```js
+moduleSystem.initModulePage({
+   domMutationSupport: true
+});
+´´´
+
+####Adding DOM element containing a module
+By adding a DOM element you have to consider nothing but adding the modules-attribute the moduleSystem is searching for. Your module will be loaded and its parts will be injected automatically. Even your provided postConstruct-function will be called after loading your modules.
+
+#####Adding DOM elements with your module appended
+Here is an example how to add an DOM element containing a single module:
+```js
+// create your child element
+var yourChildElement = document.createElement("div");
+
+// configure your child element to have the proper modules-attribute and your javascript-module-name as value
+yourChildElement.setAttribute('modules', 'your-javascript-module-name');
+
+// get any existing element you will append the module element as child of
+var yourExistingElement = document.getElementById('your existing element');
+
+// append your element as child to the existing element.
+yourExistingElement.appendChild(yourChildElement);
+´´´
+
+#####Adding DOM elements with multiple module appended
+You can also add modules with multiply modules appended by its names. Here is your example:
+```js
+// create your child element
+var yourChildElement = document.createElement("div");
+
+// configure your child element to have the proper modules-attribute and your javascript-module-names (comma-separated) as value.
+yourChildElement.setAttribute('modules', 'your-first-javascript-module-name, your-second-javascript-module-name, your-nth-javascript-module-name');
+
+// get any existing element you will append the module element as child of
+var yourExistingElement = document.getElementById('your existing element');
+
+// append your element as child to the existing element.
+yourExistingElement.appendChild(yourChildElement);
+´´´
+
+#####Adding DOM elements with with nested elements
+
 
 To do for 1.4
 -------------
