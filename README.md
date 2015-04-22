@@ -308,7 +308,7 @@ You are able to add (append) and remove DOM elements containing modules. This fu
 moduleSystem.initModulePage({
    domMutationSupport: true
 });
-´´´
+```
 
 ####Adding DOM element containing a module
 By adding a DOM element you have to consider nothing but adding the modules-attribute the moduleSystem is searching for. Your module will be loaded and its parts will be injected automatically. Even your provided postConstruct-function will be called after loading your modules.
@@ -327,7 +327,7 @@ var yourExistingElement = document.getElementById('your existing element');
 
 // append your element as child to the existing element.
 yourExistingElement.appendChild(yourChildElement);
-´´´
+```
 
 #####Adding DOM elements with multiple module appended
 You can also add modules with multiply modules appended by its names. Here is your example:
@@ -343,7 +343,7 @@ var yourExistingElement = document.getElementById('your existing element');
 
 // append your element as child to the existing element.
 yourExistingElement.appendChild(yourChildElement);
-´´´
+```
 
 #####Adding DOM elements with with nested elements
 

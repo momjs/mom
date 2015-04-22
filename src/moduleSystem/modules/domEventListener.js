@@ -148,7 +148,7 @@ function domEventListenerCreator(settings, modules, parts) {
 
                return result;
             };
-         })(Element.prototype.appendChild);
+         })(appendChild);
 
          (function (insertBefore) {
             Element.prototype.insertBefore = function (newElement, element) {
@@ -158,7 +158,7 @@ function domEventListenerCreator(settings, modules, parts) {
 
                return result;
             };
-         })(Element.prototype.insertBefore);
+         })(insertBefore);
 
          (function (removeChild) {
             Element.prototype.removeChild = function (newElement, element) {
@@ -168,7 +168,7 @@ function domEventListenerCreator(settings, modules, parts) {
 
                return result;
             };
-         })(Element.prototype.removeChild);
+         })(removeChild);
 
          (function (replaceChild) {
             Element.prototype.replaceChild = function (newElement, oldElement) {
@@ -178,7 +178,7 @@ function domEventListenerCreator(settings, modules, parts) {
 
                return result;
             };
-         })(Element.prototype.replaceChild);
+         })(replaceChild);
       }
 
       function unregisterToEvents() {
