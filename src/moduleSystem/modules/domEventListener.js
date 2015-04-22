@@ -2,9 +2,7 @@
 function domEventListenerCreator(settings, modules, parts) {
    'use strict';
 
-   var rootNode = settings.rootNode,
-      modulesAttributeSelector = settings.actualSelector,
-      registerStrategy = decideDomMutationStrategy();
+   var registerStrategy = decideDomMutationStrategy();
 
    function decideDomMutationStrategy() {
       var WebKitMutationObserver = window.WebKitMutationObserver,
@@ -24,10 +22,10 @@ function domEventListenerCreator(settings, modules, parts) {
 
    function onElementAdded(addedNode) {
 
-      if (containsNode(rootNode, addedNode)) {
-         var addedModules = querySelectorAll(addedNode, modulesAttributeSelector);
+      if (containsNode(settings.rootNode, addedNode)) {
+         var addedModules = querySelectorAll(addedNode, settings.actualSelector);
 
-         if (matchesSelector(addedNode, modulesAttributeSelector)) {
+         if (matchesSelector(addedNode, settings.actualSelector)) {
             loadModule(addedNode);
          }
 
@@ -50,13 +48,13 @@ function domEventListenerCreator(settings, modules, parts) {
    }
 
    function onElementRemoved(removedElement) {
-      var addedModuleElements = querySelectorAll(removedElement, modulesAttributeSelector);
+      var addedModuleElements = querySelectorAll(removedElement, settings.actualSelector);
 
       each(addedModuleElements, function (moduleElement) {
          unloadModules(moduleElement);
       });
 
-      if (matchesSelector(removedElement, modulesAttributeSelector)) {
+      if (matchesSelector(removedElement, settings.actualSelector)) {
          unloadModules(removedElement);
       }
    }
@@ -101,7 +99,7 @@ function domEventListenerCreator(settings, modules, parts) {
          observer = new ObserverCreator(onMutation);
 
       function registerToEvents() {
-         observer.observe(rootNode, observerConfig);
+         observer.observe(settings.rootNode, observerConfig);
       }
 
       function unregisterToEvents() {

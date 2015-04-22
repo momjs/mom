@@ -9,7 +9,7 @@ moduleSystem = (function () {
          partBuilder = partBuilderCreator(parts, settings),
          modleBuilder = moduleBuilderCreator(modules),
          moduleLoader = moduleLoaderCreator(modules, parts, settings),
-         domEventListener;
+         domEventListener = domEventListenerCreator(settings, modules, parts);
 
 
       partBuilder('event-bus')
@@ -32,10 +32,7 @@ moduleSystem = (function () {
 
          moduleLoader.initModulePage();
 
-         domEventListener = domEventListenerCreator(settings, modules, parts);
-
          if (settings.domMutationSupport === true) {
-
             domEventListener.registerToEvents();
          }
       }
