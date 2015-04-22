@@ -140,71 +140,57 @@ function domEventListenerCreator(settings, modules, parts) {
 
       function registerToEvents() {
 
-         (function (appendChild) {
-            Element.prototype.appendChild = function (newElement, element) {
-               var result = appendChild.call(this, newElement, element);
+         Element.prototype.appendChild = function (newElement, element) {
+            var result = appendChild.call(this, newElement, element);
 
-               onElementAdded(newElement);
+            onElementAdded(newElement);
 
-               return result;
-            };
-         })(appendChild);
+            return result;
+         };
 
-         (function (insertBefore) {
-            Element.prototype.insertBefore = function (newElement, element) {
-               var result = insertBefore.call(this, newElement, element);
+         Element.prototype.insertBefore = function (newElement, element) {
+            var result = insertBefore.call(this, newElement, element);
 
-               onElementAdded(newElement);
+            onElementAdded(newElement);
 
-               return result;
-            };
-         })(insertBefore);
+            return result;
+         };
 
-         (function (removeChild) {
-            Element.prototype.removeChild = function (newElement, element) {
-               var result = removeChild.call(this, newElement, element);
+         Element.prototype.removeChild = function (newElement, element) {
+            var result = removeChild.call(this, newElement, element);
 
-               onElementRemoved(newElement);
+            onElementRemoved(newElement);
 
-               return result;
-            };
-         })(removeChild);
+            return result;
+         };
 
-         (function (replaceChild) {
-            Element.prototype.replaceChild = function (newElement, oldElement) {
-               var result = replaceChild.call(this, newElement, oldElement);
+         Element.prototype.replaceChild = function (newElement, oldElement) {
+            var result = replaceChild.call(this, newElement, oldElement);
 
-               onElementReplaced(newElement, oldElement);
+            onElementReplaced(newElement, oldElement);
 
-               return result;
-            };
-         })(replaceChild);
+            return result;
+         };
       }
 
       function unregisterToEvents() {
 
-         (function (appendChild) {
-            Element.prototype.appendChild = function (newElement, element) {
-               return appendChild.call(this, newElement, element);
-            };
-         })(appendChild);
-         (function (insertBefore) {
-            Element.prototype.insertBefore = function (newElement, element) {
-               return insertBefore.call(this, newElement, element);
-            };
-         })(insertBefore);
+         Element.prototype.appendChild = function (newElement, element) {
+            return appendChild.call(this, newElement, element);
+         };
 
-         (function (removeChild) {
-            Element.prototype.removeChild = function (newElement, element) {
-               return removeChild.call(this, newElement, element);
-            };
-         })(removeChild);
+         Element.prototype.insertBefore = function (newElement, element) {
+            return insertBefore.call(this, newElement, element);
+         };
 
-         (function (replaceChild) {
-            Element.prototype.replaceChild = function (newElement, oldElement) {
-               return replaceChild.call(this, newElement, oldElement);
-            };
-         })(replaceChild);
+
+         Element.prototype.removeChild = function (newElement, element) {
+            return removeChild.call(this, newElement, element);
+         };
+
+         Element.prototype.replaceChild = function (newElement, oldElement) {
+            return replaceChild.call(this, newElement, oldElement);
+         };
       }
 
       return {
