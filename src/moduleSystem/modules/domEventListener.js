@@ -11,13 +11,11 @@ function domEventListenerCreator(settings, modules, parts) {
          MutationObserver = window.MutationObserver,
          strategy;
 
-      if(WebKitMutationObserver) {
+      if (WebKitMutationObserver) {
          strategy = createMutationObserverStrategy(WebKitMutationObserver);
-      }
-      else if(MutationObserver) {
+      } else if (MutationObserver) {
          strategy = createMutationObserverStrategy(MutationObserver);
-      }
-      else {
+      } else {
          strategy = createLegacyDomMutationStrategy();
       }
 
@@ -26,14 +24,14 @@ function domEventListenerCreator(settings, modules, parts) {
 
    function onElementAdded(addedNode) {
 
-      if(containsNode(rootNode, addedNode)) {
+      if (containsNode(rootNode, addedNode)) {
          var addedModules = querySelectorAll(addedNode, modulesAttributeSelector);
 
-         if(matchesSelector(addedNode, modulesAttributeSelector)) {
+         if (matchesSelector(addedNode, modulesAttributeSelector)) {
             loadModule(addedNode);
          }
 
-         each(addedModules, function(addedModule) {
+         each(addedModules, function (addedModule) {
             loadModule(addedModule);
          });
 
@@ -44,10 +42,9 @@ function domEventListenerCreator(settings, modules, parts) {
 
    function containsNode(parentNode, node) {
 
-      if(parentNode === document) {
+      if (parentNode === document) {
          return document.body.contains(node);
-      }
-      else {
+      } else {
          return parentNode.contains(node);
       }
    }
@@ -55,7 +52,7 @@ function domEventListenerCreator(settings, modules, parts) {
    function onElementRemoved(removedElement) {
       var addedModuleElements = querySelectorAll(removedElement, modulesAttributeSelector);
 
-      each(addedModuleElements, function(moduleElement) {
+      each(addedModuleElements, function (moduleElement) {
          unloadModules(moduleElement);
       });
 
@@ -73,7 +70,7 @@ function domEventListenerCreator(settings, modules, parts) {
 
    function querySelectorAll(element, selector) {
 
-      if(element.querySelectorAll) {
+      if (element.querySelectorAll) {
          return element.querySelectorAll(selector);
       }
 
@@ -89,13 +86,18 @@ function domEventListenerCreator(settings, modules, parts) {
    }
 
    return {
-      registerToEvents : registerStrategy.register,
-      unregisterToEvents : registerStrategy.unregister
+      registerToEvents: registerStrategy.register,
+      unregisterToEvents: registerStrategy.unregister
    };
 
    function createMutationObserverStrategy(ObserverCreator) {
 
-      var observerConfig = { attributes: true, childList: true, characterData: true, subtree: true },
+      var observerConfig = {
+            attributes: true,
+            childList: true,
+            characterData: true,
+            subtree: true
+         },
          observer = new ObserverCreator(onMutation);
 
       function registerToEvents() {
@@ -109,13 +111,13 @@ function domEventListenerCreator(settings, modules, parts) {
 
       function onMutation(mutations, observer) {
 
-         each(mutations, function(mutationRecord) {
+         each(mutations, function (mutationRecord) {
 
-            each(mutationRecord.addedNodes, function(addedNode) {
+            each(mutationRecord.addedNodes, function (addedNode) {
                onElementAdded(addedNode);
             });
 
-            each(mutationRecord.removedNodes, function(removedNode) {
+            each(mutationRecord.removedNodes, function (removedNode) {
                onElementRemoved(removedNode);
             });
          });
@@ -124,8 +126,8 @@ function domEventListenerCreator(settings, modules, parts) {
       }
 
       return {
-         register : registerToEvents,
-         unregister : unregisterToEvents
+         register: registerToEvents,
+         unregister: unregisterToEvents
       };
    }
 
@@ -138,9 +140,9 @@ function domEventListenerCreator(settings, modules, parts) {
 
       function registerToEvents() {
 
-         (function(appendChild) {
-            Element.prototype.appendChild = function(newElement, element) {
-               var result = appendChild.apply(this, [newElement, element]);
+         (function (appendChild) {
+            Element.prototype.appendChild = function (newElement, element) {
+               var result = appendChild.call(this, newElement, element);
 
                onElementAdded(newElement);
 
@@ -148,9 +150,9 @@ function domEventListenerCreator(settings, modules, parts) {
             };
          })(Element.prototype.appendChild);
 
-         (function(insertBefore) {
-            Element.prototype.insertBefore = function(newElement, element) {
-               var result = insertBefore.apply(this, [newElement, element]);
+         (function (insertBefore) {
+            Element.prototype.insertBefore = function (newElement, element) {
+               var result = insertBefore.call(this, newElement, element);
 
                onElementAdded(newElement);
 
@@ -158,9 +160,9 @@ function domEventListenerCreator(settings, modules, parts) {
             };
          })(Element.prototype.insertBefore);
 
-         (function(removeChild) {
-            Element.prototype.removeChild = function(newElement, element) {
-               var result = removeChild.apply(this, [newElement, element]);
+         (function (removeChild) {
+            Element.prototype.removeChild = function (newElement, element) {
+               var result = removeChild.call(this, newElement, element);
 
                onElementRemoved(newElement);
 
@@ -168,9 +170,9 @@ function domEventListenerCreator(settings, modules, parts) {
             };
          })(Element.prototype.removeChild);
 
-         (function(replaceChild) {
-            Element.prototype.replaceChild = function(newElement, oldElement) {
-               var result = replaceChild.apply(this, [newElement, oldElement]);
+         (function (replaceChild) {
+            Element.prototype.replaceChild = function (newElement, oldElement) {
+               var result = replaceChild.call(this, newElement, oldElement);
 
                onElementReplaced(newElement, oldElement);
 
@@ -181,34 +183,25 @@ function domEventListenerCreator(settings, modules, parts) {
 
       function unregisterToEvents() {
 
-         (function(appendChild) {
-            Element.prototype.appendChild = function(newElement, element) {
-               return appendChild.apply(this, [newElement, element]);
-            };
+         (function (appendChild) {
+            Element.prototype.appendChild = appendChild;
          })(appendChild);
-
-         (function(insertBefore) {
-            Element.prototype.insertBefore = function(newElement, element) {
-               return insertBefore.apply(this, [newElement, element]);
-            };
+         (function (insertBefore) {
+            Element.prototype.insertBefore = insertBefore;
          })(insertBefore);
 
-         (function(removeChild) {
-            Element.prototype.removeChild = function(newElement, element) {
-               return removeChild.apply(this, [newElement, element]);
-            };
+         (function (removeChild) {
+            Element.prototype.removeChild = removeChild;
          })(removeChild);
 
-         (function(replaceChild) {
-            Element.prototype.replaceChild = function(newElement, element) {
-               return replaceChild.apply(this, [newElement, element]);
-            };
+         (function (replaceChild) {
+            Element.prototype.replaceChild = replaceChild;
          })(replaceChild);
       }
 
       return {
-         register : registerToEvents,
-         unregister : unregisterToEvents
+         register: registerToEvents,
+         unregister: unregisterToEvents
       };
    }
 }
