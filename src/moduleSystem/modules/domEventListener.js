@@ -105,16 +105,25 @@ function domEventListenerCreator(settings, modules, parts) {
       }
 
       function onMutation(mutations, observer) {
+         var addedNodes, removedNodes;
 
          each(mutations, function (mutationRecord) {
+            addedNodes = mutationRecord.addedNodes;
+            removedNodes = mutationRecord.removedNodes;
 
-            each(mutationRecord.addedNodes, function (addedNode) {
-               onElementAdded(addedNode);
-            });
+            /* on Safari 6 the added nodes may be null */
+            if(addedNodes !== null) {
+               each(addedNodes, function (addedNode) {
+                  onElementAdded(addedNode);
+               });
+            }
 
-            each(mutationRecord.removedNodes, function (removedNode) {
-               onElementRemoved(removedNode);
-            });
+            /* on Safari 6 the removed nodes may be null */
+            if(removedNodes !== null) {
+               each(removedNodes, function (removedNode) {
+                  onElementRemoved(removedNode);
+               });
+            }
          });
 
          observer.takeRecords();
