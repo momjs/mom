@@ -1,9 +1,8 @@
 /*exported modulesCreator */
-function modulesCreator(partAccess, eventBus, settings) {
+function modulesCreator(partAccess, eventBus, loadedModules, settings) {
    'use strict';
 
-   var loadedModules = loadedModulesContainerCreator(settings),
-      availableModuleDescriptors = {},
+   var availableModuleDescriptors = {},
       calledPostConstructs = [];
 
    function addModuleDescriptor(moduleDescriptor) {

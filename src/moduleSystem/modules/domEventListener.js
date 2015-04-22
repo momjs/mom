@@ -5,13 +5,10 @@ function domEventListenerCreator(settings, modules, parts) {
    var registerStrategy = decideDomMutationStrategy();
 
    function decideDomMutationStrategy() {
-      var WebKitMutationObserver = window.WebKitMutationObserver,
-         MutationObserver = window.MutationObserver,
+      var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
          strategy;
 
-      if (WebKitMutationObserver) {
-         strategy = createMutationObserverStrategy(WebKitMutationObserver);
-      } else if (MutationObserver) {
+      if (MutationObserver) {
          strategy = createMutationObserverStrategy(MutationObserver);
       } else {
          strategy = createLegacyDomMutationStrategy();
