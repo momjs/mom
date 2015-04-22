@@ -184,18 +184,26 @@ function domEventListenerCreator(settings, modules, parts) {
       function unregisterToEvents() {
 
          (function (appendChild) {
-            Element.prototype.appendChild = appendChild;
+            Element.prototype.appendChild = function (newElement, element) {
+               return appendChild.call(this, newElement, element);
+            };
          })(appendChild);
          (function (insertBefore) {
-            Element.prototype.insertBefore = insertBefore;
+            Element.prototype.insertBefore = function (newElement, element) {
+               return insertBefore.call(this, newElement, element);
+            };
          })(insertBefore);
 
          (function (removeChild) {
-            Element.prototype.removeChild = removeChild;
+            Element.prototype.removeChild = function (newElement, element) {
+               return removeChild.call(this, newElement, element);
+            };
          })(removeChild);
 
          (function (replaceChild) {
-            Element.prototype.replaceChild = replaceChild;
+            Element.prototype.replaceChild = function (newElement, oldElement) {
+               return replaceChild.call(this, newElement, oldElement);
+            };
          })(replaceChild);
       }
 
