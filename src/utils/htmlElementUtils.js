@@ -1,14 +1,14 @@
 /* exported matchesSelector */
-var matchesSelector = (function() {
+var matchesSelector = (function () {
    'use strict';
 
    var ElementPrototype = Element.prototype,
-      nativeFunction = ElementPrototype.matches || 
-         ElementPrototype.matchesSelector ||
-         ElementPrototype.mozMatchesSelector ||
-         ElementPrototype.msMatchesSelector ||
-         ElementPrototype.oMatchesSelector ||
-         ElementPrototype.webkitMatchesSelector;
+      nativeFunction = ElementPrototype.matches ||
+      ElementPrototype.matchesSelector ||
+      ElementPrototype.mozMatchesSelector ||
+      ElementPrototype.msMatchesSelector ||
+      ElementPrototype.oMatchesSelector ||
+      ElementPrototype.webkitMatchesSelector;
 
    function nativeCall(element, selector) {
       return nativeFunction.call(element, selector);
@@ -16,13 +16,9 @@ var matchesSelector = (function() {
 
    function polyfill(element, selector) {
       var parentElement = element.parentNode || element.document,
-         selectedElements = parentElement.querySelectorAll(selector),
-         i = -1;
+         selectedElements = parentElement.querySelectorAll(selector);
 
-      /* jshint noempty: false */
-      while (selectedElements[++i] && selectedElements[i] !== element){}
-
-      return !!selectedElements[i];
+      return contains(selectedElements, element);
    }
 
    return (nativeFunction) ? nativeCall : polyfill;
