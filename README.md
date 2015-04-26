@@ -349,6 +349,31 @@ yourExistingElement.appendChild(yourChildElement);
 ```
 
 #####Adding DOM elements with with nested elements
+The module system will also load modules which are nested itself in surrounding elements you add.
+```js
+// create your child element
+var yourChildElement = document.createElement('div');
+
+// configure your child element to have the proper modules-attribute
+yourChildElement.setAttribute('modules', 'your-first-javascript-module-name');
+
+var parentElement = document.createElement('div');
+parentElement.appendChild(yourChildElement);
+
+// get any existing element you will append the module element as child of
+var yourExistingElement = document.getElementById('your existing element');
+
+// append your element as child to the existing element.
+yourExistingElement.appendChild(parentElement);
+```
+The module system will search recursively for nested module elements and load it.
+
+####Removing DOM element containing a module
+The module system will recognize and unload modules if you remove them from DOM.
+On unloading the module system do:
+- call the preDestruct method (if present)
+- unregister the module from event-bus
+- remove internal registration of the module
 
 
 To do for 1.4
