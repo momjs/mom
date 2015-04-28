@@ -90,7 +90,7 @@ function modulesCreator(partAccess, eventBus, loadedModules, settings) {
             try {
                module.preDestruct();
             } catch (e) {
-               settings.logger('Exception while calling preDestruct', e);
+               logError('Exception while calling preDestruct', e);
             }
          }
       });

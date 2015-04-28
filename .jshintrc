@@ -28,6 +28,7 @@
       "each": true,
       "isArray": false,
       "remove": false,
+      "logError": false,
       "matchesSelector": true,
       "moduleSystem": true,
       "eventBusCreator": false,
