@@ -1,3 +1,7 @@
+var console = console || {
+   error : function() {}
+};
+
 describe('Module system when dom element removed', function() {
 
    var EXISTING_DIV_ID = 'test-div';
@@ -22,8 +26,6 @@ describe('Module system when dom element removed', function() {
    var eventBus;
 
    var thrownError;
-
-
 
    var WAIT_TIME_FOR_MUTATION_EVENT = 0;
    var MAX_WAIT_TIME = 1000;
@@ -69,9 +71,6 @@ describe('Module system when dom element removed', function() {
          return fifthSpyModuleObject;
       });
 
-      console = console || {};
-      spyOn(console, 'error');
-
       moduleSystem.createModule('test-module').creator(spyModule);
       moduleSystem.createModule('test-module1').creator(firstSpyModule);
       moduleSystem.createModule('test-module2').creator(secondSpyModule);
@@ -86,6 +85,8 @@ describe('Module system when dom element removed', function() {
       moduleSystem.initModulePage(settings);
 
       eventBus = moduleSystem.getPart('event-bus');
+
+      spyOn(console, 'error');
    });
 
    afterEach(function() {
