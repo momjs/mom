@@ -147,7 +147,9 @@ function domEventListenerCreator(settings, modules, parts) {
          Element.prototype.appendChild = function (newElement, element) {
             var result = appendChild.call(this, newElement, element);
 
-            onElementAdded(newElement);
+            callAsync(function() {
+               onElementAdded(newElement);
+            });
 
             return result;
          };
@@ -155,7 +157,9 @@ function domEventListenerCreator(settings, modules, parts) {
          Element.prototype.insertBefore = function (newElement, element) {
             var result = insertBefore.call(this, newElement, element);
 
-            onElementAdded(newElement);
+            callAsync(function() {
+               onElementAdded(newElement);
+            });
 
             return result;
          };
@@ -163,7 +167,9 @@ function domEventListenerCreator(settings, modules, parts) {
          Element.prototype.removeChild = function (newElement, element) {
             var result = removeChild.call(this, newElement, element);
 
-            onElementRemoved(newElement);
+            callAsync(function() {
+               onElementRemoved(newElement);
+            });
 
             return result;
          };
@@ -171,7 +177,9 @@ function domEventListenerCreator(settings, modules, parts) {
          Element.prototype.replaceChild = function (newElement, oldElement) {
             var result = replaceChild.call(this, newElement, oldElement);
 
-            onElementReplaced(newElement, oldElement);
+            callAsync(function() {
+               onElementReplaced(newElement, oldElement);
+            });
 
             return result;
          };

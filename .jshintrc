@@ -29,6 +29,7 @@
       "isArray": false,
       "remove": false,
       "logError": false,
+      "callAsync": false,
       "matchesSelector": true,
       "moduleSystem": true,
       "eventBusCreator": false,
