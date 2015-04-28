@@ -69,6 +69,7 @@ describe('Module system when dom element removed', function() {
          return fifthSpyModuleObject;
       });
 
+      console = console || {};
       spyOn(console, 'error');
 
       moduleSystem.createModule('test-module').creator(spyModule);
@@ -264,11 +265,7 @@ describe('Module system when dom element removed', function() {
    });
    describe('when removing parent div (without module)', function() {
 
-      var consoleBackup;
-
       beforeEach(function(done) {
-
-         consoleBackup = console;
 
          $('#test-div3').remove();
 
