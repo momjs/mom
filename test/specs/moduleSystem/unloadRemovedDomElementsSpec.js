@@ -66,8 +66,6 @@ describe('Module system when dom element removed', function () {
       moduleSystem.initModulePage(settings);
 
       eventBus = moduleSystem.getPart('event-bus');
-
-      spyOn(console, 'error');
    });
 
    afterEach(function () {
