@@ -1,8 +1,4 @@
-var console = console || {
-   error : function() {}
-};
-
-describe('Module system when dom element removed', function() {
+describe('Module system when dom element removed', function () {
 
    var EXISTING_DIV_ID = 'test-div';
    var EXISTING_DIV_ID_SELECTOR = '#' + EXISTING_DIV_ID;
@@ -30,7 +26,7 @@ describe('Module system when dom element removed', function() {
    var WAIT_TIME_FOR_MUTATION_EVENT = 0;
    var MAX_WAIT_TIME = 1000;
 
-   beforeEach(function() {
+   beforeEach(function () {
 
       moduleSystem = moduleSystem.newInstance();
 
@@ -42,41 +38,26 @@ describe('Module system when dom element removed', function() {
       firstSpyModuleObject = jasmine.createSpyObj('spyModuleObj1', ['onEvent', 'preDestruct']);
       secondSpyModuleObject = jasmine.createSpyObj('spyModuleObj2', ['onEvent', 'preDestruct']);
       thirdSpyModuleObject = jasmine.createSpyObj('spyModuleObj3', ['onEvent', 'preDestruct']);
-      fourthSpyModuleObject = {
-         preDestruct : function() {
-            throw thrownError;
-         },
-         onEvent : jasmine.createSpy('onEventSpy')
-      };
-      fifthSpyModuleObject = jasmine.createSpyObj('spyModuleObj5', ['onEvent', 'preDestruct']);
+
 
       spyModule = jasmine.createSpy('spyModule');
-      firstSpyModule = jasmine.createSpy('spyModule1').and.callFake(function() {
+      firstSpyModule = jasmine.createSpy('spyModule1').and.callFake(function () {
          return firstSpyModuleObject;
       });
 
-      secondSpyModule = jasmine.createSpy('spyModule2').and.callFake(function() {
+      secondSpyModule = jasmine.createSpy('spyModule2').and.callFake(function () {
          return secondSpyModuleObject;
       });
 
-      thirdSpyModule = jasmine.createSpy('spyModule3').and.callFake(function() {
+      thirdSpyModule = jasmine.createSpy('spyModule3').and.callFake(function () {
          return thirdSpyModuleObject;
       });
 
-      fourthSpyModule = jasmine.createSpy('spyModule4').and.callFake(function() {
-         return fourthSpyModuleObject;
-      });
-
-      fifthSpyModule = jasmine.createSpy('spyModule5').and.callFake(function() {
-         return fifthSpyModuleObject;
-      });
 
       moduleSystem.createModule('test-module').creator(spyModule);
       moduleSystem.createModule('test-module1').creator(firstSpyModule);
       moduleSystem.createModule('test-module2').creator(secondSpyModule);
       moduleSystem.createModule('test-module3').creator(thirdSpyModule);
-      moduleSystem.createModule('test-module4').creator(fourthSpyModule);
-      moduleSystem.createModule('test-module5').creator(fifthSpyModule);
 
       var settings = {
          domMutationSupport: true
@@ -89,225 +70,178 @@ describe('Module system when dom element removed', function() {
       spyOn(console, 'error');
    });
 
-   afterEach(function() {
+   afterEach(function () {
       moduleSystem.dispose();
       eventBus.reset();
    });
 
-   describe('when removing child module dom element', function() {
+   describe('when removing child module dom element', function () {
 
-      beforeEach(function(done) {
+      beforeEach(function (done) {
 
          $('#test-div2').remove();
 
-         setTimeout(function() {
+         setTimeout(function () {
             done();
          }, WAIT_TIME_FOR_MUTATION_EVENT);
       }, MAX_WAIT_TIME);
 
-      it('should call preDestruct on second module', function() {
+      it('should call preDestruct on second module', function () {
 
          expect(secondSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      it('should call preDestruct on third module', function() {
+      it('should call preDestruct on third module', function () {
 
          expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      describe('when event has been published', function() {
+      describe('when event has been published', function () {
 
          var publishedEvent;
 
-         beforeEach(function() {
+         beforeEach(function () {
 
             publishedEvent = {
-               name : 'MyTestEvent'
+               name: 'MyTestEvent'
             };
 
             eventBus.publish(publishedEvent);
          });
 
-         it('should call event listener function on first added module once', function() {
+         it('should call event listener function on first added module once', function () {
 
             expect(firstSpyModuleObject.onEvent.calls.count()).toBe(1);
          });
 
-         it('should call event listener function on first added module with expected event', function() {
+         it('should call event listener function on first added module with expected event', function () {
 
             expect(firstSpyModuleObject.onEvent).toHaveBeenCalledWith(publishedEvent);
          });
 
-         it('should NOT call event listener function on second added module', function() {
+         it('should NOT call event listener function on second added module', function () {
 
             expect(secondSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
 
-         it('should NOT call event listener function on third added module', function() {
+         it('should NOT call event listener function on third added module', function () {
 
             expect(thirdSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
       });
    });
 
-   describe('when removing child module dom element', function() {
+   describe('when removing child module dom element', function () {
 
-      beforeEach(function(done) {
+      beforeEach(function (done) {
 
          $('#test-div1').remove();
 
-         setTimeout(function() {
+         setTimeout(function () {
             done();
          }, WAIT_TIME_FOR_MUTATION_EVENT);
       }, MAX_WAIT_TIME);
 
-      it('should call preDestruct on first module', function() {
+      it('should call preDestruct on first module', function () {
 
          expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      it('should call preDestruct on second module', function() {
+      it('should call preDestruct on second module', function () {
 
          expect(secondSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      it('should call preDestruct on third module', function() {
+      it('should call preDestruct on third module', function () {
 
          expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      describe('when event has been published', function() {
+      describe('when event has been published', function () {
 
          var publishedEvent;
 
-         beforeEach(function() {
+         beforeEach(function () {
 
             publishedEvent = {
-               name : 'MyTestEvent'
+               name: 'MyTestEvent'
             };
 
             eventBus.publish(publishedEvent);
          });
 
-         it('should NOT call event listener function on first added module', function() {
+         it('should NOT call event listener function on first added module', function () {
 
             expect(firstSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
 
-         it('should NOT call event listener function on second added module', function() {
+         it('should NOT call event listener function on second added module', function () {
 
             expect(secondSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
 
-         it('should NOT call event listener function on third added module', function() {
+         it('should NOT call event listener function on third added module', function () {
 
             expect(thirdSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
       });
    });
 
-   describe('when removing parent div (without module)', function() {
+   describe('when removing parent div (without module)', function () {
 
-      beforeEach(function(done) {
+      beforeEach(function (done) {
 
          $('#test-parentDiv').remove();
 
-         setTimeout(function() {
+         setTimeout(function () {
             done();
          }, WAIT_TIME_FOR_MUTATION_EVENT);
       }, MAX_WAIT_TIME);
 
-      it('should call preDestruct on first module', function() {
+      it('should call preDestruct on first module', function () {
 
          expect(firstSpyModuleObject.preDestruct).toHaveBeenCalled();
          expect(firstSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      it('should call preDestruct on second module', function() {
+      it('should call preDestruct on second module', function () {
 
          expect(secondSpyModuleObject.preDestruct).toHaveBeenCalled();
          expect(secondSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      it('should call preDestruct on third module', function() {
+      it('should call preDestruct on third module', function () {
 
          expect(thirdSpyModuleObject.preDestruct).toHaveBeenCalled();
          expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
       });
 
-      describe('when event has been published', function() {
+      describe('when event has been published', function () {
 
          var publishedEvent;
 
-         beforeEach(function() {
+         beforeEach(function () {
 
             publishedEvent = {
-               name : 'MyTestEvent'
+               name: 'MyTestEvent'
             };
 
             eventBus.publish(publishedEvent);
          });
 
-         it('should NOT call event listener function on first added module', function() {
+         it('should NOT call event listener function on first added module', function () {
 
             expect(firstSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
 
-         it('should NOT call event listener function on second added module', function() {
+         it('should NOT call event listener function on second added module', function () {
 
             expect(secondSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
 
-         it('should NOT call event listener function on third added module', function() {
+         it('should NOT call event listener function on third added module', function () {
 
             expect(thirdSpyModuleObject.onEvent).not.toHaveBeenCalled();
-         });
-      });
-   });
-   describe('when removing parent div (without module)', function() {
-
-      beforeEach(function(done) {
-
-         $('#test-div3').remove();
-
-         setTimeout(function() {
-            done();
-         }, WAIT_TIME_FOR_MUTATION_EVENT);
-      }, MAX_WAIT_TIME);
-
-      it('should call preDestruct on third module', function() {
-
-         expect(fifthSpyModuleObject.preDestruct).toHaveBeenCalled();
-         expect(fifthSpyModuleObject.preDestruct.calls.count()).toBe(1);
-      });
-
-      it('should log error of throwing preDestruct', function() {
-
-         expect(console.error).toHaveBeenCalledWith('Exception while calling preDestruct', thrownError);
-         expect(console.error.calls.count()).toBe(1);
-      });
-
-      describe('when event has been published', function() {
-
-         var publishedEvent;
-
-         beforeEach(function() {
-
-            publishedEvent = {
-               name : 'MyTestEvent'
-            };
-
-            eventBus.publish(publishedEvent);
-         });
-
-         it('should NOT call event listener function on third added module', function() {
-
-            expect(fifthSpyModuleObject.onEvent).not.toHaveBeenCalled();
-         });
-
-         it('should NOT call event listener function on fourth added module', function() {
-
-            expect(fourthSpyModuleObject.onEvent).not.toHaveBeenCalled();
          });
       });
    });

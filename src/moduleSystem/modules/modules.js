@@ -87,16 +87,11 @@ function modulesCreator(partAccess, eventBus, loadedModules, settings) {
       each(modulesToUnload, function (module) {
 
          if (typeof module.preDestruct === 'function') {
-            try {
-               module.preDestruct();
-            } catch (e) {
-               logError('Exception while calling preDestruct', e);
-            }
+            module.preDestruct();
          }
       });
 
       each(modulesToUnload, function (module) {
-
          eventBus.remove(module);
       });
 
