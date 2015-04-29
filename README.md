@@ -379,6 +379,31 @@ On unloading the module system do:
 If needed you can clean-up or garbage collect your module by implementing the preDestruct method. It will called directly before unregistering the module object from eventbus and module registry.
 Please make sure your preDestruct implementation is NOT throwing any errors.
 
+####Browser compatibility
+Please consider that for the Internet Explorer 8, 9 and 10 the dom mutation support has an legacy implementation which behavior slightly differs from the behavior of newer browsers:
+
+#####Overview
+
+| Browser           | Version  | Implementation         |
+|-------------------|----------|------------------------|
+| Internet explorer | 8, 9, 10 | legacy implementation* |
+| Internet explorer | 11       | MutationObserver       |
+| Safari            | >=6      | MutationObserver       |
+| Firefox           | >=14     | MutationObserver       |
+| Chrome            | >=18     | MutationObserver       |
+
+*You may load or implement MutationObserver polyfill to unify the implementation for all browsers.
+
+#####Supported dom mutation functions and properties
+
+| Mutation             | MutationObserver | legacy implementation |
+|----------------------|------------------|-----------------------|
+| Element.appendChild  | Yes              | Yes                   |
+| Element.insertBefore | Yes              | Yes                   |
+| Element.removeChild  | Yes              | Yes                   |
+| Element.replaceChild | Yes              | Yes                   |
+| Element.innerHtml    | Yes              | No                    |
+
 To do for 1.4
 -------------
 - [x] provide a method for dynamic loading and unloading of modules
