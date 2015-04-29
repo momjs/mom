@@ -371,10 +371,38 @@ The module system will search recursively for nested module elements and load it
 ####Removing DOM element containing a module
 The module system will recognize and unload modules if you remove them from DOM.
 On unloading the module system do:
-- call the preDestruct method (if present)
-- unregister the module from event-bus
-- remove internal registration of the module
+- call the preDestruct method (if implemented and published by module object)
+- unregister the module from event-bus (if your module returns a module object)
+- remove internal registration of the module (if your module returns a module object)
 
+#####Write the preDestruct method
+If needed you can clean-up or garbage collect your module by implementing the preDestruct method. It will called directly before unregistering the module object from eventbus and module registry.
+Please make sure your preDestruct implementation is NOT throwing any errors.
+
+####Browser compatibility
+Please consider that for the Internet Explorer 8, 9 and 10 the dom mutation support has an legacy implementation which behavior slightly differs from the behavior of newer browsers:
+
+#####Overview
+
+| Browser           | Version  | Implementation         |
+|-------------------|----------|------------------------|
+| Internet explorer | 8, 9, 10 | legacy implementation* |
+| Internet explorer | 11       | MutationObserver       |
+| Safari            | >=6      | MutationObserver       |
+| Firefox           | >=14     | MutationObserver       |
+| Chrome            | >=18     | MutationObserver       |
+
+*You may load or implement MutationObserver polyfill to unify the implementation for all browsers.
+
+#####Supported dom mutation functions and properties
+
+| Mutation             | MutationObserver | legacy implementation |
+|----------------------|------------------|-----------------------|
+| Element.appendChild  | Yes              | Yes                   |
+| Element.insertBefore | Yes              | Yes                   |
+| Element.removeChild  | Yes              | Yes                   |
+| Element.replaceChild | Yes              | Yes                   |
+| Element.innerHtml    | Yes              | No                    |
 
 To do for 1.4
 -------------
