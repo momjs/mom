@@ -1,9 +1,9 @@
-/*exported eventBus */
-function eventBus() {
+/*exported eventBusCreator */
+function eventBusCreator() {
    'use strict';
 
    var ON_EVENT_FUNCTION_NAME = 'onEvent',
-      components = [];
+      listeners = [];
 
    function publishEvent(event) {
 
@@ -13,44 +13,57 @@ function eventBus() {
 
       var callbackFunctionName = 'on' + event.name;
 
-      each(components, function (component) {
+      each(listeners, function (listener) {
 
          if (event.name !== undefined) {
-            tryToCallComponent(component, callbackFunctionName, event);
+            tryToCallListener(listener, callbackFunctionName, event);
          }
 
-         tryToCallComponent(component, ON_EVENT_FUNCTION_NAME, event);
+         tryToCallListener(listener, ON_EVENT_FUNCTION_NAME, event);
       });
    }
 
-   function tryToCallComponent(component, functionName, event) {
+   function tryToCallListener(listener, functionName, event) {
 
-      var callback = component[functionName];
+      var callback = listener[functionName];
 
       if (typeof callback === 'function') {
-         callback.call(component, event);
+         callback.call(listener, event);
       }
    }
 
-   function addComponent(component) {
-      if (component === undefined) {
-         throw new Error('Component to be registered is undefined');
+   function addListener(listener) {
+      if (listener === undefined) {
+         throw new Error('Listener to be registered is undefined');
       }
 
-      if (contains(components, component)) {
-         throw new Error('Component is already registered');
+      if (contains(listeners, listener)) {
+         throw new Error('Listener is already registered');
       }
 
-      components.push(component);
+      listeners.push(listener);
+   }
+
+   function removeListener(listener) {
+      if(listener === undefined) {
+         throw new Error('Listener to be removed is undefined');
+      }
+
+      var hasBeenRemoved = remove(listeners, listener);
+
+      if(!hasBeenRemoved) {
+         throw new Error('Listener to be removed is not registered');
+      }
    }
 
    function reset() {
-      components = [];
+      listeners = [];
    }
 
    return {
       publish: publishEvent,
-      add: addComponent,
+      add: addListener,
+      remove: removeListener,
       reset: reset
    };
 }

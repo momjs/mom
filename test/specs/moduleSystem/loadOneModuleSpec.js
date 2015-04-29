@@ -2,12 +2,17 @@ describe('Module system loads one module', function () {
 
    var spyModule;
 
-   beforeEach(function () {
-      moduleSystem = moduleSystem.newInstance();
+   beforeEach(function() {
 
       loadFixtures('moduleSystem/oneModule.html');
 
       spyModule = jasmine.createSpy('spyModule');
+
+      moduleSystem = moduleSystem.newInstance();
+   });
+
+   afterEach(function() {
+      moduleSystem.dispose();
    });
 
    it('should throw Error if a module is not registered but found in dom', function () {

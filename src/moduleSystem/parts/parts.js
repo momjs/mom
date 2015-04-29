@@ -1,11 +1,12 @@
-/*exported parts */
-function parts(settings) {
+/*exported partsCreator */
+function partsCreator(settings) {
    'use strict';
 
    var loadedSingletonParts = {},
       loadedParts = [],
       buildingParts = {},
-      availablePartDescriptors = {};
+      availablePartDescriptors = {},
+      calledPostConstructs = [];
 
    function addPartDescriptor(partDescriptor) {
       availablePartDescriptors[partDescriptor.name] = partDescriptor;
@@ -122,7 +123,9 @@ function parts(settings) {
    }
 
    function buildCreatorPart(partDescriptor) {
-      var domSettings = getDOMSettings(document, settings.partSettingsSelector, partDescriptor.name),
+      var partName = partDescriptor.name,
+         actualSelector = settings.getPartSettingsSelector(partName),
+         domSettings = getDOMSettings(document, actualSelector, partDescriptor.name),
          mergedSettings = {},
          dependencies,
          foundDependencies,
@@ -161,12 +164,12 @@ function parts(settings) {
    }
 
    function callPostConstruct(part) {
-      if (typeof part.postConstruct === 'function') {
-         part.postConstruct();
-
-         //delete post constructor so it can definetly not be called again
-         //e.g. a singleton part is requested via provisionPart
-         delete part.postConstruct;
+      var postConstruct = part.postConstruct;
+      if (typeof postConstruct === 'function') {
+         if(!contains(calledPostConstructs, postConstruct)) {
+            postConstruct();
+            calledPostConstructs.push(postConstruct);
+         }
       }
    }
 

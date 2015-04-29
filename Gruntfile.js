@@ -27,14 +27,19 @@ module.exports = function (grunt) {
          src: [
                '<%= dirs.source %>/utils/settingsUtils.js',
                '<%= dirs.source %>/utils/arrayUtils.js',
+               '<%= dirs.source %>/utils/logUtils.js',
                '<%= dirs.source %>/utils/objectUtils.js',
+               '<%= dirs.source %>/utils/functionUtils.js',
                '<%= dirs.source %>/utils/stringUtils.js',
+               '<%= dirs.source %>/utils/htmlElementUtils.js',
                '<%= dirs.source %>/moduleSystem/constants.js',
-               '<%= dirs.source %>/moduleSystem/settings.js',
                '<%= dirs.source %>/moduleSystem/descriptorCreators.js',
+               '<%= dirs.source %>/moduleSystem/settings.js',
                '<%= dirs.source %>/moduleSystem/modules/moduleLoader.js',
                '<%= dirs.source %>/moduleSystem/modules/moduleBuilder.js',
+               '<%= dirs.source %>/moduleSystem/modules/loadedModulesContainer.js',
                '<%= dirs.source %>/moduleSystem/modules/modules.js',
+               '<%= dirs.source %>/moduleSystem/modules/domEventListener.js',
                '<%= dirs.source %>/moduleSystem/parts/partBuilder.js',
                '<%= dirs.source %>/moduleSystem/parts/parts.js',
                '<%= dirs.source %>/eventBus/eventBus.js',
@@ -101,21 +106,6 @@ module.exports = function (grunt) {
             options: '<%= jasmine.options %>'
          }
       },
-      bump: {
-         options: {
-            files: ['package.json', 'bower.json'],
-            updateConfigs: ['pkg'],
-            commit: true,
-            commitMessage: 'Release v%VERSION%',
-            commitFiles: ['-a'],
-            createTag: false,
-            tagName: 'v%VERSION%',
-            tagMessage: 'Version %VERSION%',
-            push: true,
-            pushTo: 'origin',
-            gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
-         }
-      },
       copy: {
          release: {
             src: '<%= concat.dist.dest %>',
@@ -126,12 +116,10 @@ module.exports = function (grunt) {
             dest: '<%= dirs.dest %>/<%= pkg.name %>.min.js'
          }
       },
-      exec: {
-         gitAddAll: 'git add --all'
-      },
       'saucelabs-jasmine': {
          all: {
             options: {
+               username: 'alexan',
                urls: ['http://127.0.0.1:<%= connect.server.options.port %>/_SpecRunner.html'],
                build: (process.env.TRAVIS_BUILD_NUMBER) ? process.env.TRAVIS_BUILD_NUMBER : undefined,
                testname: (process.env.TRAVIS_BRANCH) ? process.env.TRAVIS_BRANCH : 'manual test',
@@ -196,21 +184,11 @@ module.exports = function (grunt) {
 
    grunt.loadNpmTasks('grunt-bower');
 
-   grunt.loadNpmTasks('grunt-bump');
-
-   grunt.loadNpmTasks('grunt-exec');
-
    grunt.loadNpmTasks('grunt-saucelabs');
-
 
    // Default task.
    grunt.registerTask('default', ['build']);
 
-   grunt.registerTask('releasePatch', ['bump-only:patch', 'build', 'exec', 'bump-commit']);
-
-   grunt.registerTask('releaseMinior', ['bump-only:minor', 'build', 'exec', 'bump-commit']);
-
-   grunt.registerTask('releaseMajor', ['bump-only:major', 'build', 'exec', 'bump-commit']);
 
    // Build task.
    grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);
