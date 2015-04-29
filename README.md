@@ -5,9 +5,23 @@ Especially usefull for Content Management Systems (CMS):
    - where you don't know which javascript needs to be loaded on which page
    - where you want to configure javascript on render time from the CMS
    - where you want to loosely couple modules, because you don't now if the other module is even on the page 
+   
+###Examples
+- [Weather Page](https://alexan.github.io/ModuleSystem/examples/weather/)
+   
+####Status
+Master: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=master)](https://travis-ci.org/alexan/ModuleSystem)
+Develop: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=develop)](https://travis-ci.org/alexan/ModuleSystem)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/alexan.svg)](https://saucelabs.com/u/alexan)
+
+[![Dev Dependencies](https://david-dm.org/alexan/ModuleSystem/dev-status.svg)](https://david-dm.org/alexan/ModuleSystem#info=devDependencies)
 
 Breaking changes
 ----------------
+#### 1.2 -> 1.3
+The 'eventBus' part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
+
 #### 1.1 -> 1.2
 #####Scopes. 
 By default the module system creates a new instance each time it suplies a part.
@@ -26,10 +40,6 @@ moduleSystem.initModuleSystem({
    defaultScope : 'singleton'
 });
 ```
-#### 1.2 -> 1.3
-The 'eventBus' part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
-
-
 
 How To Use
 ----------
@@ -116,7 +126,7 @@ The configuration has to be put in the html head
 <head>
    <script type="adder/settings">
    {
-      isDebug: fales
+      isDebug: false
    }
    </script>
 </head>
@@ -294,22 +304,109 @@ $(function() {
     moduleSystem.initModulePage();
 });
 ```
-To do for 1.3
--------------
-- [x] initialize module system only on parts of the dom
-- [x] embrace module names with '-' instead of CamelCase
-- [x] better wrong formated settings json exception
-- [x] module/part builder sanity checks
-- [x] cleanup jshint globals
-- [x] sauce laps travis-ci browser tests
-- [x] merge part settings with settings provided from initialization
-- [x] clean up tests
-- [x] ie8 compatibility
+
+###Dynamic DOM mutation support
+You are able to add (append) and remove DOM elements containing modules. This function is disabled by default but can easily be configured by the domMutationSupport setting.
+```js
+moduleSystem.initModulePage({
+   domMutationSupport: true
+});
+```
+
+####Adding DOM element containing a module
+By adding a DOM element you have to consider nothing but adding the modules-attribute the moduleSystem is searching for. Your module will be loaded and its parts will be injected automatically. Even your provided postConstruct-function will be called after loading your modules.
+
+#####Adding DOM elements with your module appended
+Here is an example how to add an DOM element containing a single module:
+```js
+// create your child element
+var yourChildElement = document.createElement("div");
+
+// configure your child element to have the proper modules-attribute and your javascript-module-name as value
+yourChildElement.setAttribute('modules', 'your-javascript-module-name');
+
+// get any existing element you will append the module element as child of
+var yourExistingElement = document.getElementById('your existing element');
+
+// append your element as child to the existing element.
+yourExistingElement.appendChild(yourChildElement);
+```
+
+#####Adding DOM elements with multiple module appended
+You can also add modules with multiply modules appended by its names. Here is your example:
+```js
+// create your child element
+var yourChildElement = document.createElement("div");
+
+// configure your child element to have the proper modules-attribute and your javascript-module-names (comma-separated) as value.
+yourChildElement.setAttribute('modules', 'your-first-javascript-module-name, your-second-javascript-module-name, your-nth-javascript-module-name');
+
+// get any existing element you will append the module element as child of
+var yourExistingElement = document.getElementById('your existing element');
+
+// append your element as child to the existing element.
+yourExistingElement.appendChild(yourChildElement);
+```
+
+#####Adding DOM elements with with nested elements
+The module system will also load modules which are nested itself in surrounding elements you add.
+```js
+// create your child element
+var yourChildElement = document.createElement('div');
+
+// configure your child element to have the proper modules-attribute
+yourChildElement.setAttribute('modules', 'your-first-javascript-module-name');
+
+var parentElement = document.createElement('div');
+parentElement.appendChild(yourChildElement);
+
+// get any existing element you will append the module element as child of
+var yourExistingElement = document.getElementById('your existing element');
+
+// append your element as child to the existing element.
+yourExistingElement.appendChild(parentElement);
+```
+The module system will search recursively for nested module elements and load it.
+
+####Removing DOM element containing a module
+The module system will recognize and unload modules if you remove them from DOM.
+On unloading the module system do:
+- call the preDestruct method (if implemented and published by module object)
+- unregister the module from event-bus (if your module returns a module object)
+- remove internal registration of the module (if your module returns a module object)
+
+#####Write the preDestruct method
+If needed you can clean-up or garbage collect your module by implementing the preDestruct method. It will called directly before unregistering the module object from eventbus and module registry.
+Please make sure your preDestruct implementation is NOT throwing any errors.
+
+####Browser compatibility
+Please consider that for the Internet Explorer 8, 9 and 10 the dom mutation support has an legacy implementation which behavior slightly differs from the behavior of newer browsers:
+
+#####Overview
+
+| Browser           | Version  | Implementation         |
+|-------------------|----------|------------------------|
+| Internet explorer | 8, 9, 10 | legacy implementation* |
+| Internet explorer | 11       | MutationObserver       |
+| Safari            | >=6      | MutationObserver       |
+| Firefox           | >=14     | MutationObserver       |
+| Chrome            | >=18     | MutationObserver       |
+
+*You may load or implement MutationObserver polyfill to unify the implementation for all browsers.
+
+#####Supported dom mutation functions and properties
+
+| Mutation             | MutationObserver | legacy implementation |
+|----------------------|------------------|-----------------------|
+| Element.appendChild  | Yes              | Yes                   |
+| Element.insertBefore | Yes              | Yes                   |
+| Element.removeChild  | Yes              | Yes                   |
+| Element.replaceChild | Yes              | Yes                   |
+| Element.innerHtml    | Yes              | No                    |
 
 To do for 1.4
 -------------
-- [ ] provision single dom node
-- [ ] provide a method for dynamic loading and unloading of modules
+- [x] provide a method for dynamic loading and unloading of modules
 
 To do future releases
 -------------
