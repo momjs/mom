@@ -5,5 +5,5 @@ function callAsync(functionPointer, timeout) {
    
    var actualTimeout = timeout || 0;
 
-   window.setTimeout(functionPointer, actualTimeout);
+   setTimeout(functionPointer, actualTimeout);
 }
