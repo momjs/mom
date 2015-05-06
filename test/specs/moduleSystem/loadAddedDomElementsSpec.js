@@ -24,7 +24,7 @@ describe('Module system', function() {
 
    beforeEach(function() {
 
-      moduleSystem = moduleSystem.newInstance();
+      mom = mom.newInstance();
 
       loadFixtures('moduleSystem/simpleModuleDiv.html');
       $parentDiv = $(EXISTING_DIV_ID_SELECTOR);
@@ -54,14 +54,14 @@ describe('Module system', function() {
 
       secondSpyModule = jasmine.createSpy('spyModule2').and.returnValue(secondSpyModuleObject);
 
-      moduleSystem.createModule('test-module').creator(existingModuleCreator);
-      moduleSystem.createModule('test-module1').creator(firstSpyModule);
-      moduleSystem.createModule('test-module2').creator(secondSpyModule);
+      mom.createModule('test-module').creator(existingModuleCreator);
+      mom.createModule('test-module1').creator(firstSpyModule);
+      mom.createModule('test-module2').creator(secondSpyModule);
 
    });
 
    afterEach(function() {
-      moduleSystem.dispose();
+      mom.dispose();
    });
 
    describe('when dom mutation support is enabled', function() {
@@ -71,9 +71,9 @@ describe('Module system', function() {
             domMutationSupport: true
          };
 
-         moduleSystem.initModulePage(settings);
+         mom.initModulePage(settings);
 
-         eventBus = moduleSystem.getPart('event-bus');
+         eventBus = mom.getPart('event-bus');
       });
 
       describe('on adding a dom node with one module', function() {
@@ -658,10 +658,10 @@ describe('Module system', function() {
 
          dependencyPartSpy = jasmine.createSpy('dependencyPart').and.returnValue(dependencyPartObject);
 
-         moduleSystem.createPart('dependency-part')
+         mom.createPart('dependency-part')
             .creator(dependencyPartSpy);
 
-         moduleSystem.createModule('module-with-dependency')
+         mom.createModule('module-with-dependency')
             .dependencies(['dependency-part'])
             .creator(moduleWithDependencySpy);
 
@@ -669,7 +669,7 @@ describe('Module system', function() {
             domMutationSupport: true
          };
 
-         moduleSystem.initModulePage(settings);
+         mom.initModulePage(settings);
 
          var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="module-with-dependency">' +
             '</div>';
@@ -736,9 +736,9 @@ describe('Module system', function() {
             domMutationSupport: true
          };
 
-         moduleSystem.initModulePage(settings);
+         mom.initModulePage(settings);
 
-         eventBus = moduleSystem.getPart('event-bus');
+         eventBus = mom.getPart('event-bus');
 
          var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" modules="test-module1"></div>';
 
@@ -800,7 +800,7 @@ describe('Module system', function() {
             domMutationSupport: true
          };
 
-         moduleSystem.initModulePage(settings);
+         mom.initModulePage(settings);
 
          var elementToAddAsTest = '<div id="' + ADDED_DIV_ID + '" data-modules="test-module1"></div>';
 
@@ -844,9 +844,9 @@ describe('Module system', function() {
             domMutationSupport: false
          };
 
-         moduleSystem.initModulePage(settings);
+         mom.initModulePage(settings);
 
-         eventBus = moduleSystem.getPart('event-bus');
+         eventBus = mom.getPart('event-bus');
       });
 
       describe('when div has been added to dom', function() {

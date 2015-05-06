@@ -6,7 +6,7 @@ describe('EventBus', function () {
 
    beforeEach(function () {
 
-      eventbus = moduleSystem.getPart('event-bus');
+      eventbus = mom.getPart('event-bus');
 
       testListener = {
          onTestChanged: jasmine.createSpy('onTestChanged'),

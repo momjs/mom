@@ -8,25 +8,25 @@ describe('Module system loads one module', function () {
 
       spyModule = jasmine.createSpy('spyModule');
 
-      moduleSystem = moduleSystem.newInstance();
+      mom = mom.newInstance();
    });
 
    afterEach(function() {
-      moduleSystem.dispose();
+      mom.dispose();
    });
 
    it('should throw Error if a module is not registered but found in dom', function () {
 
-      expect(moduleSystem.initModulePage).toThrowError('Module [test-module] not created but found in dom');
+      expect(mom.initModulePage).toThrowError('Module [test-module] not created but found in dom');
    });
 
    it('should provide Modules with static dependencies', function () {
       var staticDependency = 'test Static';
 
-      moduleSystem.createPart('static-dependency').returns(staticDependency);
-      moduleSystem.createModule('test-module').dependencies(['static-dependency']).creator(spyModule);
+      mom.createPart('static-dependency').returns(staticDependency);
+      mom.createModule('test-module').dependencies(['static-dependency']).creator(spyModule);
 
-      moduleSystem.initModulePage();
+      mom.initModulePage();
 
       expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), staticDependency);
    });
@@ -38,30 +38,30 @@ describe('Module system loads one module', function () {
       };
 
       var spyModule = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createModule('test-module')
+      mom.createModule('test-module')
          .settings(settings)
          .creator(spyModule);
 
-      moduleSystem.initModulePage();
+      mom.initModulePage();
 
       expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), settings);
 
    });
 
    it('should add every module to the event bus', function () {
-      var eventBus = moduleSystem.getPart('event-bus');
+      var eventBus = mom.getPart('event-bus');
 
       eventBus.add = jasmine.createSpy('add').and.callThrough();
 
       var publicMethodObject = {
          testProperty: 'test'
       };
-      moduleSystem.createModule('test-module').creator(function () {
+      mom.createModule('test-module').creator(function () {
          return publicMethodObject;
       });
 
 
-      moduleSystem.initModulePage();
+      mom.initModulePage();
 
 
       expect(eventBus.add).toHaveBeenCalledWith({
@@ -83,10 +83,10 @@ describe('Module system loads one module', function () {
       });
 
 
-      moduleSystem.createModule('test-module').creator(spyModule);
+      mom.createModule('test-module').creator(spyModule);
 
 
-      moduleSystem.initModulePage();
+      mom.initModulePage();
 
 
       expect(spyModuleObject.postConstruct).toHaveBeenCalled();
@@ -96,12 +96,12 @@ describe('Module system loads one module', function () {
 
       beforeEach(function () {
 
-         moduleSystem.createModule('test-module').creator(spyModule);
+         mom.createModule('test-module').creator(spyModule);
       });
 
       it('should load any Module found in dom', function () {
 
-         moduleSystem.initModulePage();
+         mom.initModulePage();
 
          expect(spyModule).toHaveBeenCalled();
          expect(spyModule.calls.argsFor(0)[0]).toBe(document.getElementById('test-module'));
@@ -109,7 +109,7 @@ describe('Module system loads one module', function () {
 
       it('should load module with configured selector and attribute', function () {
 
-         moduleSystem.initModulePage({
+         mom.initModulePage({
             selector: '.js-module',
             attribute: 'data-modules'
          });
@@ -120,7 +120,7 @@ describe('Module system loads one module', function () {
 
       it('should load module with configured attribute', function () {
 
-         moduleSystem.initModulePage({
+         mom.initModulePage({
             attribute: 'data-mods'
          });
 
@@ -133,24 +133,24 @@ describe('Module system loads one module', function () {
 
       beforeEach(function () {
 
-         moduleSystem.createModule('test-module').dependencies(['test-part']).creator(spyModule);
+         mom.createModule('test-module').dependencies(['test-part']).creator(spyModule);
       });
 
       it('should load any needed Part', function () {
          var spyPart = jasmine.createSpy('creator');
-         moduleSystem.createPart('test-part').creator(spyPart);
+         mom.createPart('test-part').creator(spyPart);
 
-         moduleSystem.initModulePage();
+         mom.initModulePage();
 
          expect(spyPart).toHaveBeenCalled();
       });
 
       it('should not load any part which is not needed', function () {
-         moduleSystem.createPart('test-part').creator(function () {});
+         mom.createPart('test-part').creator(function () {});
          var spyPart = jasmine.createSpy('creator');
-         moduleSystem.createPart('test-part2').creator(spyPart);
+         mom.createPart('test-part2').creator(spyPart);
 
-         moduleSystem.initModulePage();
+         mom.initModulePage();
 
          expect(spyPart).not.toHaveBeenCalled();
       });
@@ -159,11 +159,11 @@ describe('Module system loads one module', function () {
          var publicMethodObject = {
             testProperty: 'test'
          };
-         moduleSystem.createPart('test-part').creator(function () {
+         mom.createPart('test-part').creator(function () {
             return publicMethodObject;
          });
 
-         moduleSystem.initModulePage();
+         mom.initModulePage();
 
 
          expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), publicMethodObject);
@@ -174,13 +174,13 @@ describe('Module system loads one module', function () {
          var postConstructSpy = spyPartObject.postConstruct;
 
 
-         moduleSystem.createPart('test-part')
+         mom.createPart('test-part')
             .creator(function () {
                return spyPartObject;
             });
 
 
-         moduleSystem.getPart('test-part');
+         mom.getPart('test-part');
 
 
          expect(postConstructSpy).toHaveBeenCalled();

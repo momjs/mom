@@ -28,7 +28,7 @@ describe('Module system when dom element removed', function () {
 
    beforeEach(function () {
 
-      moduleSystem = moduleSystem.newInstance();
+      mom = mom.newInstance();
 
       loadFixtures('moduleSystem/nestedModules.html');
       $parentDiv = $(EXISTING_DIV_ID_SELECTOR);
@@ -54,22 +54,22 @@ describe('Module system when dom element removed', function () {
       });
 
 
-      moduleSystem.createModule('test-module').creator(spyModule);
-      moduleSystem.createModule('test-module1').creator(firstSpyModule);
-      moduleSystem.createModule('test-module2').creator(secondSpyModule);
-      moduleSystem.createModule('test-module3').creator(thirdSpyModule);
+      mom.createModule('test-module').creator(spyModule);
+      mom.createModule('test-module1').creator(firstSpyModule);
+      mom.createModule('test-module2').creator(secondSpyModule);
+      mom.createModule('test-module3').creator(thirdSpyModule);
 
       var settings = {
          domMutationSupport: true
       };
 
-      moduleSystem.initModulePage(settings);
+      mom.initModulePage(settings);
 
-      eventBus = moduleSystem.getPart('event-bus');
+      eventBus = mom.getPart('event-bus');
    });
 
    afterEach(function () {
-      moduleSystem.dispose();
+      mom.dispose();
       eventBus.reset();
    });
 

@@ -1,4 +1,4 @@
-moduleSystem = (function () {
+mom = (function () {
    'use strict';
 
    function newInstance() {

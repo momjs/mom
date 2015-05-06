@@ -4,7 +4,7 @@ describe('Part builder', function () {
 
    beforeEach(function () {
 
-      builder = moduleSystem.createPart('myPart');
+      builder = mom.createPart('myPart');
    });
 
    describe('on invalid settings', function () {

@@ -36,7 +36,7 @@ describe('Module system', function() {
 
    beforeEach(function() {
 
-      moduleSystem = moduleSystem.newInstance();
+      mom = mom.newInstance();
 
       loadFixtures('moduleSystem/replaceNodesFixture.html');
       $withoutModuleElement = $(WITHOUT_MODULE_ELEMENT_ID_SELECTOR);
@@ -62,16 +62,16 @@ describe('Module system', function() {
       secondAddedModuleCreator = jasmine.createSpy('second_added_module_spy_creator')
          .and.returnValue(secondAddedModuleObject);
 
-      moduleSystem.createModule('test-module-added1').creator(firstAddedModuleCreator);
-      moduleSystem.createModule('test-module-added2').creator(secondAddedModuleCreator);
-      moduleSystem.createModule('test-module-existing1').creator(firstExistingModuleCreator);
-      moduleSystem.createModule('test-module-existing2').creator(secondExistingModuleCreator);
-      moduleSystem.createModule('test-module-existing3').creator(thirdExistingModuleCreator);
+      mom.createModule('test-module-added1').creator(firstAddedModuleCreator);
+      mom.createModule('test-module-added2').creator(secondAddedModuleCreator);
+      mom.createModule('test-module-existing1').creator(firstExistingModuleCreator);
+      mom.createModule('test-module-existing2').creator(secondExistingModuleCreator);
+      mom.createModule('test-module-existing3').creator(thirdExistingModuleCreator);
 
    });
 
    afterEach(function() {
-      moduleSystem.dispose();
+      mom.dispose();
    });
 
    describe('when dom mutation support is enabled', function() {
@@ -81,9 +81,9 @@ describe('Module system', function() {
             domMutationSupport: true
          };
 
-         moduleSystem.initModulePage(settings);
+         mom.initModulePage(settings);
 
-         eventBus = moduleSystem.getPart('event-bus');
+         eventBus = mom.getPart('event-bus');
       });
 
       describe('on replacing a non-module-node with a module node', function () {

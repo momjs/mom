@@ -2,7 +2,7 @@ describe('Module system when loading parts', function () {
 
    beforeEach(function () {
 
-      moduleSystem = moduleSystem.newInstance();
+      mom = mom.newInstance();
    });
 
    it('should get a part', function () {
@@ -10,9 +10,9 @@ describe('Module system when loading parts', function () {
          test: 'test'
       };
       var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
-      moduleSystem.createPart('test-part').creator(spyPart);
+      mom.createPart('test-part').creator(spyPart);
 
-      expect(moduleSystem.getPart('test-part')).toEqual(partObj);
+      expect(mom.getPart('test-part')).toEqual(partObj);
    });
 
    it('should not reinitilize part if allready initialized', function () {
@@ -20,10 +20,10 @@ describe('Module system when loading parts', function () {
          test: 'test'
       };
       var spyPart = jasmine.createSpy('creator').and.returnValue(partObj);
-      moduleSystem.createPart('test-part').scope(moduleSystem.scope.lazySingleton).creator(spyPart);
+      mom.createPart('test-part').scope(mom.scope.lazySingleton).creator(spyPart);
 
-      moduleSystem.getPart('test-part');
-      var partObjActual = moduleSystem.getPart('test-part');
+      mom.getPart('test-part');
+      var partObjActual = mom.getPart('test-part');
 
       expect(partObj).toEqual(partObjActual);
       expect(spyPart.calls.count()).toEqual(1);
@@ -35,7 +35,7 @@ describe('Module system when loading parts', function () {
       var postConstructSpy2 = jasmine.createSpy('post construct');
       var first = true;
 
-      moduleSystem.createPart('test-part')
+      mom.createPart('test-part')
          .creator(function () {
             var postConstruct;
             if(first) {
@@ -51,8 +51,8 @@ describe('Module system when loading parts', function () {
          });
 
 
-      moduleSystem.getPart('test-part');
-      moduleSystem.getPart('test-part');
+      mom.getPart('test-part');
+      mom.getPart('test-part');
 
 
       expect(postConstructSpy1.calls.count()).toEqual(1);
@@ -63,8 +63,8 @@ describe('Module system when loading parts', function () {
       var postConstructSpy = jasmine.createSpy('post construct');
 
 
-      moduleSystem.createPart('test-part')
-         .scope(moduleSystem.scope.lazySingleton)
+      mom.createPart('test-part')
+         .scope(mom.scope.lazySingleton)
          .creator(function () {
             return {
                postConstruct: postConstructSpy
@@ -72,8 +72,8 @@ describe('Module system when loading parts', function () {
          });
 
 
-      moduleSystem.getPart('test-part');
-      moduleSystem.getPart('test-part');
+      mom.getPart('test-part');
+      mom.getPart('test-part');
 
 
       expect(postConstructSpy.calls.count()).toEqual(1);
@@ -85,11 +85,11 @@ describe('Module system when loading parts', function () {
       };
 
       var spyPart = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createPart('test-part')
+      mom.createPart('test-part')
          .settings(settings)
          .creator(spyPart);
 
-      moduleSystem.getPart('test-part');
+      mom.getPart('test-part');
 
       expect(spyPart).toHaveBeenCalledWith(settings);
    });
@@ -105,11 +105,11 @@ describe('Module system when loading parts', function () {
 
 
       var spyPart = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createPart('test-part')
+      mom.createPart('test-part')
          .settings(settings)
          .creator(spyPart);
 
-      moduleSystem.getPart('test-part');
+      mom.getPart('test-part');
 
       expect(spyPart).toHaveBeenCalledWith({
          def: 'default',
@@ -130,11 +130,11 @@ describe('Module system when loading parts', function () {
 
 
       var spyPart = jasmine.createSpy('creator').and.returnValue({});
-      moduleSystem.createPart('test-not-merging')
+      mom.createPart('test-not-merging')
          .settings(settings)
          .creator(spyPart);
 
-      moduleSystem.getPart('test-not-merging');
+      mom.getPart('test-not-merging');
 
       expect(spyPart).toHaveBeenCalledWith(settings);
 
@@ -145,12 +145,12 @@ describe('Module system when loading parts', function () {
       var publicMethodObject = {
          testProperty: 'test'
       };
-      moduleSystem.createPart('dependency-part').creator(function () {
+      mom.createPart('dependency-part').creator(function () {
          return publicMethodObject;
       });
-      moduleSystem.createPart('test-part').dependencies(['dependency-part']).creator(testPart);
+      mom.createPart('test-part').dependencies(['dependency-part']).creator(testPart);
 
-      moduleSystem.getPart('test-part');
+      mom.getPart('test-part');
 
 
       expect(testPart).toHaveBeenCalledWith(publicMethodObject);
@@ -158,20 +158,20 @@ describe('Module system when loading parts', function () {
 
    it('should throw an exception if a part dependencie couldnt be resolved', function () {
       var spyPart = jasmine.createSpy();
-      moduleSystem.createPart('test-part').dependencies(['dependency-part']).creator(spyPart);
+      mom.createPart('test-part').dependencies(['dependency-part']).creator(spyPart);
 
       expect(function () {
-         moduleSystem.getPart('test-part');
+         mom.getPart('test-part');
       }).toThrow();
    });
 
    it('should throw an exception on circular dependencies', function () {
       var spyPart = jasmine.createSpy();
-      moduleSystem.createPart('test-part').dependencies(['dependency-part']).creator(spyPart);
-      moduleSystem.createPart('dependency-part').dependencies(['test-part']).creator(spyPart);
+      mom.createPart('test-part').dependencies(['dependency-part']).creator(spyPart);
+      mom.createPart('dependency-part').dependencies(['test-part']).creator(spyPart);
 
       expect(function () {
-         moduleSystem.getPart('test-part');
+         mom.getPart('test-part');
       }).toThrowError('Circular dependency detected for part [test-part]');
    });
 
@@ -190,7 +190,7 @@ describe('Module system when loading parts', function () {
       );
 
       var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).creator(
+      mom.createPart(referencedPart).creator(
          function () {
             return {
                /*
@@ -200,10 +200,10 @@ describe('Module system when loading parts', function () {
          }
       );
 
-      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spy-part-1');
-      moduleSystem.getPart('spy-part-2');
+      mom.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
+      mom.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
+      mom.getPart('spy-part-1');
+      mom.getPart('spy-part-2');
 
       expect(dependencyForFirstSpy).not.toBe(dependencyForSecondSpy);
    });
@@ -222,7 +222,7 @@ describe('Module system when loading parts', function () {
          }
       );
       var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.lazySingleton).creator(
+      mom.createPart(referencedPart).scope(mom.scope.lazySingleton).creator(
          function () {
             return {
                /*
@@ -232,10 +232,10 @@ describe('Module system when loading parts', function () {
          }
       );
 
-      moduleSystem.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spyPart2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spyPart1');
-      moduleSystem.getPart('spyPart2');
+      mom.createPart('spyPart1').dependencies([referencedPart]).creator(firstSpyPart);
+      mom.createPart('spyPart2').dependencies([referencedPart]).creator(secondSpyPart);
+      mom.getPart('spyPart1');
+      mom.getPart('spyPart2');
 
       expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
    });
@@ -254,7 +254,7 @@ describe('Module system when loading parts', function () {
          }
       );
       var referencedPart = 'part-name';
-      moduleSystem.createPart(referencedPart).scope(moduleSystem.scope.eagerSingleton).creator(
+      mom.createPart(referencedPart).scope(mom.scope.eagerSingleton).creator(
          function () {
             return {
                /*
@@ -264,10 +264,10 @@ describe('Module system when loading parts', function () {
          }
       );
 
-      moduleSystem.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
-      moduleSystem.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
-      moduleSystem.getPart('spy-part-1');
-      moduleSystem.getPart('spy-part-2');
+      mom.createPart('spy-part-1').dependencies([referencedPart]).creator(firstSpyPart);
+      mom.createPart('spy-part-2').dependencies([referencedPart]).creator(secondSpyPart);
+      mom.getPart('spy-part-1');
+      mom.getPart('spy-part-2');
 
       expect(dependencyForFirstSpy).toBe(dependencyForSecondSpy);
    });
@@ -280,9 +280,9 @@ describe('Module system when loading parts', function () {
             postConstruct: postConstructSpy
          };
       });
-      moduleSystem.createPart('test-part').scope(moduleSystem.scope.eagerSingleton).creator(spyPart);
+      mom.createPart('test-part').scope(mom.scope.eagerSingleton).creator(spyPart);
 
-      moduleSystem.initModulePage();
+      mom.initModulePage();
 
       expect(spyPart).toHaveBeenCalled();
       expect(postConstructSpy).toHaveBeenCalled();

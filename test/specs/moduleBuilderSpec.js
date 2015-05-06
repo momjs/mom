@@ -4,7 +4,7 @@ describe('Module builder', function () {
 
    beforeEach(function () {
 
-      builder = moduleSystem.createModule('myModule');
+      builder = mom.createModule('myModule');
    });
 
    describe('on invalid settings', function () {

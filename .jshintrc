@@ -31,7 +31,7 @@
       "logError": false,
       "callAsync": false,
       "matchesSelector": true,
-      "moduleSystem": true,
+      "mom": true,
       "eventBusCreator": false,
       "moduleBuilderCreator": false,
       "partBuilderCreator": false,

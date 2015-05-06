@@ -3,7 +3,7 @@ describe('Module system loads one module with settings', function() {
    var spyModule;
 
    beforeEach(function() {
-      moduleSystem = moduleSystem.newInstance();
+      mom = mom.newInstance();
 
       loadFixtures('moduleSystem/oneModuleWithSettings.html');
 
@@ -12,10 +12,10 @@ describe('Module system loads one module with settings', function() {
 
    it('should provide a settings object to the module if settings found in DOM', function () {
 
-      moduleSystem.createModule('test-module')
+      mom.createModule('test-module')
          .creator(spyModule);
 
-      moduleSystem.initModulePage();
+      mom.initModulePage();
 
       expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), {
          testOverrideSetting: 12
@@ -30,11 +30,11 @@ describe('Module system loads one module with settings', function() {
          otherSetting: 'setting'
       };
 
-      moduleSystem.createModule('test-module')
+      mom.createModule('test-module')
          .settings(settings)
          .creator(spyModule);
 
-      moduleSystem.initModulePage();
+      mom.initModulePage();
 
       expect(spyModule).toHaveBeenCalledWith(jasmine.any(Object), {
          testOverrideSetting: 12,
