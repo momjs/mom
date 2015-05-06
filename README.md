@@ -1,4 +1,4 @@
-mom - the module System
+mom - the module manager
 ============
 Dynamic Loading of Javascript based on DOM elements. 
 Especially usefull for Content Management Systems (CMS):
@@ -10,36 +10,12 @@ Especially usefull for Content Management Systems (CMS):
 - [Weather Page](http://momjs.github.io/mom/examples/weather/)
    
 ####Status
-Master: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=master)](https://travis-ci.org/alexan/ModuleSystem)
-Develop: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=develop)](https://travis-ci.org/alexan/ModuleSystem)
+Master: [![Build Status](https://travis-ci.org/momjs/mom.svg?branch=master)](https://travis-ci.org/momjs/mom)
+Develop: [![Build Status](https://travis-ci.org/momjs/mom.svg?branch=develop)](https://travis-ci.org/momjs/mom)
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/alexan.svg)](https://saucelabs.com/u/alexan)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/momjs.svg)](https://saucelabs.com/u/momjs)
 
-[![Dev Dependencies](https://david-dm.org/alexan/ModuleSystem/dev-status.svg)](https://david-dm.org/alexan/ModuleSystem#info=devDependencies)
-
-Breaking changes
-----------------
-#### 1.2 -> 1.3
-The 'eventBus' part is now called 'event-bus'. Access to the 'eventBus' part will print deprecated logs.
-
-#### 1.1 -> 1.2
-#####Scopes. 
-By default the module system creates a new instance each time it suplies a part.
-In 1.1 parts where singletons (created once and reused). 
-
-If logic relies on that behaviour, then these parts should be scoped singleton
-```js
-mom.createPart("singleton-part")
-    .scope('singleton')
-    .creator(function() {
-        ...
-    });
-    
-//or change the default behaviour
-mom.initModuleSystem({
-   defaultScope : 'singleton'
-});
-```
+[![Dev Dependencies](https://david-dm.org/momjs/mom/dev-status.svg)](https://david-dm.org/momjs/mom#info=devDependencies)
 
 How To Use
 ----------
@@ -67,6 +43,7 @@ moduleSystem.createPart("adder")
 #####Scopes
 By default the module system creates a new instance each time it suplies a part.
 To change this behaviour a scope could be specified
+
 ######Lazy Singleton
 ```js
 mom.createPart("singleton-part")
@@ -77,7 +54,7 @@ mom.createPart("singleton-part")
 ```
 Or the default behaviour could be changed
 ```js
-mom.initModuleSystem({
+mom.initModulePage({
    defaultScope : 'lazy-singleton'
 });
 ```
