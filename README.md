@@ -25,7 +25,7 @@ Utility functions like z.B AJAX loader etc.
 
 ####Creator Parts
 ```js
-moduleSystem.createPart("adder")
+mom.createPart("adder")
     .creator(function() {
         function privateMethod(x ,y) {
             return x + y;
