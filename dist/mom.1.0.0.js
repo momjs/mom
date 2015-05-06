@@ -1234,19 +1234,8 @@ mom = (function () {
          moduleLoader = moduleLoaderCreator(modules, parts, settings),
          domEventListener = domEventListenerCreator(settings, modules, parts);
 
-
       partBuilder('event-bus')
          .returns(eventBus);
-
-      //deprecated remove in 1.4
-      partBuilder('eventBus')
-         .creator(function () {
-            if (window.console && console.warn) {
-               console.warn('partName "eventBus" deprecated use "event-bus" instead');
-            }
-
-            return eventBus;
-         });
 
       function initModulePageInterceptor(newSettings) {
          if (newSettings !== undefined) {
