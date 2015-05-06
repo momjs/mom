@@ -131,7 +131,7 @@ describe('Module system', function() {
             expect(firstSpyModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
-         it('should set the joj-id attribute to the dom element', function() {
+         it('should set the mom-id attribute to the dom element', function() {
 
             expect(ADDED_DIV_SELECTOR).toHaveAttr(DEFAULT_CUSTOM_ID);
          });
@@ -778,7 +778,7 @@ describe('Module system', function() {
          expect(firstSpyModuleObject.postConstruct.calls.count()).toEqual(1);
       });
 
-      it('should NOT set the joj-id attribute to the dom element', function() {
+      it('should NOT set the mom-id attribute to the dom element', function() {
 
          expect(ADDED_DIV_SELECTOR).not.toHaveAttr(DEFAULT_CUSTOM_ID);
       });

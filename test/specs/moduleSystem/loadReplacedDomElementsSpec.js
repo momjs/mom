@@ -125,7 +125,7 @@ describe('Module system', function() {
             expect(firstAddedModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
-         it('should set the joj-id attribute to the dom element', function() {
+         it('should set the mom-id attribute to the dom element', function() {
 
             expect(ADDED_DIV_ID_SELECTOR).toHaveAttr(DEFAULT_CUSTOM_ID);
          });
@@ -184,7 +184,7 @@ describe('Module system', function() {
             expect(firstAddedModuleObject.postConstruct).not.toHaveBeenCalled();
          });
 
-         it('should set the joj-id attribute to added dom element', function() {
+         it('should set the mom-id attribute to added dom element', function() {
 
             expect(ADDED_DIV_ID_SELECTOR).not.toHaveAttr(DEFAULT_CUSTOM_ID);
          });
@@ -259,7 +259,7 @@ describe('Module system', function() {
             expect(firstAddedModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
-         it('should set the joj-id attribute to added dom element', function() {
+         it('should set the mom-id attribute to added dom element', function() {
 
             expect(ADDED_DIV_ID_SELECTOR).toHaveAttr(DEFAULT_CUSTOM_ID);
          });
@@ -340,7 +340,7 @@ describe('Module system', function() {
             expect(firstAddedModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
-         it('should set the joj-id attribute to added dom element', function() {
+         it('should set the mom-id attribute to added dom element', function() {
 
             expect(ADDED_DIV_ID_SELECTOR).toHaveAttr(DEFAULT_CUSTOM_ID);
          });
@@ -454,7 +454,7 @@ describe('Module system', function() {
             expect(secondAddedModuleObject.postConstruct.calls.count()).toBe(1);
          });
 
-         it('should set the joj-id attribute to added dom element', function() {
+         it('should set the mom-id attribute to added dom element', function() {
 
             expect(ADDED_DIV_ID_SELECTOR).toHaveAttr(DEFAULT_CUSTOM_ID);
          });
