@@ -1,4 +1,4 @@
-ModuleSystem
+mom - the module System
 ============
 Dynamic Loading of Javascript based on DOM elements. 
 Especially usefull for Content Management Systems (CMS):
@@ -7,7 +7,7 @@ Especially usefull for Content Management Systems (CMS):
    - where you want to loosely couple modules, because you don't now if the other module is even on the page 
    
 ###Examples
-- [Weather Page](https://alexan.github.io/ModuleSystem/examples/weather/)
+- [Weather Page](http://momjs.github.io/mom/examples/weather/)
    
 ####Status
 Master: [![Build Status](https://travis-ci.org/alexan/ModuleSystem.svg?branch=master)](https://travis-ci.org/alexan/ModuleSystem)
@@ -29,14 +29,14 @@ In 1.1 parts where singletons (created once and reused).
 
 If logic relies on that behaviour, then these parts should be scoped singleton
 ```js
-moduleSystem.createPart("singleton-part")
+mom.createPart("singleton-part")
     .scope('singleton')
     .creator(function() {
         ...
     });
     
 //or change the default behaviour
-moduleSystem.initModuleSystem({
+mom.initModuleSystem({
    defaultScope : 'singleton'
 });
 ```
@@ -69,7 +69,7 @@ By default the module system creates a new instance each time it suplies a part.
 To change this behaviour a scope could be specified
 ######Lazy Singleton
 ```js
-moduleSystem.createPart("singleton-part")
+mom.createPart("singleton-part")
     .scope('lazy-singleton')
     .creator(function() {
         ...
@@ -77,7 +77,7 @@ moduleSystem.createPart("singleton-part")
 ```
 Or the default behaviour could be changed
 ```js
-moduleSystem.initModuleSystem({
+mom.initModuleSystem({
    defaultScope : 'lazy-singleton'
 });
 ```
@@ -85,7 +85,7 @@ A lazy singleton part gets created on the first request and is reused on followi
 
 ######Eager Singleton
 ```js
-moduleSystem.createPart("singleton-part")
+mom.createPart("singleton-part")
     .scope('eager-singleton')
     .creator(function() {
         ...
@@ -96,7 +96,7 @@ There is only one intance of this module which gets reused.
 
 #####Configure
 ```js
-moduleSystem.createPart("adder")
+mom.createPart("adder")
     .settings({
         isDebug : true;
     })
@@ -136,7 +136,7 @@ The configuration has to be put in the html head
 #####Dependency Injection
 creator parts could be composed of other parts
 ```js
-moduleSystem.createPart("calculator")
+mom.createPart("calculator")
     .dependencies(["adder", "multiplier", "static-part"])
     .creator(function(adder, multiplier, staticPart) {
         console.log(staticPart.static);
@@ -150,7 +150,7 @@ moduleSystem.createPart("calculator")
 ####Returns Parts
 If a part don't need a constructor function to be called (e.g. has no dependencies, settings, etc), a returns part could be used
 ```js
-moduleSystem.createPart("static-part")
+mom.createPart("static-part")
     .returns({
          static : "static"
     });
@@ -159,7 +159,7 @@ moduleSystem.createPart("static-part")
 ###Module
 ####Creation and registration
 ```js
-moduleSystem.createModule("hello-world")
+mom.createModule("hello-world")
     .creator(function(moduleObj) {
         alert("Hello " + moduleObj.innerHTML;
     });
@@ -176,7 +176,7 @@ Incase more than one DOM-Node with the same module is found more than one module
 ####Configure
 like parts modules could be provisioned with settings
 ```js
-moduleSystem.createModule("static-hello-world")
+mom.createModule("static-hello-world")
     .settings({staticText : "World"})
     .creator(function(moduleObj, settings) {
         alert("Hello " + settings.staticText;
@@ -200,7 +200,7 @@ an additional setting which merges/overrides the default settings object could b
 modules could be composed out of parts.
 It's a design decision to not allow modules to be injected in other modules. Use the EventBus for communication between modules.
 ```js
-moduleSystem.createModule("static-hello-world-with-dependencies")
+mom.createModule("static-hello-world-with-dependencies")
     .settings({staticText : "World"})
     .dependencies(["adder"])
     .creator(function(moduleObj, settings, adder) {
@@ -214,7 +214,7 @@ moduleSystem.createModule("static-hello-world-with-dependencies")
 every module could decide to publish a postConstruct method which gets executed after every module is properly initialized.
 This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could not listening to the EventBus already and miss the event. 
 ```js
-moduleSystem.createModule("hello-world-publisher")
+mom.createModule("hello-world-publisher")
     .dependencies(["event-bus"])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
@@ -239,7 +239,7 @@ moduleSystem.createModule("hello-world-publisher")
 modules should communicate over the EventBus to prevent tight coupling. 
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 ```js
-moduleSystem.createModule("hello-world-publisher")
+mom.createModule("hello-world-publisher")
     .dependencie(["event-bus"])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
@@ -263,7 +263,7 @@ moduleSystem.createModule("hello-world-publisher")
         }
     });
 
-moduleSystem.createModule("hello-world-listener")
+mom.createModule("hello-world-listener")
     .creator(function(moduleObj) {
         function onHelloWorldChanged(event) {
             alert("Hello " + event.text);
@@ -274,7 +274,7 @@ moduleSystem.createModule("hello-world-listener")
         }
     });
     
-moduleSystem.createModule("unnamed-event-listener")
+mom.createModule("unnamed-event-listener")
     .creator(function(moduleObj) {
         function onEvent(event) {
             if(name === 'HelloWorldChanged') {
@@ -301,20 +301,20 @@ sometimes it is useful to handle a dom element with more than one js-module. For
 when every module is registered in the module system initModulePage() should be called. This would typically be done on DOM ready
 ```js
 $(function() {
-    moduleSystem.initModulePage();
+    mom.initModulePage();
 });
 ```
 
 ###Dynamic DOM mutation support
 You are able to add (append) and remove DOM elements containing modules. This function is disabled by default but can easily be configured by the domMutationSupport setting.
 ```js
-moduleSystem.initModulePage({
+mom.initModulePage({
    domMutationSupport: true
 });
 ```
 
 ####Adding DOM element containing a module
-By adding a DOM element you have to consider nothing but adding the modules-attribute the moduleSystem is searching for. Your module will be loaded and its parts will be injected automatically. Even your provided postConstruct-function will be called after loading your modules.
+By adding a DOM element you have to consider nothing but adding the modules-attribute mom is searching for. Your module will be loaded and its parts will be injected automatically. Even your provided postConstruct-function will be called after loading your modules.
 
 #####Adding DOM elements with your module appended
 Here is an example how to add an DOM element containing a single module:
