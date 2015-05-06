@@ -381,9 +381,6 @@ Please consider that for the Internet Explorer 8, 9 and 10 the dom mutation supp
 | Element.replaceChild | Yes              | Yes                   |
 | Element.innerHtml    | Yes              | No                    |
 
-To do for 1.4
--------------
-- [x] provide a method for dynamic loading and unloading of modules
 
 To do future releases
 -------------
