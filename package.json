@@ -1,12 +1,12 @@
 {
-   "name": "moduleSystem",
+   "name": "mom",
    "description": "Dynamic Loading of Javascript based on DOM elements",
-   "version": "1.4.0",
-   "filename": "moduleSystem.min.js",
-   "author": "Eder Alexander <eder.alexan@gmail.com>",
+   "version": "1.0.0",
+   "filename": "mom.min.js",
+   "author": "mom <https://github.com/momjs/mom>",
    "repository": {
       "type": "git",
-      "url": "git://github.com/alexan/ModuleSystem.git"
+      "url": "git@github.com:momjs/mom.git"
    },
    "dependencies": {},
    "devDependencies": {
