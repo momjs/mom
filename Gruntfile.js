@@ -1,6 +1,10 @@
 /* global module: true */
 module.exports = function (grunt) {
    'use strict';
+   var SAUCE_USERNAME;
+   var SAUCE_ACCESS_KEY;
+   setSauceLabsKeys();
+   
    
    require('load-grunt-tasks')(grunt);
    require('time-grunt')(grunt);
@@ -120,6 +124,8 @@ module.exports = function (grunt) {
       'saucelabs-jasmine': {
          all: {
             options: {
+               username: SAUCE_USERNAME,
+               key: SAUCE_ACCESS_KEY,
                urls: ['http://127.0.0.1:<%= connect.server.options.port %>/_SpecRunner.html'],
                build: (process.env.TRAVIS_BUILD_NUMBER) ? process.env.TRAVIS_BUILD_NUMBER : undefined,
                testname: (process.env.TRAVIS_BRANCH) ? process.env.TRAVIS_BRANCH : 'manual test',
@@ -174,7 +180,7 @@ module.exports = function (grunt) {
    grunt.registerTask('build', ['bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);
 
    var testJobs = ['jasmine:test'];
-   if (typeof process.env.SAUCE_ACCESS_KEY !== 'undefined') {
+   if (SAUCE_ACCESS_KEY && SAUCE_USERNAME) {
       testJobs.push('sauce');
    }
 
@@ -188,4 +194,19 @@ module.exports = function (grunt) {
    grunt.registerTask('createSpecRunner', [
         'jasmine:test:build'
     ]);
+   
+   function setSauceLabsKeys() {
+      if(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
+         SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY;
+         SAUCE_USERNAME = process.env.SAUCE_USERNAME;
+      } else if(process.env.TRAVIS_BRANCH === 'master' && 
+                process.env.SAUCE_USERNAME_MASTER && process.env.SAUCE_ACCESS_KEY_MASTER) {
+         SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY_MASTER;
+         SAUCE_USERNAME = process.env.SAUCE_USERNAME_MASTER;
+      } else if(process.env.SAUCE_USERNAME_DEVELOP && process.env.SAUCE_ACCESS_KEY_DEVELOP) {
+         SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY_DEVELOP;
+         SAUCE_USERNAME = process.env.SAUCE_USERNAME_DEVELOP;
+      }
+      
+   }
 };
