@@ -1,4 +1,4 @@
-moduleSystem.createModule("weather")
+mom.createModule("weather")
    .dependencies(["weather-loader", "description-image-mapper"])
    .creator(function (domNode, weatherLoader, mapper) {
       var $domNode = $(domNode);
@@ -16,7 +16,7 @@ moduleSystem.createModule("weather")
    });
 
 
-moduleSystem.createModule("location-selection")
+mom.createModule("location-selection")
    .dependencies(["eventBus"])
    .creator(function (selectBox, eventBus) {
       var $selectBox = $(selectBox);
@@ -43,7 +43,7 @@ moduleSystem.createModule("location-selection")
 /**
  * Maps a Weather Description to an Image Path
  */
-moduleSystem.createPart("description-image-mapper")
+mom.createPart("description-image-mapper")
    .creator(function () {
 
       function map(description) {
@@ -65,7 +65,7 @@ moduleSystem.createPart("description-image-mapper")
  * }
  * calls callback parameter on success
  */
-moduleSystem.createPart("weather-loader")
+mom.createPart("weather-loader")
    .creator(function () {
 
 
@@ -82,4 +82,4 @@ moduleSystem.createPart("weather-loader")
 
 
 
-moduleSystem.initModulePage();
+mom.initModulePage();

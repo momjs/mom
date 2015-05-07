@@ -13,7 +13,7 @@ function weatherChangedEvent(weather) {
    };
 }
 
-moduleSystem.createModule("set-location")
+mom.createModule("set-location")
    .dependencies(["location-translator", "eventBus"])
    .settings({
       city: "New York"
@@ -57,7 +57,7 @@ moduleSystem.createModule("set-location")
       };
    });
 
-moduleSystem.createModule("map")
+mom.createModule("map")
    .dependencies(["eventBus"])
    .settings({
       smallOffSetX: 0,
@@ -162,7 +162,7 @@ moduleSystem.createModule("map")
       };
    });
 
-moduleSystem.createModule("color-changer")
+mom.createModule("color-changer")
    .settings({
       colors: [
          "rgb(0, 142, 223)",
@@ -202,7 +202,7 @@ moduleSystem.createModule("color-changer")
    });
 
 
-moduleSystem.createModule("weather")
+mom.createModule("weather")
    .creator(function (domElement) {
       var $domElement = $(domElement);
 
@@ -228,7 +228,7 @@ moduleSystem.createModule("weather")
       };
    });
 
-moduleSystem.createModule("detect-location")
+mom.createModule("detect-location")
    .dependencies(["nearest-location", "eventBus"])
    .creator(function (domElement, nearestLocation, eventBus) {
       var $detectLocation = $(domElement);
@@ -241,9 +241,9 @@ moduleSystem.createModule("detect-location")
       });
    });
 
-moduleSystem.createPart("weather-loader")
+mom.createPart("weather-loader")
    .dependencies(["eventBus", "wwo-loader"])
-   .scope(moduleSystem.scope.eagerSingleton)
+   .scope(mom.scope.eagerSingleton)
    .creator(function (eventBus, loader) {
       function loadWeather(lat, lng) {
          loader.load(lat, lng, function (weather) {
@@ -263,7 +263,7 @@ moduleSystem.createPart("weather-loader")
    });
 
 
-moduleSystem.createPart("wwo-loader")
+mom.createPart("wwo-loader")
    .dependencies(["wwo-mapper"])
    .settings({
       k: "e95b16b710ec21d99e0c5f2997885",
@@ -302,7 +302,7 @@ moduleSystem.createPart("wwo-loader")
    });
 
 
-moduleSystem.createPart("wwo-mapper")
+mom.createPart("wwo-mapper")
    .creator(function () {
 
       function map(data) {
@@ -328,8 +328,8 @@ moduleSystem.createPart("wwo-mapper")
    });
 
 
-moduleSystem.createPart("nearest-location")
-   .scope(moduleSystem.scope.eagerSingleton)
+mom.createPart("nearest-location")
+   .scope(mom.scope.eagerSingleton)
    .creator(function () {
 
       function getLocation(callback) {
@@ -355,8 +355,8 @@ moduleSystem.createPart("nearest-location")
       };
    });
 
-moduleSystem.createPart("location-translator")
-   .scope(moduleSystem.scope.lazySingleton)
+mom.createPart("location-translator")
+   .scope(mom.scope.lazySingleton)
    .creator(function ()  {
       var geocoder = new google.maps.Geocoder();
 
@@ -395,4 +395,4 @@ moduleSystem.createPart("location-translator")
 
    });
 
-moduleSystem.initModulePage();
+mom.initModulePage();

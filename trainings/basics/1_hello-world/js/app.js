@@ -1,4 +1,4 @@
-moduleSystem.createModule("hello-world")
+mom.createModule("hello-world")
    .creator(function (domNode) {
       var $domNode = $(domNode);
 
@@ -10,4 +10,4 @@ moduleSystem.createModule("hello-world")
 
 
 
-moduleSystem.initModulePage();
+mom.initModulePage();
