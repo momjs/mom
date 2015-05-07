@@ -5,6 +5,7 @@ report/
 .grunt/
 .idea/
 _SpecRunner.html
+reports/
 
 # Windows image file caches
 Thumbs.db

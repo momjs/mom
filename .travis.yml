@@ -3,6 +3,12 @@ node_js:
 - '0.12'
 before_install:
 - npm install -g grunt-cli
+install: 
+ - npm install
+before_script: 
+ - grunt
+script: 
+ - grunt coveralls
 env:
   global:
   #SAUCE_USERNAME_MASTER

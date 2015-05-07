@@ -102,6 +102,38 @@ module.exports = function (grunt) {
             src: '<%= files.src %>',
             options: '<%= jasmine.options %>'
          },
+         coverage: {
+            src: '<%= jasmine.test.src %>',
+            options: {
+               vendor: [
+                  '<%= dirs.dep %>/jquery/dist/jquery.js',
+                  '<%= dirs.dep %>/jasmine-jsreporter-real/jasmine-jsreporter.js',
+                  '<%= dirs.dep %>/jasmine-jquery/lib/jasmine-jquery.js'
+               ],
+               helpers: ['<%= dirs.test %>/helpers/**/*.js'],
+               specs: [
+                  '<%= dirs.test %>/specs/**/*Spec.js'
+               ],
+               template : require('grunt-template-jasmine-istanbul'),
+			      templateOptions: {
+                  coverage: 'reports/coverage.json',
+                  report: [
+						   {
+							   type: 'html',
+							   options: {
+								   dir: 'reports/html'
+							   }
+						   },
+						   {
+							   type: 'lcov',
+							   options: {
+								   dir: 'reports/lcov'
+							   }
+						   },
+					   ]
+				   }
+            }
+         },
          prod: {
             src: '<%= concat.dist.dest %>',
             options: '<%= jasmine.options %>'
@@ -109,6 +141,14 @@ module.exports = function (grunt) {
          prodMin: {
             src: '<%= uglify.dist.dest %>',
             options: '<%= jasmine.options %>'
+         }
+      },
+      coveralls: {
+         options: {
+            force: true
+         },
+         run: {
+            src: 'reports/lcov/lcov.info'
          }
       },
       copy: {
@@ -179,7 +219,7 @@ module.exports = function (grunt) {
    // Build task.
    grunt.registerTask('build', ['bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);
 
-   var testJobs = ['jasmine:test'];
+   var testJobs = ['jasmine:coverage'];
    if (SAUCE_ACCESS_KEY && SAUCE_USERNAME) {
       testJobs.push('sauce');
    }
@@ -192,8 +232,8 @@ module.exports = function (grunt) {
    grunt.registerTask('sauce', ['createSpecRunner', 'connect', 'saucelabs-jasmine']);
 
    grunt.registerTask('createSpecRunner', [
-        'jasmine:test:build'
-    ]);
+      'jasmine:test:build'
+   ]);
    
    function setSauceLabsKeys() {
       if(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
