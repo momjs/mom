@@ -13,11 +13,14 @@ Especially usefull for Content Management Systems (CMS):
 Master: [![Build Status](https://travis-ci.org/momjs/mom.svg?branch=master)](https://travis-ci.org/momjs/mom)
 Develop: [![Build Status](https://travis-ci.org/momjs/mom.svg?branch=develop)](https://travis-ci.org/momjs/mom)
 
-Master:
+Master: [![Coverage Status](https://coveralls.io/repos/momjs/mom/badge.svg?branch=master)](https://coveralls.io/r/momjs/mom?branch=master)
+Develop: [![Coverage Status](https://coveralls.io/repos/momjs/mom/badge.svg?branch=develop)](https://coveralls.io/r/momjs/mom?branch=develop)
+
+Master: 
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/momjs_master.svg)](https://saucelabs.com/u/momjs_master)
 
-Develop:
+Develop: 
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/momjs.svg)](https://saucelabs.com/u/momjs)
 
