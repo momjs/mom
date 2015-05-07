@@ -1,6 +1,9 @@
 /* global module: true */
 module.exports = function (grunt) {
    'use strict';
+   
+   require('load-grunt-tasks')(grunt);
+   require('time-grunt')(grunt);
 
    // Project configuration.
    grunt.initConfig({
@@ -19,7 +22,7 @@ module.exports = function (grunt) {
       },
       dirs: {
          dest: 'dist',
-         dep: '<%= dirs.dest %>/dependencies',
+         dep: 'bower_components',
          source: 'src',
          test: 'test'
       },
@@ -45,11 +48,6 @@ module.exports = function (grunt) {
                '<%= dirs.source %>/eventBus/eventBus.js',
                '<%= dirs.source %>/moduleSystem/moduleSystem.js']
       },
-      bower: {
-         dev: {
-            dest: '<%= dirs.dep %>'
-         }
-      },
       concat: {
          options: {
             banner: '<%= meta.banner %>'
@@ -63,8 +61,11 @@ module.exports = function (grunt) {
             dest: '<%= dirs.dest %>/<%= pkg.name %>.<%= pkg.version %>.js'
          }
       },
-      bowerInstall: {
-         install: {}
+      bower: {
+         install: {},
+         options: {
+            copy: false
+         }
       },
       uglify: {
          options: {
@@ -84,9 +85,9 @@ module.exports = function (grunt) {
       jasmine: {
          options: {
             vendor: [
-               '<%= dirs.dep %>/dist/jquery.js',
-               '<%= dirs.dep %>/jasmine-jsreporter.js',
-               '<%= dirs.dep %>/lib/jasmine-jquery.js'
+               '<%= dirs.dep %>/jquery/dist/jquery.js',
+               '<%= dirs.dep %>/jasmine-jsreporter-real/jasmine-jsreporter.js',
+               '<%= dirs.dep %>/jasmine-jquery/lib/jasmine-jquery.js'
             ],
             helpers: ['<%= dirs.test %>/helpers/**/*.js'],
             specs: [
@@ -165,32 +166,12 @@ module.exports = function (grunt) {
 
    });
 
-   grunt.loadNpmTasks('grunt-contrib-connect');
-
-   grunt.loadNpmTasks('grunt-contrib-jshint');
-
-   grunt.loadNpmTasks('grunt-contrib-concat');
-
-   grunt.loadNpmTasks('grunt-contrib-uglify');
-
-   grunt.loadNpmTasks('grunt-contrib-jasmine');
-
-   grunt.loadNpmTasks('grunt-contrib-copy');
-
-   grunt.loadNpmTasks('grunt-bower-task');
-
-   grunt.renameTask('bower', 'bowerInstall');
-
-   grunt.loadNpmTasks('grunt-bower');
-
-   grunt.loadNpmTasks('grunt-saucelabs');
-
    // Default task.
    grunt.registerTask('default', ['build']);
 
 
    // Build task.
-   grunt.registerTask('build', ['bowerInstall', 'bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);
+   grunt.registerTask('build', ['bower', 'jshint', 'test', 'concat', 'uglify', 'testProd', 'copy']);
 
    var testJobs = ['jasmine:test'];
    if (typeof process.env.SAUCE_ACCESS_KEY !== 'undefined') {

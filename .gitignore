@@ -1,7 +1,5 @@
 # autogeneration
 bower_components/
-dist/dependencies/
-lib/
 node_modules/
 report/
 .grunt/
