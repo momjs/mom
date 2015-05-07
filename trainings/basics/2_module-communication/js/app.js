@@ -1,5 +1,5 @@
 mom.createModule("location-selection")
-   .dependencies(["eventBus"])
+   .dependencies(["event-bus"])
    .creator(function (domNode, eventBus) {
       var $selectBox = $(domNode);
 

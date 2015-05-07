@@ -17,7 +17,7 @@ mom.createModule("weather")
 
 
 mom.createModule("location-selection")
-   .dependencies(["eventBus"])
+   .dependencies(["event-bus"])
    .creator(function (selectBox, eventBus) {
       var $selectBox = $(selectBox);
 
