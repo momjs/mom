@@ -34,7 +34,7 @@ Utility functions like z.B AJAX loader etc.
 
 ####Creator Parts
 ```js
-mom.createPart("adder")
+mom.createPart('adder')
     .creator(function() {
         function privateMethod(x ,y) {
             return x + y;
@@ -55,7 +55,7 @@ To change this behaviour a scope could be specified
 
 ######Lazy Singleton
 ```js
-mom.createPart("singleton-part")
+mom.createPart('singleton-part')
     .scope('lazy-singleton')
     .creator(function() {
         ...
@@ -71,7 +71,7 @@ A lazy singleton part gets created on the first request and is reused on followi
 
 ######Eager Singleton
 ```js
-mom.createPart("singleton-part")
+mom.createPart('singleton-part')
     .scope('eager-singleton')
     .creator(function() {
         ...
@@ -82,14 +82,14 @@ There is only one intance of this module which gets reused.
 
 #####Configure
 ```js
-mom.createPart("adder")
+mom.createPart('adder')
     .settings({
         isDebug : true;
     })
     .creator(function (settings) {
         function privateMethod(x ,y) {
             if(settings.isDebug) {
-                console.log("x: " + x + " y: " + y);
+                console.log('x: ' + x + ' y: ' + y);
             }
             return x + y;
         }
@@ -112,7 +112,7 @@ The configuration has to be put in the html head
 <head>
    <script type="adder/settings">
    {
-      isDebug: false
+      "isDebug": false
    }
    </script>
 </head>
@@ -122,8 +122,8 @@ The configuration has to be put in the html head
 #####Dependency Injection
 creator parts could be composed of other parts
 ```js
-mom.createPart("calculator")
-    .dependencies(["adder", "multiplier", "static-part"])
+mom.createPart('calculator')
+    .dependencies(['adder', 'multiplier', 'static-part'])
     .creator(function(adder, multiplier, staticPart) {
         console.log(staticPart.static);
  
@@ -136,18 +136,18 @@ mom.createPart("calculator")
 ####Returns Parts
 If a part don't need a constructor function to be called (e.g. has no dependencies, settings, etc), a returns part could be used
 ```js
-mom.createPart("static-part")
+mom.createPart('static-part')
     .returns({
-         static : "static"
+         static : 'static'
     });
 ```
 
 ###Module
 ####Creation and registration
 ```js
-mom.createModule("hello-world")
+mom.createModule('hello-world')
     .creator(function(moduleObj) {
-        alert("Hello " + moduleObj.innerHTML;
+        alert('Hello ' + moduleObj.innerHTML;
     });
 ```
 this module gets loaded when a DOM-element with attribute modules="helloWorld" is found. The found DOM-Node is then given to the Module as the first parameter
@@ -162,10 +162,10 @@ Incase more than one DOM-Node with the same module is found more than one module
 ####Configure
 like parts modules could be provisioned with settings
 ```js
-mom.createModule("static-hello-world")
-    .settings({staticText : "World"})
+mom.createModule('static-hello-world')
+    .settings({staticText : 'World'})
     .creator(function(moduleObj, settings) {
-        alert("Hello " + settings.staticText;
+        alert('Hello ' + settings.staticText;
     });
 ```
 ```html
@@ -186,11 +186,11 @@ an additional setting which merges/overrides the default settings object could b
 modules could be composed out of parts.
 It's a design decision to not allow modules to be injected in other modules. Use the EventBus for communication between modules.
 ```js
-mom.createModule("static-hello-world-with-dependencies")
-    .settings({staticText : "World"})
-    .dependencies(["adder"])
+mom.createModule('static-hello-world-with-dependencies')
+    .settings({staticText : 'World'})
+    .dependencies(['adder'])
     .creator(function(moduleObj, settings, adder) {
-        alert("Hello " + settings.staticText + " " + adder.add(1,2);
+        alert('Hello ' + settings.staticText + ' ' + adder.add(1,2);
     });
 ```
 ```html
@@ -200,8 +200,8 @@ mom.createModule("static-hello-world-with-dependencies")
 every module could decide to publish a postConstruct method which gets executed after every module is properly initialized.
 This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could not listening to the EventBus already and miss the event. 
 ```js
-mom.createModule("hello-world-publisher")
-    .dependencies(["event-bus"])
+mom.createModule('hello-world-publisher')
+    .dependencies(['event-bus'])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
         
@@ -225,8 +225,8 @@ mom.createModule("hello-world-publisher")
 modules should communicate over the EventBus to prevent tight coupling. 
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 ```js
-mom.createModule("hello-world-publisher")
-    .dependencie(["event-bus"])
+mom.createModule('hello-world-publisher')
+    .dependencie(['event-bus'])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
         
@@ -249,10 +249,10 @@ mom.createModule("hello-world-publisher")
         }
     });
 
-mom.createModule("hello-world-listener")
+mom.createModule('hello-world-listener')
     .creator(function(moduleObj) {
         function onHelloWorldChanged(event) {
-            alert("Hello " + event.text);
+            alert('Hello ' + event.text);
         }
          
         return {
@@ -260,13 +260,13 @@ mom.createModule("hello-world-listener")
         }
     });
     
-mom.createModule("unnamed-event-listener")
+mom.createModule('unnamed-event-listener')
     .creator(function(moduleObj) {
         function onEvent(event) {
             if(name === 'HelloWorldChanged') {
-               alert("Hello " + event.text);
+               alert('Hello ' + event.text);
             } else {
-               alert("Hello " + event.data);
+               alert('Hello ' + event.data);
             }
         }
          
