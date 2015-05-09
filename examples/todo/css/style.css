@@ -1,0 +1,12 @@
+.todo-action-button {
+   bottom: 45px;
+   right: 24px;
+}
+
+.todo-container {
+   margin-top: 2em;
+}
+
+.todo-item--checked {
+   text-decoration: line-through;
+}
