@@ -3,6 +3,9 @@
    right: 24px;
 }
 
+.todo-item {
+   margin-left: -0.5rem;
+}
 
 .todo-item--checked {
    text-decoration: line-through;
