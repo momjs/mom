@@ -7,7 +7,8 @@ Especially usefull for Content Management Systems (CMS):
    - where you want to loosely couple modules, because you don't now if the other module is even on the page 
    
 ###Examples
-- [Weather Page](http://momjs.github.io/mom/examples/weather/)
+- [Weather](http://momjs.github.io/mom/examples/weather/)
+- [ToDo](http://momjs.github.io/mom/examples/todo/)
    
 ####Status
 Master: [![Build Status](https://travis-ci.org/momjs/mom.svg?branch=master)](https://travis-ci.org/momjs/mom)
