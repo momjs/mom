@@ -11,7 +11,6 @@ mom.createPart('uuid')
    
    return generate;
 
-   
    function generate() {
       var uuid = template.replace(/[xy]/g, replaceRandom);
       
@@ -172,8 +171,7 @@ mom.createModule('todo-item')
    };
    
    render();
-   
-   persister.saveItem(item);
+   save();
       
    remove.addEventListener('click', function() {
       removeItem();
@@ -183,15 +181,18 @@ mom.createModule('todo-item')
    checkbox.addEventListener('change', function() {
       item.checked = checkbox.checked;
       render();
-      persister.saveItem(item);
+      save();
    });
    
-   function removeItem() {
-      domElement.parentElement.removeChild(domElement);
-      persister.deleteItem(item.id);
+   
+   return {
+      onRemoveCheckedEvent: onRemoveChecked
+   };
+   
+   function save() {
+      persister.saveItem(item);
    }
    
-
    function render() {
       if(item.checked) {
          label.classList.add('todo-item--checked');
@@ -200,15 +201,16 @@ mom.createModule('todo-item')
       }
    }
    
+   function removeItem() {
+      domElement.parentElement.removeChild(domElement);
+      persister.deleteItem(item.id);
+   }
+   
    function onRemoveChecked() {
       if(item.checked) {
          removeItem();
       }
    }
-   
-   return {
-      onRemoveCheckedEvent: onRemoveChecked
-   };
 });
 
 mom.createModule('todo-remove-checked')
