@@ -41,11 +41,6 @@ mom.createPart('todo-persister')
       return JSON.parse(todoJson);
    } 
    
-   function getItem(todoItem) {
-      var todo = get();
-      return todo[todoItem.id];
-   }
-   
    function save(todo) {
       var todoJson = JSON.stringify(todo);
       localStorage.setItem(TODO_PREFIX, todoJson);
