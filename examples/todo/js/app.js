@@ -31,8 +31,11 @@ mom.createModule('todo-adder')
    
    function addToDo() {
       var text = content.value;
+      var toDo;
+      
       if(text !== '') {
-         createToDo(text);
+         toDo = createToDo(text);
+         domElement.appendChild(toDo);
          content.value='';
       }
    }
@@ -41,9 +44,7 @@ mom.createModule('todo-adder')
    function createToDo(text) {
       var replacedText = template.replace('%text%', text);
       var item = replacedText.replace(/%i%/g, i++);
-      var element = createDomElement(item);
-
-      domElement.appendChild(element);
+      return createDomElement(item);
    }
 
    function createDomElement(string) {
