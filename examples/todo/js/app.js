@@ -8,19 +8,32 @@ mom.createModule('todo-adder')
    var content = domElement.querySelector('.js-todo-adder-content');
    var template='<div class="row valign-wrapper" modules="todo-item"><div class="col s10 valign"><input type="checkbox" class="filled-in js-todo-item-box" id="todo%i%"/><label for="todo%i%" class="js-todo-item-label">%text%</label></div><div class="col s2 valign"><a class="waves-effect waves-light btn red js-todo-item-remove"><i class="mdi-content-clear"></i></a></div></div>',
        i=0;
+   var enterKey = '13';
 
    addBtn.addEventListener('click', function(event) {
+      addToDo();
+      Materialize.updateTextFields();
+      content.focus();
+   });
+   
+   content.onkeypress = function(e){
+      if (!e) e = window.event;
+      var keyCode = e.keyCode || e.which;
+      if (keyCode == enterKey){
+         addToDo();
+      }
+   };
+   
+   function addToDo() {
       var text = content.value;
       if(text !== '') {
-         addToDo(text);
+         createToDo(text);
          content.value='';
-         Materialize.updateTextFields();
-         content.focus();
       }
-   });
+   }
+   
 
-
-   function addToDo(text) {
+   function createToDo(text) {
       var replacedText = template.replace("%text%", text);
       var item = replacedText.replace(/%i%/g, i++);
       var element = createDomElement(item);
