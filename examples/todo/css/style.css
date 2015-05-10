@@ -3,10 +3,25 @@
    right: 24px;
 }
 
-.todo-container {
-   margin-top: 2em;
-}
 
 .todo-item--checked {
    text-decoration: line-through;
+}
+
+@media only screen and (min-width: 0) {
+   .todo-container {
+      margin: 0 0;
+   }
+
+@media only screen and (min-width : 601px) {
+   .todo-container {
+      margin: 0 auto;
+   }
+}
+
+   
+@media only screen and (min-width : 993px) {
+   .todo-container {
+      margin: 0 auto;
+   }
 }
