@@ -11,7 +11,7 @@ mom.createModule('todo-adder')
    var content = domElement.querySelector('.js-todo-adder-content');
    var template='<div class="row valign-wrapper" modules="todo-item"><div class="col s10 valign"><input type="checkbox" class="filled-in js-todo-item-box" id="todo%i%"/><label for="todo%i%" class="js-todo-item-label">%text%</label></div><div class="col s2 valign"><a class="waves-effect waves-light btn red js-todo-item-remove"><i class="mdi-content-clear"></i></a></div></div>',
        i=0;
-   var enterKey = '13';
+   var enterKey = 13;
 
    addBtn.addEventListener('click', function() {
       addToDo();
