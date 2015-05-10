@@ -1,3 +1,6 @@
+(function() {
+'use strict';
+
 var removeCheckedEvent = {
       name: 'RemoveCheckedEvent',
 };
@@ -10,16 +13,18 @@ mom.createModule('todo-adder')
        i=0;
    var enterKey = '13';
 
-   addBtn.addEventListener('click', function(event) {
+   addBtn.addEventListener('click', function() {
       addToDo();
       Materialize.updateTextFields();
       content.focus();
    });
    
    content.onkeypress = function(e){
-      if (!e) e = window.event;
+      if (!e) {
+         e = window.event;
+      }
       var keyCode = e.keyCode || e.which;
-      if (keyCode == enterKey){
+      if (keyCode === enterKey){
          addToDo();
       }
    };
@@ -34,7 +39,7 @@ mom.createModule('todo-adder')
    
 
    function createToDo(text) {
-      var replacedText = template.replace("%text%", text);
+      var replacedText = template.replace('%text%', text);
       var item = replacedText.replace(/%i%/g, i++);
       var element = createDomElement(item);
 
@@ -99,9 +104,11 @@ mom.createModule('todo-remove-checked')
       eventBus.publish(removeCheckedEvent);
    });
    
-})
+});
 
 
 mom.initModulePage({
    domMutationSupport: true
 });
+   
+})();
