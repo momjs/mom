@@ -119,7 +119,7 @@ mom.createModule('todo-adder')
       
       if(text !== '') {
          toDo = {
-            text: text,
+            text: escapeHTML(text),
             id: uuid(),
             checked: false
          };
@@ -127,6 +127,15 @@ mom.createModule('todo-adder')
          
          content.value='';
       }
+   }
+   
+   function escapeHTML(text) {
+      return text
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
    }
    
    function createToDo(toDo) {
