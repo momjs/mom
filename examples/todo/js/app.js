@@ -15,6 +15,7 @@ mom.createModule('todo-adder')
          addToDo(text);
          content.value='';
          Materialize.updateTextFields();
+         content.focus();
       }
    });
 
