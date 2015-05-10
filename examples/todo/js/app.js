@@ -136,7 +136,7 @@ mom.createModule('todo-adder')
       var toDoHtml = template;
       var toDoElement;
       
-      toDoHtml = toDoHtml.replace('%text%', toDo.text)
+      toDoHtml = toDoHtml.replace('%text%', toDo.text);
       toDoHtml = toDoHtml.replace(/%id%/g, toDo.id);
       toDoHtml = toDoHtml.replace('%checked%', (toDo.checked) ? 'checked' : '');
       
