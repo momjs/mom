@@ -25,7 +25,7 @@ mom.createPart('uuid')
    
 mom.createPart('todo-persister')
    .creator(function() {
-   var TODO_PREFIX = 'todo';
+   var TODO_IDENTIFIER = 'todo';
 
    return {
       saveItem: saveItem,
@@ -34,7 +34,7 @@ mom.createPart('todo-persister')
    };
    
    function get() {
-      var todoJson = localStorage.getItem(TODO_PREFIX);
+      var todoJson = localStorage.getItem(TODO_IDENTIFIER);
       if(!todoJson) {
          todoJson = '{}';
       }
@@ -43,7 +43,7 @@ mom.createPart('todo-persister')
    
    function save(todo) {
       var todoJson = JSON.stringify(todo);
-      localStorage.setItem(TODO_PREFIX, todoJson);
+      localStorage.setItem(TODO_IDENTIFIER, todoJson);
    }
    
    function saveItem(todoItem) {
