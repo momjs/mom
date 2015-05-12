@@ -25,7 +25,7 @@ mom.createPart('uuid')
    
 mom.createPart('todo-persister')
    .creator(function() {
-   var TODO_IDENTIFIER = 'todo';
+   var TODO_PREFIX = 'todo';
 
    return {
       saveItem: saveItem,
@@ -34,7 +34,7 @@ mom.createPart('todo-persister')
    };
    
    function get() {
-      var todoJson = localStorage.getItem(TODO_IDENTIFIER);
+      var todoJson = localStorage.getItem(TODO_PREFIX);
       if(!todoJson) {
          todoJson = '{}';
       }
@@ -43,7 +43,7 @@ mom.createPart('todo-persister')
    
    function save(todo) {
       var todoJson = JSON.stringify(todo);
-      localStorage.setItem(TODO_IDENTIFIER, todoJson);
+      localStorage.setItem(TODO_PREFIX, todoJson);
    }
    
    function saveItem(todoItem) {
@@ -76,16 +76,7 @@ mom.createModule('todo-adder')
    .creator(function(domElement, uuid, persister) {
    var addBtn = domElement.querySelector('.js-todo-adder-add');
    var content = domElement.querySelector('.js-todo-adder-content');
-   var template='\
-   <div class="row valign-wrapper todo-item" modules="todo-item">\
-      <div class="col s10 valign">\
-         <input type="checkbox" class="filled-in js-todo-item-box" id="%id%" %checked%/>\
-         <label for="%id%" class="js-todo-item-label">%text%</label>\
-      </div>\
-      <div class="col s2 valign">\
-         <a class="waves-effect waves-light btn red js-todo-item-remove"><i class="mdi-content-clear"></i></a>\
-      </div>\
-   </div>';
+   var template='<div class="row valign-wrapper todo-item" modules="todo-item"><div class="col s10 valign"><input type="checkbox" class="filled-in js-todo-item-box" id="%id%" %checked%/><label for="%id%" class="js-todo-item-label">%text%</label></div><div class="col s2 valign"><a class="waves-effect waves-light btn red js-todo-item-remove"><i class="mdi-content-clear"></i></a></div></div>';
    var enterKey = 13;
    
    addBtn.addEventListener('click', function() {
