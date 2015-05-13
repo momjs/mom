@@ -1,0 +1,19 @@
+.todo-action-btn {
+   display: none;
+}
+
+.todo-action-adder {
+   display: none;
+}
+
+.todo-adder-add {
+   display: none;
+}
+
+.todo-item-remove {
+   display: none!important;
+}
+
+.todo-item--checked {
+   text-decoration: line-through;
+}

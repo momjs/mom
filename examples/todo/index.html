@@ -4,17 +4,18 @@
    <title>Mom - ToDo</title>
    <link href="css/materialize.css" rel="stylesheet">
    <link href="css/style.css" type="text/css" rel="stylesheet">
+   <link href="css/print.css"  rel="stylesheet" type="text/css" media="print" />
    <meta name="viewport" content="width=device-width" />
 </head>
 <body> 
    <div class="container todo-container" modules="todo-adder">
-      <div class="row valign-wrapper">
+      <div class="row valign-wrapper todo-action-adder">
          <div class="input-field col s10 valign">
             <i class="mdi-action-assignment-turned-in prefix"></i>
             <input id="new-todo" type="text" class="js-todo-adder-content">
             <label for="new-todo">New ToDo</label>
          </div>
-         <div class="col s2 valign">
+         <div class="col s2 valign todo-adder-add">
             <a class="waves-effect waves-light btn js-todo-adder-add"><i class="mdi-content-add"></i></a>
          </div>
       </div>
