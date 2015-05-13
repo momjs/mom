@@ -13,7 +13,3 @@
 .todo-item-remove {
    display: none!important;
 }
-
-.todo-item--checked {
-   text-decoration: line-through;
-}
