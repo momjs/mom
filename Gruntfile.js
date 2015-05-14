@@ -4,8 +4,8 @@ module.exports = function (grunt) {
    var SAUCE_USERNAME;
    var SAUCE_ACCESS_KEY;
    setSauceLabsKeys();
-   
-   
+
+
    require('load-grunt-tasks')(grunt);
    require('time-grunt')(grunt);
 
@@ -234,12 +234,12 @@ module.exports = function (grunt) {
    grunt.registerTask('createSpecRunner', [
       'jasmine:test:build'
    ]);
-   
+
    function setSauceLabsKeys() {
       if(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
          SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY;
          SAUCE_USERNAME = process.env.SAUCE_USERNAME;
-      } else if(process.env.TRAVIS_BRANCH === 'master' && 
+      } else if(process.env.TRAVIS_BRANCH === 'master' &&
                 process.env.SAUCE_USERNAME_MASTER && process.env.SAUCE_ACCESS_KEY_MASTER) {
          SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY_MASTER;
          SAUCE_USERNAME = process.env.SAUCE_USERNAME_MASTER;
@@ -247,6 +247,6 @@ module.exports = function (grunt) {
          SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY_DEVELOP;
          SAUCE_USERNAME = process.env.SAUCE_USERNAME_DEVELOP;
       }
-      
+
    }
 };
