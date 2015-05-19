@@ -309,10 +309,6 @@ mom.createPart('wwo-loader')
          });
       }
 
-      function onLocationChanged(event) {
-         loadWeather(event.lat, event.lng);
-      }
-
       return {
          load: load
       };
