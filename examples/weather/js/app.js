@@ -284,7 +284,7 @@ mom.createPart('wwo-loader')
    .dependencies(['wwo-mapper'])
    .settings({
       k: 'e95b16b710ec21d99e0c5f2997885',
-      url: '//api2.worldweatheronline.com/free/v2/weather.ashx?callback=?',
+      url: '//api.worldweatheronline.com/free/v2/weather.ashx?callback=?',
    })
    .creator(function (settings, mapper) {
       function load(lat, lng, callback) {
@@ -346,7 +346,7 @@ mom.createPart('wwo-mapper')
 
 
 mom.createPart('nearest-location')
-   .scope(mom.scope.eagerSingleton)
+   .scope(mom.scope.lazySingleton)
    .creator(function () {
 
       function getLocation(callback) {
