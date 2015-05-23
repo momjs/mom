@@ -18,7 +18,7 @@ describe('Module system', function() {
 
    var elementToAddAsHtml = '<div id="' + ADDED_DIV_ID + '" modules="added-module"></div>';
 
-   var WAIT_TIME_FOR_MUTATION_EVENT = 10;
+   var WAIT_TIME_FOR_MUTATION_EVENT = 0;
    var MAX_WAIT_TIME = 1000;
 
    beforeEach(function () {
@@ -31,13 +31,13 @@ describe('Module system', function() {
       existingModuleObject = {
 
          postConstruct : jasmine.createSpy('existingModuleObject.postConstruct').and.callFake(function() {
-            $parentDiv.appendTo(elementToAddAsHtml);
+            $parentDiv.append(elementToAddAsHtml);
          })
       };
       addedModuleObject = jasmine.createSpyObj('addedModuleObject', ['onEvent', 'postConstruct']);
 
       existingModuleCreator = jasmine.createSpy('existingModuleCreate').and.returnValue(existingModuleObject);
-      addedModuleCreator = jasmine.createSpy('addedModuleCreator').and.callFake(addedModuleCreator);
+      addedModuleCreator = jasmine.createSpy('addedModuleCreator').and.returnValue(addedModuleObject);
 
       mom.createModule('test-module').creator(existingModuleCreator);
       mom.createModule('added-module').creator(addedModuleCreator);
