@@ -8,7 +8,7 @@ mom = (function () {
          loadedModules = loadedModulesContainerCreator(settings),
          modules = modulesCreator(parts, eventBus, loadedModules, settings),
          partBuilder = partBuilderCreator(parts, settings),
-         modleBuilder = moduleBuilderCreator(modules),
+         moduleBuilder = moduleBuilderCreator(modules),
          moduleLoader = moduleLoaderCreator(modules, parts, settings),
          domEventListener = domEventListenerCreator(settings, modules, parts);
 
@@ -20,11 +20,11 @@ mom = (function () {
             settings.mergeWith(newSettings);
          }
 
-         moduleLoader.initModulePage();
-
          if (settings.domMutationSupport === true) {
             domEventListener.registerToEvents();
          }
+
+         moduleLoader.initModulePage();
       }
 
       function dispose() {
@@ -37,7 +37,7 @@ mom = (function () {
 
       return merge({
          createPart: partBuilder,
-         createModule: modleBuilder,
+         createModule: moduleBuilder,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
          dispose: dispose,
