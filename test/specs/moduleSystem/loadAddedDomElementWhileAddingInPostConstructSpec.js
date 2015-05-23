@@ -43,6 +43,10 @@ describe('Module system', function() {
       mom.createModule('added-module').creator(addedModuleCreator);
    });
 
+   afterEach(function() {
+      mom.dispose();
+   });
+
    describe('when dom mutation support is enabled', function () {
 
       beforeEach(function(done) {
