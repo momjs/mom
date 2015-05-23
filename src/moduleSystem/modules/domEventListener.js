@@ -18,8 +18,8 @@ function domEventListenerCreator(settings, modules, parts) {
    }
 
    function onElementAdded(addedNode) {
-
-      if (containsNode(settings.rootNode, addedNode)) {
+     if(addedNode.nodeType === Node.ELEMENT_NODE) {
+       if (containsNode(settings.rootNode, addedNode)) {
          var addedModules = querySelectorAll(addedNode, settings.actualSelector);
 
          if (matchesSelector(addedNode, settings.actualSelector)) {
@@ -33,6 +33,7 @@ function domEventListenerCreator(settings, modules, parts) {
          modules.provisionFinished();
          parts.provisionFinished();
       }
+     }
    }
 
    function containsNode(parentNode, node) {
@@ -45,19 +46,20 @@ function domEventListenerCreator(settings, modules, parts) {
    }
 
    function onElementRemoved(removedElement) {
-      var addedModuleElements = querySelectorAll(removedElement, settings.actualSelector);
+      if(removedElement.nodeType === Node.ELEMENT_NODE) {
+        var addedModuleElements = querySelectorAll(removedElement, settings.actualSelector);
 
-      each(addedModuleElements, function (moduleElement) {
-         unloadModules(moduleElement);
-      });
+        each(addedModuleElements, function (moduleElement) {
+           unloadModules(moduleElement);
+        });
 
-      if (matchesSelector(removedElement, settings.actualSelector)) {
-         unloadModules(removedElement);
+        if (matchesSelector(removedElement, settings.actualSelector)) {
+           unloadModules(removedElement);
+        }
       }
    }
 
    function onElementReplaced(newElement, oldElement) {
-
       onElementAdded(newElement);
       onElementRemoved(oldElement);
    }

@@ -603,11 +603,37 @@ describe('Module system', function() {
                }, WAIT_TIME_FOR_MUTATION_EVENT);
             }, MAX_WAIT_TIME);
 
-            it('should NOT call module creator', function() {
+            it('should call module creator', function() {
 
                expect(firstSpyModule).toHaveBeenCalled();
             });
          });
+
+        describe('when adding no element nodes', function() {
+          beforeEach(function(done) {
+            parentElement = document.getElementById(EXISTING_DIV_ID);
+
+            var childHtmlText = document.createTextNode('test');
+            var childHtmlElement = document.createElement('div');
+
+            childHtmlElement.id = CHILD_DIV_ID;
+            childHtmlElement.setAttribute('modules', 'test-module1');
+
+            parentElement.appendChild(childHtmlText);
+            parentElement.appendChild(childHtmlElement);
+
+            setTimeout(function() {
+              done();
+            }, WAIT_TIME_FOR_MUTATION_EVENT);
+            }, MAX_WAIT_TIME);
+
+            it('should call module creator', function() {
+              expect(firstSpyModule).toHaveBeenCalled();
+            });
+
+
+
+        });
 
          describe('when parent node is NOT in DOM', function() {
 

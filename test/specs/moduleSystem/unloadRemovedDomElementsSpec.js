@@ -243,4 +243,67 @@ describe('Module system when dom element removed', function () {
          });
       });
    });
+
+  describe('when removing no element node', function() {
+
+      beforeEach(function (done) {
+
+         var textNode = document.createTextNode('test');
+         var parent = document.getElementById('test-parentDiv');
+         var testDiv1 = document.getElementById('test-div');
+
+         parent.appendChild(textNode);
+
+         parent.removeChild(textNode);
+         parent.removeChild(testDiv1);
+
+         setTimeout(function () {
+            done();
+         }, WAIT_TIME_FOR_MUTATION_EVENT);
+      }, MAX_WAIT_TIME);
+
+      it('should call preDestruct on first module', function () {
+
+         expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      it('should call preDestruct on second module', function () {
+
+         expect(secondSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      it('should call preDestruct on third module', function () {
+
+         expect(thirdSpyModuleObject.preDestruct.calls.count()).toBe(1);
+      });
+
+      describe('when event has been published', function () {
+
+         var publishedEvent;
+
+         beforeEach(function () {
+
+            publishedEvent = {
+               name: 'MyTestEvent'
+            };
+
+            eventBus.publish(publishedEvent);
+         });
+
+         it('should NOT call event listener function on first added module', function () {
+
+            expect(firstSpyModuleObject.onEvent).not.toHaveBeenCalled();
+         });
+
+         it('should NOT call event listener function on second added module', function () {
+
+            expect(secondSpyModuleObject.onEvent).not.toHaveBeenCalled();
+         });
+
+         it('should NOT call event listener function on third added module', function () {
+
+            expect(thirdSpyModuleObject.onEvent).not.toHaveBeenCalled();
+         });
+      });
+  });
 });
