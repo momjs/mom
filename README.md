@@ -1,27 +1,27 @@
 mom - the module manager
 ============
-Dynamic Loading of Javascript based on DOM elements. 
+Dynamic Loading of Javascript based on DOM elements.
 Especially usefull for Content Management Systems (CMS):
    - where you don't know which javascript needs to be loaded on which page
    - where you want to configure javascript on render time from the CMS
-   - where you want to loosely couple modules, because you don't now if the other module is even on the page 
-   
+   - where you want to loosely couple modules, because you don't now if the other module is even on the page
+
 ###Examples
 - [Weather](http://momjs.github.io/mom/examples/weather/)
 - [ToDo](http://momjs.github.io/mom/examples/todo/)
-   
+
 ####Status
 Master: [![Build Status](https://travis-ci.org/momjs/mom.svg?branch=master)](https://travis-ci.org/momjs/mom)
 Develop: [![Build Status](https://travis-ci.org/momjs/mom.svg?branch=develop)](https://travis-ci.org/momjs/mom)
 
-Master: [![Coverage Status](https://coveralls.io/repos/momjs/mom/badge.svg?branch=master)](https://coveralls.io/r/momjs/mom?branch=master)
+Master:  [![Coverage Status](https://coveralls.io/repos/momjs/mom/badge.svg?branch=master)](https://coveralls.io/r/momjs/mom?branch=master)
 Develop: [![Coverage Status](https://coveralls.io/repos/momjs/mom/badge.svg?branch=develop)](https://coveralls.io/r/momjs/mom?branch=develop)
 
-Master: 
+Master:
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/momjs_master.svg)](https://saucelabs.com/u/momjs_master)
 
-Develop: 
+Develop:
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/momjs.svg)](https://saucelabs.com/u/momjs)
 
@@ -40,11 +40,11 @@ mom.createPart('adder')
         function privateMethod(x ,y) {
             return x + y;
         }
- 
+
         function publicMethod(x, y) {
             return privateMethod(x, y);
         }
- 
+
         return {
             add : publicMethod
         };
@@ -94,11 +94,11 @@ mom.createPart('adder')
             }
             return x + y;
         }
-  
+
         function publicMethod(x, y) {
             return privateMethod(x, y);
         }
-  
+
         return {
             add : publicMethod
         };
@@ -127,7 +127,7 @@ mom.createPart('calculator')
     .dependencies(['adder', 'multiplier', 'static-part'])
     .creator(function(adder, multiplier, staticPart) {
         console.log(staticPart.static);
- 
+
         return {
             add : adder.add,
             multiply : multiplier.multiply
@@ -176,14 +176,14 @@ mom.createModule('static-hello-world')
 an additional setting which merges/overrides the default settings object could be provided via DOM
 ```html
 <div modules="static-hello-world"> //alerts Hello Module
-  <script type="staticHelloWorld/settings"> 
+  <script type="staticHelloWorld/settings">
     {
       "staticText" : "Module"
     }
   </script>
 </div>
 ```
-####Dependencie Injection
+####Dependency Injection
 modules could be composed out of parts.
 It's a design decision to not allow modules to be injected in other modules. Use the EventBus for communication between modules.
 ```js
@@ -199,21 +199,21 @@ mom.createModule('static-hello-world-with-dependencies')
 ```
 ####PostConstruct Hook
 every module could decide to publish a postConstruct method which gets executed after every module is properly initialized.
-This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could not listening to the EventBus already and miss the event. 
+This should be used if a event could be resulting from the actions in place. Because if an event is published before all modules are initialized, a listening module could not listening to the EventBus already and miss the event.
 ```js
 mom.createModule('hello-world-publisher')
     .dependencies(['event-bus'])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
-        
+
             var event = {
                 name = 'HelloWorldChanged',
                 text = moduleObj.innerHTML
             };
-            
+
             eventBus.publish(event);
         }
-         
+
         return {
             postConstruct : postConstruct
         }
@@ -223,28 +223,28 @@ mom.createModule('hello-world-publisher')
 <div modules="hello-world-publisher" /> //publish hello world changed
 ```
 ####Communication between modules
-modules should communicate over the EventBus to prevent tight coupling. 
+modules should communicate over the EventBus to prevent tight coupling.
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 ```js
 mom.createModule('hello-world-publisher')
     .dependencie(['event-bus'])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
-        
+
             var namedEvent = {
                 name : 'HelloWorldChanged',
                 text : moduleObj.innerHTML
             };
-            
+
             eventBus.publish(namedEvent);
-            
+
             var event = {
                data : 'testData'
             };
-            
+
             eventBus.publis(event)
         }
-         
+
         return {
             postConstruct : postConstruct
         }
@@ -255,12 +255,12 @@ mom.createModule('hello-world-listener')
         function onHelloWorldChanged(event) {
             alert('Hello ' + event.text);
         }
-         
+
         return {
             onHelloWorldChanged: onHelloWorldChanged // gets called if a HelloWorldChanged event gets published
         }
     });
-    
+
 mom.createModule('unnamed-event-listener')
     .creator(function(moduleObj) {
         function onEvent(event) {
@@ -270,7 +270,7 @@ mom.createModule('unnamed-event-listener')
                alert('Hello ' + event.data);
             }
         }
-         
+
         return {
             onEvent: onEvent // gets called by every named event and events without names
         }
