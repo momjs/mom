@@ -100,11 +100,9 @@ mom.createModule('todo-adder')
    };
    
    function postConstruct() {
-      setTimeout(function() {
-         persister.iterate(function(toDoItem) {
-            createToDo(toDoItem);
-         });
-      }, 0);
+     persister.iterate(function(toDoItem) {
+        createToDo(toDoItem);
+     });
    }
 
    function addToDo() {
