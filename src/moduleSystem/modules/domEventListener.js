@@ -3,7 +3,7 @@ function domEventListenerCreator(settings, modules, parts) {
    'use strict';
 
    var registerStrategy = decideDomMutationStrategy();
-   var ELEMENT_NODE = (window.Node) ? Node.ELEMENT_NODE : 1;
+   var ELEMENT_NODE = (window.Node) ? Node.ELEMENT_NODE : 1; //ie8 node is undefined
 
    function decideDomMutationStrategy() {
       var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
