@@ -9,8 +9,8 @@ mom = (function () {
          modules = modulesCreator(parts, eventBus, loadedModules, settings),
          partBuilder = partBuilderCreator(parts, settings),
          moduleBuilder = moduleBuilderCreator(modules),
-         moduleLoader = moduleLoaderCreator(modules, parts, settings),
-         domEventListener = domEventListenerCreator(settings, modules, parts);
+         domEventListener = domEventListenerCreator(settings, modules, parts),
+         moduleLoader = moduleLoaderCreator(modules, parts, domEventListener, settings);
 
       partBuilder('event-bus')
          .returns(eventBus);
@@ -18,10 +18,6 @@ mom = (function () {
       function initModulePageInterceptor(newSettings) {
          if (newSettings !== undefined) {
             settings.mergeWith(newSettings);
-         }
-
-         if (settings.domMutationSupport === true) {
-            domEventListener.registerToEvents();
          }
 
          moduleLoader.initModulePage();
