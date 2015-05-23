@@ -1,5 +1,5 @@
 /*exported moduleLoaderCreator */
-function moduleLoaderCreator(moduleAccess, partAccess, settings) {
+function moduleLoaderCreator(moduleAccess, partAccess, domEventListener, settings) {
    'use strict';
 
    function initModulePage() {
@@ -11,7 +11,10 @@ function moduleLoaderCreator(moduleAccess, partAccess, settings) {
       each(modulesOnPage, function (element) {
          initModule(element);
       });
-
+     
+      if (settings.domMutationSupport === true) {
+          domEventListener.registerToEvents();
+      }
 
       partAccess.provisionFinished();
       moduleAccess.provisionFinished();

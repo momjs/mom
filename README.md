@@ -227,7 +227,7 @@ modules should communicate over the EventBus to prevent tight coupling.
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 ```js
 mom.createModule('hello-world-publisher')
-    .dependencie(['event-bus'])
+    .dependencies(['event-bus'])
     .creator(function(moduleObj, eventBus) {
         function postConstruct() {
 
@@ -299,6 +299,7 @@ mom.initModulePage({
    domMutationSupport: true
 });
 ```
+Please note: DOM mutation support isn't enabled until all modules are initialized. You can append/remove your modules to DOM at postConstruct or later.
 
 ####Adding DOM element containing a module
 By adding a DOM element you have to consider nothing but adding the modules-attribute mom is searching for. Your module will be loaded and its parts will be injected automatically. Even your provided postConstruct-function will be called after loading your modules.

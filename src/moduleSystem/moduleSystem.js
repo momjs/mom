@@ -8,9 +8,9 @@ mom = (function () {
          loadedModules = loadedModulesContainerCreator(settings),
          modules = modulesCreator(parts, eventBus, loadedModules, settings),
          partBuilder = partBuilderCreator(parts, settings),
-         modleBuilder = moduleBuilderCreator(modules),
-         moduleLoader = moduleLoaderCreator(modules, parts, settings),
-         domEventListener = domEventListenerCreator(settings, modules, parts);
+         moduleBuilder = moduleBuilderCreator(modules),
+         domEventListener = domEventListenerCreator(settings, modules, parts),
+         moduleLoader = moduleLoaderCreator(modules, parts, domEventListener, settings);
 
       partBuilder('event-bus')
          .returns(eventBus);
@@ -21,10 +21,6 @@ mom = (function () {
          }
 
          moduleLoader.initModulePage();
-
-         if (settings.domMutationSupport === true) {
-            domEventListener.registerToEvents();
-         }
       }
 
       function dispose() {
@@ -37,7 +33,7 @@ mom = (function () {
 
       return merge({
          createPart: partBuilder,
-         createModule: modleBuilder,
+         createModule: moduleBuilder,
          initModulePage: initModulePageInterceptor,
          newInstance: newInstance,
          dispose: dispose,
