@@ -3,6 +3,7 @@ function domEventListenerCreator(settings, modules, parts) {
    'use strict';
 
    var registerStrategy = decideDomMutationStrategy();
+   var ELEMENT_NODE = (window.Node) ? Node.ELEMENT_NODE : 1;
 
    function decideDomMutationStrategy() {
       var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
@@ -18,7 +19,7 @@ function domEventListenerCreator(settings, modules, parts) {
    }
 
    function onElementAdded(addedNode) {
-     if(addedNode.nodeType === Node.ELEMENT_NODE) {
+     if(addedNode.nodeType === ELEMENT_NODE) {
        if (containsNode(settings.rootNode, addedNode)) {
          var addedModules = querySelectorAll(addedNode, settings.actualSelector);
 
@@ -46,7 +47,7 @@ function domEventListenerCreator(settings, modules, parts) {
    }
 
    function onElementRemoved(removedElement) {
-      if(removedElement.nodeType === Node.ELEMENT_NODE) {
+      if(removedElement.nodeType === ELEMENT_NODE) {
         var addedModuleElements = querySelectorAll(removedElement, settings.actualSelector);
 
         each(addedModuleElements, function (moduleElement) {
