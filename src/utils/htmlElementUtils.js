@@ -1,4 +1,12 @@
 /* exported matchesSelector */
+
+/**
+ * Test if the given element matches the given selector
+ *
+ * @param {element} element - to test
+ * @param {String} selector
+ * @returns {boolean} true when element matches selector
+ */
 var matchesSelector = (function () {
    'use strict';
 
