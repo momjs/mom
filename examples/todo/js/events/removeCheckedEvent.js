@@ -1,0 +1,3 @@
+var removeCheckedEvent = {
+      name: 'RemoveCheckedEvent',
+};

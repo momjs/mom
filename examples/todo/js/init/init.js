@@ -1,0 +1,3 @@
+mom.initModulePage({
+   domMutationSupport: true
+});
