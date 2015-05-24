@@ -4,7 +4,7 @@
  * Calls the given function asynchronously
  *
  * @param {function} function - to execute async
- * @param {number} delay - optional execution deleay
+ * @param {number} delay - optional execution deleay in milliseconds
  */
 function callAsync(functionPointer, delay) {
    'use strict';
