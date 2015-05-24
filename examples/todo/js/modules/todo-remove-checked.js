@@ -10,7 +10,6 @@
       domElement.addEventListener('click', function() {
          eventBus.publish(removeCheckedEvent);
       });
-
    }
    
 })();
