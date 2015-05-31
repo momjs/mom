@@ -1,6 +1,10 @@
 /**
  * Site header
  */
+.navigation {
+  float:left;
+}
+
 .site-header {
     border-top: 5px solid $grey-color-dark;
     border-bottom: 1px solid $grey-color-light;
@@ -162,7 +166,7 @@
  * Page content
  */
 .page-content {
-    padding: $spacing-unit 0;
+    float: left;
 }
 
 .page-heading {
