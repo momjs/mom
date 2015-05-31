@@ -1,12 +1,15 @@
 ---
 layout: default
 ---
-###Parts
-Utility functions like z.B AJAX loader etc.
-####Creation and registration
+#Parts
 
-####Creator Parts
-```js
+Utility functions like z.B AJAX loader etc.
+
+##Creation and registration
+
+###Creator Parts
+
+{% highlight js %}
 mom.createPart('adder')
     .creator(function() {
         function privateMethod(x ,y) {
@@ -21,40 +24,45 @@ mom.createPart('adder')
             add : publicMethod
         };
     });
-```
-#####Scopes
+{% endhighlight %}
+
+####Scopes
+
 By default the module system creates a new instance each time it suplies a part.
 To change this behaviour a scope could be specified
 
-######Lazy Singleton
-```js
+#####Lazy Singleton
+
+{% highlight js %}
 mom.createPart('singleton-part')
     .scope('lazy-singleton')
     .creator(function() {
         ...
     });
-```
+{% endhighlight %}
 Or the default behaviour could be changed
-```js
+{% highlight js %}
 mom.initModulePage({
    defaultScope : 'lazy-singleton'
 });
-```
+{% endhighlight %}
 A lazy singleton part gets created on the first request and is reused on following requests.
 
-######Eager Singleton
-```js
+#####Eager Singleton
+
+{% highlight js %}
 mom.createPart('singleton-part')
     .scope('eager-singleton')
     .creator(function() {
         ...
     });
-```
+{% endhighlight %}
 A eager singleton part gets created every time initModulePage() is called, even when no module/part has it as an depedency.
 There is only one intance of this module which gets reused.
 
-#####Configure
-```js
+####Configure
+
+{% highlight js %}
 mom.createPart('adder')
     .settings({
         isDebug : true;
@@ -75,12 +83,13 @@ mom.createPart('adder')
             add : publicMethod
         };
     });
-```
+{% endhighlight %}
 
-####Override from DOM
+#####Override from DOM
+
 an additional setting which merges/overrides with the default settings object could be provided via DOM.
 The configuration has to be put in the html head
-```html
+{% highlight html %}
 <html>
 <head>
    <script type="adder/settings">
@@ -90,11 +99,12 @@ The configuration has to be put in the html head
    </script>
 </head>
 </html>
-```
+{% endhighlight %}
 
-#####Dependency Injection
+##Dependency Injection
+
 creator parts could be composed of other parts
-```js
+{% highlight js %}
 mom.createPart('calculator')
     .dependencies(['adder', 'multiplier', 'static-part'])
     .creator(function(adder, multiplier, staticPart) {
@@ -105,12 +115,14 @@ mom.createPart('calculator')
             multiply : multiplier.multiply
         };
     });
-```
-####Returns Parts
+{% endhighlight %}
+
+##Returns Parts
+
 If a part don't need a constructor function to be called (e.g. has no dependencies, settings, etc), a returns part could be used
-```js
+{% highlight js %}
 mom.createPart('static-part')
     .returns({
          static : 'static'
     });
-```
+{% endhighlight %}
