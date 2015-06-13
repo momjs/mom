@@ -7,23 +7,9 @@ function partBuilderCreator(partAccess, moduleSystemSettings) {
       SCOPE_EAGER_SINGLETON = scopes.eagerSingleton,
       SCOPE_MULTI_INSTANCE = scopes.multiInstance;
 
-   function returnsDescriptor(name) {
-      var descriptor = createDescriptor(name);
+   return createPart;
 
-      descriptor.type = constants.type.returns;
-      descriptor.scope = SCOPE_LAZY_SINGLETON;
-      descriptor.returns = undefined;
-
-      return descriptor;
-   }
-
-   function partDescriptor(name) {
-      var descriptor = creatorDescriptor(name);
-      descriptor.scope = moduleSystemSettings.defaultScope;
-
-      return descriptor;
-   }
-
+   //////////////////////////////////////////////////////////////////////////////////////
 
    function createPart(name) {
       var descriptor;
@@ -35,6 +21,8 @@ function partBuilderCreator(partAccess, moduleSystemSettings) {
          returns: addReturns,
          scope: addScope
       };
+
+      ///////////////////////////////////////////////////////////////////////////////////
 
       function addCreator(creator) {
 
@@ -121,6 +109,20 @@ function partBuilderCreator(partAccess, moduleSystemSettings) {
       }
    }
 
+   function returnsDescriptor(name) {
+      var descriptor = createDescriptor(name);
 
-   return createPart;
+      descriptor.type = constants.type.returns;
+      descriptor.scope = SCOPE_LAZY_SINGLETON;
+      descriptor.returns = undefined;
+
+      return descriptor;
+   }
+
+   function partDescriptor(name) {
+      var descriptor = creatorDescriptor(name);
+      descriptor.scope = moduleSystemSettings.defaultScope;
+
+      return descriptor;
+   }
 }
