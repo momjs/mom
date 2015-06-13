@@ -287,4 +287,40 @@ describe('Module system when loading parts', function () {
       expect(spyPart).toHaveBeenCalled();
       expect(postConstructSpy).toHaveBeenCalled();
    });
+
+   it('should throw an exception when definition is not found', function() {
+     expect(function() {
+       mom.getPartDescriptor('test-part');
+     }).toThrowError('tried to load test-part, but was not registered');
+   });
+
+   it('should return a registered definition', function() {
+     var creator = function() {
+
+     };
+     var partName = 'test-part';
+     var scope = mom.scope.lazySingleton;
+     var settings = {
+       test: 'test'
+     };
+     var dependencies = ['test-dependency'];
+
+     mom.createPart(partName)
+       .scope(scope)
+       .settings(settings)
+       .dependencies(dependencies)
+       .creator(creator);
+
+     var definition = mom.getPartDescriptor('test-part');
+
+     expect(definition).toEqual({
+       name: partName,
+       scope: scope,
+       type: 'creator',
+       settings: settings,
+       dependencies: dependencies,
+       creator: creator
+     });
+
+   });
 });

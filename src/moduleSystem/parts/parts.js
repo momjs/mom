@@ -8,6 +8,18 @@ function partsCreator(settings) {
       availablePartDescriptors = {},
       calledPostConstructs = [];
 
+
+   return {
+      initEagerSingletons: initEagerSingletons,
+      getPartDescriptor: getPartDescriptor,
+      provisionPart: provisionPart,
+      getParts: getOrInitializeParts,
+      provisionFinished: callPostConstructs,
+      addPartDescriptor: addPartDescriptor
+   };
+
+   ///////////////////////////////////////////////////////////////////////////////////////////
+
    function addPartDescriptor(partDescriptor) {
       availablePartDescriptors[partDescriptor.name] = partDescriptor;
    }
@@ -180,12 +192,12 @@ function partsCreator(settings) {
       return part;
    }
 
+   function getPartDescriptor(partName) {
+      var descriptor = availablePartDescriptors[partName];
+      if(!descriptor) {
+        throw new Error('tried to load ' + partName + ', but was not registered');
+      }
 
-   return {
-      initEagerSingletons: initEagerSingletons,
-      provisionPart: provisionPart,
-      getParts: getOrInitializeParts,
-      provisionFinished: callPostConstructs,
-      addPartDescriptor: addPartDescriptor
-   };
+      return descriptor;
+   }
 }
