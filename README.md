@@ -3,7 +3,7 @@ mom - the module manager
 Dynamic Loading of Javascript based on DOM elements.
 Especially usefull for Content Management Systems (CMS):
    - where you don't know which javascript needs to be loaded on which page
-   - where you want to configure javascript on render time from the CMS
+   - where you want to configure javascript during rendering
    - where you want to loosely couple modules, because you don't now if the other module is even on the page
 
 ###Examples
