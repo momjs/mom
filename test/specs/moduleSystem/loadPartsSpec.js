@@ -294,7 +294,7 @@ describe('Module system when loading parts', function () {
      }).toThrowError('tried to load test-part, but was not registered');
    });
 
-   it('should return a registered definition', function() {
+   it('should return a registered creator definition', function() {
      var creator = function() {
 
      };
@@ -320,6 +320,27 @@ describe('Module system when loading parts', function () {
        settings: settings,
        dependencies: dependencies,
        creator: creator
+     });
+
+   });
+
+  it('should return a registered returns definition', function() {
+     var returns = function() {
+
+     };
+     var partName = 'test-part';
+
+
+     mom.createPart(partName)
+       .returns(returns);
+
+     var definition = mom.getPartDescriptor('test-part');
+
+     expect(definition).toEqual({
+       name: partName,
+       scope: mom.scope.lazySingleton,
+       type: 'returns',
+       returns: returns
      });
 
    });
