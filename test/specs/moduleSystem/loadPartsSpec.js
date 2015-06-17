@@ -15,7 +15,7 @@ describe('Module system when loading parts', function () {
       expect(mom.getPart('test-part')).toEqual(partObj);
    });
 
-   it('should not reinitilize part if allready initialized', function () {
+   it('should not reinitialize part if already initialized', function () {
       var partObj = {
          test: 'test'
       };

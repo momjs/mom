@@ -57,11 +57,26 @@ function partsCreator(settings) {
          buildingStart(partName);
 
          partDescriptor = availablePartDescriptors[partName];
-         constructionStrategy = getConstructionStrategie(partDescriptor.scope);
+         constructionStrategy = getConstructionStrategy(partDescriptor.scope);
          part = constructionStrategy(partDescriptor);
 
          buildingFinished(partName);
-      } else {
+      }
+      else if (window && window[partName]) {
+        buildingStart(partName);
+
+        partDescriptor = {
+          name : partName,
+          scope : constants.scope.eagerSingleton,
+          type : constants.type.returns,
+          returns: window[partName]
+        };
+
+        part = singletonConstructionStrategy(partDescriptor);
+
+        buildingFinished(partName);
+      }
+      else {
          throw new Error('tried to load ' + partName + ' but was not registered');
       }
 
@@ -81,9 +96,7 @@ function partsCreator(settings) {
       delete buildingParts[partName];
    }
 
-
-
-   function getConstructionStrategie(scope) {
+   function getConstructionStrategy(scope) {
       switch (scope) {
       case constants.scope.multiInstance:
          return multiInstanceConstructionStrategy;
@@ -163,8 +176,6 @@ function partsCreator(settings) {
       }
 
       return createdPart;
-
-
    }
 
 
