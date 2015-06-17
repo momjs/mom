@@ -63,7 +63,6 @@ function partsCreator(settings) {
          buildingFinished(partName);
       }
       else if (window && window[partName]) {
-        buildingStart(partName);
 
         partDescriptor = {
           name : partName,
@@ -73,8 +72,6 @@ function partsCreator(settings) {
         };
 
         part = singletonConstructionStrategy(partDescriptor);
-
-        buildingFinished(partName);
       }
       else {
          throw new Error('tried to load ' + partName + ' but was not registered');
