@@ -31,26 +31,26 @@ function settingsCreator() {
     return replacePlaceholder(settings.moduleSettingsSelector, 'name', moduleName);
   }
 
-   function getPartSettingsSelector(partName) {
-      return replacePlaceholder(settings.partSettingsSelector, 'name', partName);
-   }
+  function getPartSettingsSelector(partName) {
+    return replacePlaceholder(settings.partSettingsSelector, 'name', partName);
+  }
 
-   function replacePlaceholder(text, placeholder, value) {
-      var actualPlaceholder = '%' + placeholder + '%',
-         regEx,
-         result = text;
+  function replacePlaceholder(text, placeholder, value) {
+    var actualPlaceholder = '%' + placeholder + '%';
+    var regEx;
+    var result = text;
 
-      if (stringContains(text, actualPlaceholder)) {
-         regEx = new RegExp(actualPlaceholder, 'g');
+    if (stringContains(text, actualPlaceholder)) {
+      regEx = new RegExp(actualPlaceholder, 'g');
 
-         result = text.replace(regEx, value);
-      }
+      result = text.replace(regEx, value);
+    }
 
       return result;
    }
 
-   function mergeWith(newSettings) {
-      merge(settings, newSettings);
-      init();
-   }
+  function mergeWith(newSettings) {
+    merge(settings, newSettings);
+    init();
+  }
 }
