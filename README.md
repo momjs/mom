@@ -135,6 +135,22 @@ mom.createPart('static-part')
     });
 ```
 
+####Inject globals (as parts)
+You don't need to write returns-parts for your access to globals if you don't configure or change the global object. You
+only have to specify the name of the global variable when calling the dependencies-function while registering your part.
+```js
+myGlobal = {
+  description : 'my global object'
+};
+
+mom.createModule('my-module-which-demands-my-global').dependencies('myGlobal')
+  .creator(function(moduleObjectFromDom, myGlobalObject) {
+
+    // accessing your global by using the injected parameter
+    console.log(myGlobalObject.description); // will print 'my global object' to console.
+  });
+```
+
 ###Module
 ####Creation and registration
 ```js
