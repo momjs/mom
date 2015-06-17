@@ -384,6 +384,60 @@ Please consider that for the Internet Explorer 8, 9 and 10 the dom mutation supp
 | Element.replaceChild | Yes              | Yes                   |
 | Element.innerHtml    | Yes              | No                    |
 
+###Test
+For testing purposes you could get a part descriptor to retrieve its creator.
+```js
+mom.createPart('test-part')
+   .scope(mom.scope.lazySingleton)
+   .settings({
+       test: 1
+   })
+   .dependencies(['test-dependency'])
+   .creator(function(testDependency) {
+
+   });
+
+   var def = mom.getPartDescriptor('test-part');
+   /* {
+         name: 'test-part',
+         scope: 'lazy-singleton',
+         type: 'creator',
+         settings: { test: 1 },
+         dependencies: ['test-dependency'],
+         creator: function() {
+
+       }
+   }
+   **/
+
+   var partInstanceToTest = mom.getPartDescriptor('test-part').creator(someMockedDependency)
+```
+
+For testing purposes you could get a module descriptor to retrieve its creator.
+```js
+mom.createModule('test-module')
+   .settings({
+       test: 1
+   })
+   .dependencies(['test-dependency'])
+   .creator(function(testDependency) {
+
+   });
+
+   var def = mom.getModuleDescriptor('test-module');
+   /* {
+         name: 'test-module',
+         type: 'creator',
+         settings: { test: 1 },
+         dependencies: ['test-dependency'],
+         creator: function() {
+
+       }
+   }
+   **/
+
+   var moduleInstanceToTest = mom.getModuleDescriptor('test-module').creator(someMockedDependency)
+```
 
 To do future releases
 -------------

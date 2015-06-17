@@ -186,4 +186,41 @@ describe('Module system loads one module', function () {
          expect(postConstructSpy).toHaveBeenCalled();
       });
    });
+
+  describe('when getting descriptor', function() {
+    it('should throw an exception when definition is not found', function() {
+      expect(function() {
+        mom.getModuleDescriptor('test-module');
+      }).toThrowError('tried to load test-module module descriptor, but was not registered');
+    });
+
+    it('should return a registered creator definition', function() {
+      //given
+      var settings = {
+        test: 'test'
+      };
+      var dependencies = ['test-dependency'];
+      var creator = function() {
+
+      };
+      var name = 'test-module';
+
+      mom.createModule(name)
+        .dependencies(dependencies)
+        .settings(settings)
+        .creator(creator);
+
+      //when
+      var descriptor = mom.getModuleDescriptor(name);
+
+      //then
+      expect(descriptor).toEqual({
+        name: name,
+        settings: settings,
+        dependencies: dependencies,
+        creator: creator,
+        type: 'creator'
+      });
+    });
+  });
 });
