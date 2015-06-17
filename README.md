@@ -22,7 +22,7 @@ Especially usefull for Content Management Systems (CMS):
 How To Use
 ----------
 ###Parts
-Utility functions like z.B AJAX loader etc.
+Utility functions like e.g. AJAX loader etc.
 ####Creation and registration
 
 ####Creator Parts
