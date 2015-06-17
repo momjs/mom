@@ -178,8 +178,6 @@ function partsCreator(settings) {
       return createdPart;
    }
 
-
-
    function callPostConstructs() {
       eachProperty(loadedParts, function (part) {
          callPostConstruct(part);
@@ -206,7 +204,7 @@ function partsCreator(settings) {
    function getPartDescriptor(partName) {
       var descriptor = availablePartDescriptors[partName];
       if(!descriptor) {
-        throw new Error('tried to load ' + partName + ' descriptor, but was not registered');
+        throw new Error('tried to load ' + partName + ' part descriptor, but was not registered');
       }
 
       return descriptor;

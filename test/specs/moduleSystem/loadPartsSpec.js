@@ -288,10 +288,10 @@ describe('Module system when loading parts', function () {
       expect(postConstructSpy).toHaveBeenCalled();
    });
 
-   it('should throw an exception when definition is not found', function() {
+   it('should throw an exception when definition is not found', function() {
      expect(function() {
        mom.getPartDescriptor('test-part');
-     }).toThrowError('tried to load test-part descriptor, but was not registered');
+     }).toThrowError('tried to load test-part part descriptor, but was not registered');
    });
 
    it('should return a registered creator definition', function() {

@@ -2,8 +2,18 @@
 function modulesCreator(partAccess, eventBus, loadedModules, settings) {
    'use strict';
 
-   var availableModuleDescriptors = {},
+  var availableModuleDescriptors = {},
       calledPostConstructs = [];
+
+  return {
+    provisionModule: initializeModules,
+    unloadModules: unloadModules,
+    provisionFinished: callPostConstructs,
+    addModuleDescriptor: addModuleDescriptor,
+    getModuleDescriptor: getModuleDescriptor
+  };
+
+  /////////////////////////////////////////////////////////////////////////
 
    function addModuleDescriptor(moduleDescriptor) {
       availableModuleDescriptors[moduleDescriptor.name] = moduleDescriptor;
@@ -98,10 +108,12 @@ function modulesCreator(partAccess, eventBus, loadedModules, settings) {
       loadedModules.remove(element);
    }
 
-   return {
-      provisionModule: initializeModules,
-      unloadModules: unloadModules,
-      provisionFinished: callPostConstructs,
-      addModuleDescriptor: addModuleDescriptor
-   };
+   function getModuleDescriptor(moduleName) {
+      var descriptor = availableModuleDescriptors[moduleName];
+      if(!descriptor) {
+        throw new Error('tried to load ' + moduleName + ' module descriptor, but was not registered');
+      }
+
+      return descriptor;
+   }
 }
