@@ -81,8 +81,6 @@ function partsCreator(settings) {
       delete buildingParts[partName];
    }
 
-
-
    function getConstructionStrategie(scope) {
       switch (scope) {
       case constants.scope.multiInstance:
@@ -163,11 +161,7 @@ function partsCreator(settings) {
       }
 
       return createdPart;
-
-
    }
-
-
 
    function callPostConstructs() {
       eachProperty(loadedParts, function (part) {
