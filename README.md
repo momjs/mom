@@ -421,7 +421,6 @@ mom.createPart('test-part')
          settings: { test: 1 },
          dependencies: ['test-dependency'],
          creator: function() {
-
        }
    }
    **/
@@ -447,7 +446,6 @@ mom.createModule('test-module')
          settings: { test: 1 },
          dependencies: ['test-dependency'],
          creator: function() {
-
        }
    }
    **/
