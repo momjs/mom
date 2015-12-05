@@ -99,6 +99,15 @@ describe('Module system loads one module', function () {
          mom.createModule('test-module').creator(spyModule);
       });
 
+      it('should provision dom element on explicit call', function() {
+         var moduleElement = document.getElementById('test-module');
+
+         mom.provisionDomElement(moduleElement);
+
+         expect(spyModule).toHaveBeenCalled();
+         expect(spyModule.calls.argsFor(0)[0]).toBe(moduleElement);
+      });
+
       it('should load any Module found in dom', function () {
 
          mom.initModulePage();

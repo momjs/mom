@@ -22,6 +22,9 @@ mom = (function () {
       return merge({
         createPart: partBuilder,
         createModule: moduleBuilder,
+        provisionDomElement: function() {
+          throw 'not yet implemented';
+        },
         initModulePage: initModulePageInterceptor,
         newInstance: newInstance,
         dispose: dispose,
