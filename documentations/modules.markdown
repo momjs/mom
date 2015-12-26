@@ -97,64 +97,11 @@ mom.createModule('hello-world-publisher')
 
 ##Communication between modules
 
-modules should communicate over the EventBus to prevent tight coupling. 
+modules should communicate over the eventBus to prevent tight coupling. 
 For this every module is added to the EventBus automatically. For this a public method have to be exposed with a name like: on + EventName (eg. onHelloWorldChanged)
 
-{% highlight js %}
-mom.createModule('hello-world-publisher')
-    .dependencie(['event-bus'])
-    .creator(function(moduleObj, eventBus) {
-        function postConstruct() {
-        
-            var namedEvent = {
-                name : 'HelloWorldChanged',
-                text : moduleObj.innerHTML
-            };
-            
-            eventBus.publish(namedEvent);
-            
-            var event = {
-               data : 'testData'
-            };
-            
-            eventBus.publis(event)
-        }
-         
-        return {
-            postConstruct : postConstruct
-        }
-    });
-
-mom.createModule('hello-world-listener')
-    .creator(function(moduleObj) {
-        function onHelloWorldChanged(event) {
-            alert('Hello ' + event.text);
-        }
-         
-        return {
-            onHelloWorldChanged: onHelloWorldChanged // gets called if a HelloWorldChanged event gets published
-        }
-    });
-    
-mom.createModule('unnamed-event-listener')
-    .creator(function(moduleObj) {
-        function onEvent(event) {
-            if(name === 'HelloWorldChanged') {
-               alert('Hello ' + event.text);
-            } else {
-               alert('Hello ' + event.data);
-            }
-        }
-         
-        return {
-            onEvent: onEvent // gets called by every named event and events without names
-        }
-    });
-{% endhighlight %}
-
-{% highlight html %}
-<div modules="hello-world-listener" /> // alerts Hello World if helloWorldPublisher is in place
-{% endhighlight %}
+Detailed documentation:
+[eventBus]({{ "/documentations/eventBus.html"  | prepend: site.baseurl }})
 
 ##More than one Module per DOM-Element
 
