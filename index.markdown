@@ -11,6 +11,9 @@ Especially usefull for Content Management Systems (CMS):
    - where you want to configure javascript during rendering
    - where you want to loosely couple modules, because you don't now if the other module is even on the page
 
+##Download
+[Latest Releases](https://github.com/momjs/mom/releases)
+
 ##Examples
 
 - [Weather](examples/weather/)
